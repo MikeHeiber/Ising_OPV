@@ -1,4 +1,5 @@
 // Copyright (c) 2014 Michael C. Heiber, The University of Akron, and Julius-Maximilains Universtiy of Würzburg
+// This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 
 #include <iostream>
