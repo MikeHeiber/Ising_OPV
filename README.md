@@ -28,3 +28,5 @@ Ising_OPV will create several output files.  One text file will be created for e
 
 ### Additional Information
 A simplified web-based version of this software can be found at https://nanohub.org/resources/bhjmorphology/
+
+A detailed description and characterization of this software tool will be published very soon.  Once published, a link will be provided here.
