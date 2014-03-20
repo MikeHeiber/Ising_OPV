@@ -21,6 +21,8 @@ As an example, to run create one morphology on a single processor, the command i
 To run in a parallel processing environment and create 10 morphologies on 10 processors, the command is:
 >    mpiexec -n 10 Ising_OPV.exe parameters_default.txt
 
+These statements can be implemented into batch scripts for running Ising_OPV in supercomputing environments.
+
 ### Output
 Ising_OPV will create several output files.  One text file will be created for each morphology generated that stores the data for that morphology.  In addition, another text file, analysis_summary.txt, will contain statistics about the set of morphologies that has been created.
 
