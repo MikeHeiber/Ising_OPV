@@ -1,0 +1,26 @@
+## Parameters for Ising_OPV
+-------------------------------
+## General Parameters
+50 //length (nm) (integer values only)
+50 //width (nm) (integer values only)
+50 //height (nm) (integer values only)
+0.5 //mix_fraction (donor fraction)
+0.6 //interaction_energy (in units of kT) (code only optimized for values of 0.4, 0.6, 0.8, and 1.0)
+-1 //target_size (nm) (set to -1 if you want to specify the number of MC steps instead)
+150 //MC_steps (only used if target_size is set to a negative value)
+-------------------------------
+## Import Morphology
+false //enable_import_morphology (true or false)
+morphology //morphology_import_prefix (name of morphology file prefix from files with the form: prefix_num_uncompressed.txt)
+-------------------------------
+## Smoothing
+true //enable_smoothing (true or false)
+0.52 //smoothing_threshold (0.52 is optimal value determined for domains >= 5 nm and a mix_faction of 0.5)
+-------------------------------
+## Rescale Morphology
+true //enable_rescale (true or false)
+2 //rescale_factor (integer values only)
+-------------------------------
+## Analysis
+true //Enable_correlation_calc (true or false)
+true //Enable_tortuosity_calc (true or false)
