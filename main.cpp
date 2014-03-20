@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Michael C. Heiber, The University of Akron, and Julius-Maximilains Universtiy of Würzburg
+// For more information, see the LICENSE file that accompanies this software.
+
 #include <iostream>
 #include <fstream>
 #include <mpi.h>
