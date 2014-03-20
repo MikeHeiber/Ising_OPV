@@ -23,3 +23,6 @@ To run in a parallel processing environment and create 10 morphologies on 10 pro
 
 ### Output
 Ising_OPV will create several output files.  One text file will be created for each morphology generated that stores the data for that morphology.  In addition, another text file, analysis_summary.txt, will contain statistics about the set of morphologies that has been created.
+
+### Additional Information
+A simplified web-based version of this software can be found at https://nanohub.org/resources/bhjmorphology/
