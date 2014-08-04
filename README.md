@@ -29,4 +29,5 @@ Ising_OPV will create several output files.  One text file will be created for e
 ### Additional Information
 A simplified web-based version of this software can be found at https://nanohub.org/resources/bhjmorphology/
 
-A detailed description and characterization of this software tool will be published very soon.  Once published, a link will be provided here.
+A detailed description and characterization of this software tool is now published in Physical Review Applied. See the article titled "Efficient Generation of Model Bulk Heterojunction Morphologies for Organic Photovoltaic Device Modeling" here:
+https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008
