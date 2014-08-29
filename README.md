@@ -15,7 +15,7 @@ Ising_OPV.exe takes one input argument, which is the filename of the input param
 
 An example parameter file is provided with parameters_default.txt
 
-As an example, to run create one morphology on a single processor, the command is:
+As an example, to create one morphology on a single processor, the command is:
 >    Ising_OPV.exe parameters_default.txt
 
 To run in a parallel processing environment and create 10 morphologies on 10 processors, the command is:
