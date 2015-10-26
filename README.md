@@ -51,13 +51,20 @@ As an example, to import a compressed morphology that is in current working dire
 These statements can be implemented into batch scripts for running Ising_OPV v2.0 in a supercomputing environment.
 
 ### Output
-Ising_OPV will create several output files.  One text file will be created for each morphology generated that stores the data for that morphology.  Another text file, analysis_summary.txt, will contain statistics about the set of morphologies that has been created.  In addition, when interfacial distance histogram calculation is enabled, the file interfacial_distance_histograms.txt will be created.  When tortuosity calculation is enabled, the file tortuostiy_histograms.txt will be created to contain the histogram data, and the files end-to-end_path_data1.txt and end-to-end_path_data2.txt will be created to contain the lengths of the shortest end-to-end paths through each phase.
+Ising_OPV will create several output files:
+- morphology_#_compressed.txt -- This text file will be created for each morphology generated and stores the data for that morphology.
+- analysis_summary.txt -- This text file will contain statistics about the set of morphologies that has been created.  
+- interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type.
+-  tortuostiy_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contain the overall tortuosity histogram data for each domain type.
+-  end-to-end_path_data1.txt and end-to-end_path_data2.txt -- These text files will be created when tortuosity calculation is enabled and will contain the lengths of the shortest end-to-end paths through each domain type.
 
 ### Additional Information
 A simplified web-based version of this software can be found at https://nanohub.org/resources/bhjmorphology/
 
 Several peer-reviewed publications discuss the development and application of this software tool.  See the publications below:
-[M. C. Heiber and A. Dhinojwala, J. Phys. Chem. C **42**, 21627 (2013).](http://pubs.acs.org/doi/abs/10.1021/jp403396v)
-[M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **2**, 014008 (2014).](http://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008)
-[M. C. Heiber, C. Baumbach, V. Dyakonov, and C. Deibel, Phys. Rev. Lett. **114**, 136602 (2015).](http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.114.136602)
+- [M. C. Heiber and A. Dhinojwala, J. Phys. Chem. C **42**, 21627 (2013).](http://pubs.acs.org/doi/abs/10.1021/jp403396v)
+- [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **2**, 014008 (2014).](http://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008)
+- [M. C. Heiber, C. Baumbach, V. Dyakonov, and C. Deibel, Phys. Rev. Lett. **114**, 136602 (2015).](http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.114.136602)
+
+If you would like some assitance in customizing this software tool for your particular interest or application, please contact me to discuss collaboration options.
 
