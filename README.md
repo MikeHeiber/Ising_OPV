@@ -68,3 +68,6 @@ Several peer-reviewed publications discuss the development and application of th
 
 If you would like some assitance in customizing this software tool for your particular interest or application, please contact me to discuss collaboration options.
 
+### Acknowledgements
+Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0.
+
