@@ -71,3 +71,5 @@ If you would like some assitance in customizing this software tool for your part
 ### Acknowledgements
 Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0.
 
+Thank you to Prof. Ali Dhinojwala and Prof. Mesfin Tsige at The University of Akron, Prof. Vladimir Dyakonov at the University of Würzburg, and Prof. Carsten Deibel at Chemitz University of Technology for providing access to cluster computing resources that facilitated the testing of this software tool during various stages of development.
+
