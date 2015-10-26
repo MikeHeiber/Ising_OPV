@@ -1,26 +1,35 @@
-## Parameters for Ising_OPV
+## Parameters for Ising_OPV v2.0
 -------------------------------
 ## General Parameters
-50 //length (nm) (integer values only)
-50 //width (nm) (integer values only)
-50 //height (nm) (integer values only)
+50 //length (integer values only) (specify the x-direction size of the lattice)
+50 //width (integer values only) (specify the y-direction size of the lattice)
+50 //height (integer values only) (specify the z-direction size of the lattice)
+true //enable_z_periodic_boundary (true or false) (periodic boundaries in x- and y-directions are enabled by default, but z-direction can also be enabled here)
 0.5 //mix_fraction (donor fraction)
-0.6 //interaction_energy (in units of kT) (code only optimized for values of 0.4, 0.6, 0.8, and 1.0)
--1 //target_size (nm) (set to -1 if you want to specify the number of MC steps instead)
-150 //MC_steps (only used if target_size is set to a negative value)
+0.3 //interaction_energy1 (code optimized for values from 0.3 to 1.0) (energetic favorability for type1-type1 interactions over type1-type2 interactions in units of kT)
+0.3 //interaction_energy2 (code optimized for values from 0.3 to 1.0) (energetic favorability for type2-type2 interactions over type1-type2 interactions in units of kT)
+200 //MC_steps (determines the extent of phase separation)
 -------------------------------
-## Import Morphology
-false //enable_import_morphology (true or false)
-morphology //morphology_import_prefix (name of morphology file prefix from files with the form: prefix_num_uncompressed.txt)
+## Export Morphology Options
+true //enable_export_compressed_files (true or false) (chose whether or not morphology file output is in compressed format or not)
+false //enable_export_cross_section (true of false) (chose whether or not to separately output uncompressed data for the cross-section at the x=0 plane)
 -------------------------------
-## Smoothing
-true //enable_smoothing (true or false)
-0.52 //smoothing_threshold (0.52 is optimal value determined for domains >= 5 nm and a mix_faction of 0.5)
+## Smoothing Options
+true //enable_smoothing (true or false) (chose whether or not to execute the domain smoothing process)
+0.52 //smoothing_threshold (0.52 is optimal value determined when domain size > 5 nm)
 -------------------------------
-## Rescale Morphology
-true //enable_rescale (true or false)
+## Rescale Morphology Options
+false //enable_rescale (true or false) (chose whether or not to rescale the lattice after phase separation is complete, smoothing is performed after rescaling if both are enabled)
 2 //rescale_factor (integer values only)
 -------------------------------
+## Interfacial Mixing Options
+false //enable_interfacial_mixing (true or false) (chose whether or not to introduce interfacial mixing after phase separation, smoothing, and rescaling is complete)
+4 //interface_width (nm) (specify the approximate width of the interfacial mixing region)
+0.5 //interface_conc (donor fraction) (specify the mixing concentration in the interfacial region)
+-------------------------------
 ## Analysis
-true //Enable_correlation_calc (true or false)
-true //Enable_tortuosity_calc (true or false)
+false //enable_analysis_only (true or false)
+true //enable_correlation_calc (true or false) (chose whether or not to calculate the domain size using the pair-pair correlation method)
+100000 // N_sampling_max (specify the maximum number of sites to randomly sample for the correlation calculation)
+true //enable_interfacial_distance_calc (true of false) (chose whether or not to calculate the interfacial distance histograms)
+true //enable_tortuosity_calc (true or false) (chose whether or not to determine the tortuosity histograms, calculate the island volume fraction, and collect the end-to-end path data)
