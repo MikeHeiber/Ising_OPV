@@ -5,16 +5,20 @@ This software tool is used to generate and analyze model bulk heterojunction mor
 
 ### What's New in v2.0?
 Version 2.0 adds several exciting new features and contains several major performance improvements.
+
 Major New Features:
 - Controlled interfacial mixing following phase separation can now be performed.
 - Several advanced morphology characterization procedures that calculate interfacial distance histograms, tortuosity histograms, end-to-end paths, island volume fraction, and interfacial volume fraction.
 - Users can enable periodic boundary conditions in the z-direction.
+
 Performance Improvements:
 - Output morphology file can now be created using a compressed format that dramatically reduces disk space usage.
 - Domain size calculation speed has been greatly increased resulting in a significantly lower overall calculation time when creating morphologies with large domain sizes.
 - Memory usage reductions increase the maximum lattice size possible.
+
 Removed Features:
 - Ability to specify a target domain size has been removed do to the challenge in performing a satisfactory estimate for the wide variety of possible input parameters.
+
 Additional Updates:
 - Users can now test the effect of asymmetric interaction energies.
 - Simplified morphology import.
