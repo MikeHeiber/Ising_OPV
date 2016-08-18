@@ -1,29 +1,32 @@
-Ising_OPV v2.0
+Ising_OPV v3.0
 =========
 
 This software tool is used to generate and analyze model bulk heterojunction morphologies in a parallel computing environment.
 
-### What's New in v2.0?
-Version 2.0 adds several exciting new features and contains several major performance improvements.
+### What's New in v3.0?
+Version 3.0 fixes a significant bug present in the previous versions, adds several exciting new features, and contains several major performance improvements.
 
 Major New Features:
-- Controlled interfacial mixing following phase separation can now be performed.
-- Several advanced morphology characterization procedures that calculate interfacial distance histograms, tortuosity histograms, end-to-end paths, island volume fraction, and interfacial volume fraction.
-- Users can enable periodic boundary conditions in the z-direction.
+- Added the ability to shrink the lattice by a specified integer factor
+- Added the ability to use a 3D checkerboard starting configuration instead of a random blend
+- Added the ability to modify the interaction energy in one of the directions to allow anisotropic domain growth
+- Improved the analysis file output to include a list of the properties of all morphologies in the set
+- Added output of the average correlation function for the morphology set to the correlation_data_avg.txt file
+
+Minor New Features:
+- Added the ability to extend the correlation function calculation out to the second correlation maximum
+- Added characterization of domain anisotropy as a standard metric
+- Improved the analysis file to include a header that specifies which version of the software was used to generate the morphology set
+- Improved the analysis file output to also specify which morphology has the median domain size and the median tortuosity
 
 Performance Improvements:
-- Output morphology file can now be created using a compressed format that dramatically reduces disk space usage.
-- Domain size calculation speed has been greatly increased resulting in a significantly lower overall calculation time when creating morphologies with large domain sizes.
-- Memory usage reductions increase the maximum lattice size possible.
+- Increased the speed of the phase separation process by increasing the speed of the energy calculation during the Ising swapping phase
+- Improved speed of tortuosity calculation by increasing the the speed of pathfinding and path distance calculations
+- Added ability to enable a reduced memory usage tortuosity calculation algorithm that takes longer, but is useful when simulating very large lattices where memory limits are reached
 
-Removed Features:
-- Ability to specify a target domain size has been removed do to the challenge in performing a satisfactory estimate for the wide variety of possible input parameters.
-
-Additional Updates:
-- Users can now test the effect of asymmetric interaction energies.
-- Simplified morphology import.
-- More complete code commenting.
-- Improved smoothing algorithm that reduces blocky artifacts when using a large rescale factor.
+Bug Fixes:
+- Corrected a major bug with the random number generator used to choose which neighboring site to use for a swapping attempt (This bug caused anisotropic domain growth in the previous versions of Ising_OPV)
+- Improved the correlation function to catch rare cases where the correlation function does not cross the mix fraction value, and in these cases the domain size is set to the position of the first correlation minimum
 
 ### Compiling
 Compiling requires the boost library for random number generation and an MPI library for parallel processing.
@@ -48,12 +51,17 @@ An optional second input argument is the path to an existing morphology file for
 As an example, to import a compressed morphology that is in current working directory on a single processor, the command is:
 >    Ising_OPV.exe parameters_default.txt ./morphology_0_compressed.txt
 
-These statements can be implemented into batch scripts for running Ising_OPV v2.0 in a supercomputing environment.
+To import an entire set of morphologies in a parallel processing environment:
+>    mpiexec -n 10 Ising_OPV.exe parameters_default.txt ./morphology_#_compressed.txt
+This command will import 10 morphologies (morphology_0_compressed.txt, morphology_1_compressed.txt, etc) and assign one to each processor.
+
+These statements can be implemented into batch scripts for running Ising_OPV v3.0 in a supercomputing environment.
 
 ### Output
 Ising_OPV will create several output files:
 - morphology_#_compressed.txt -- This text file will be created for each morphology generated and stores the data for that morphology.
-- analysis_summary.txt -- This text file will contain statistics about the set of morphologies that has been created.  
+- analysis_summary.txt -- This text file will contain statistics about the set of morphologies that has been created.
+- correlation_data_avg.txt -- This text file will contain the average correlation function data for the morphology set.
 - interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type.
 -  tortuostiy_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contain the overall tortuosity histogram data for each domain type.
 -  end-to-end_path_data1.txt and end-to-end_path_data2.txt -- These text files will be created when tortuosity calculation is enabled and will contain the lengths of the shortest end-to-end paths through each domain type.
@@ -69,7 +77,7 @@ Several peer-reviewed publications discuss the development and application of th
 If you would like some assitance in customizing this software tool for your particular interest or application, please contact me to discuss collaboration options.
 
 ### Acknowledgements
-Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0.
+Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0 and help with testing in v3.0.
 
-Thank you to Prof. Ali Dhinojwala and Prof. Mesfin Tsige at The University of Akron, Prof. Vladimir Dyakonov at the University of Würzburg, and Prof. Carsten Deibel at Chemitz University of Technology for providing access to cluster computing resources that facilitated the testing of this software tool during various stages of development.
+Thank you to Prof. Ali Dhinojwala and Prof. Mesfin Tsige at The University of Akron, Prof. Vladimir Dyakonov at the University of Würzburg, and Prof. Carsten Deibel at Chemitz University of Technology, Prof. Thuc-Quyen Nguyen at the University of California, Santa Barbara for providing access to cluster computing resources that facilitated the testing of this software tool during various stages of development.  This work also used the Extreme Science and Engineering Discovery Environment (XSEDE), which is supported by National Science Foundation grant number ACI-1053575.
 
