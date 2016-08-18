@@ -1,4 +1,4 @@
-## Parameters for Ising_OPV v2.0
+## Parameters for Ising_OPV v3.0
 -------------------------------
 ## General Parameters
 50 //length (integer values only) (specify the x-direction size of the lattice)
@@ -6,30 +6,39 @@
 50 //height (integer values only) (specify the z-direction size of the lattice)
 true //enable_z_periodic_boundary (true or false) (periodic boundaries in x- and y-directions are enabled by default, but z-direction can also be enabled here)
 0.5 //mix_fraction (donor fraction)
-0.3 //interaction_energy1 (code optimized for values from 0.3 to 1.0) (energetic favorability for type1-type1 interactions over type1-type2 interactions in units of kT)
-0.3 //interaction_energy2 (code optimized for values from 0.3 to 1.0) (energetic favorability for type2-type2 interactions over type1-type2 interactions in units of kT)
-200 //MC_steps (determines the extent of phase separation)
+0.4 //interaction_energy1 (code optimized for values from 0.3 to 1.0) (energetic favorability for type1-type1 interactions over type1-type2 interactions in units of kT)
+0.4 //interaction_energy2 (code optimized for values from 0.3 to 1.0) (energetic favorability for type2-type2 interactions over type1-type2 interactions in units of kT)
+200 //MC_steps (specifies the duration of the phase separation process)
 -------------------------------
 ## Export Morphology Options
-true //enable_export_compressed_files (true or false) (chose whether or not morphology file output is in compressed format or not)
-false //enable_export_cross_section (true of false) (chose whether or not to separately output uncompressed data for the cross-section at the x=0 plane)
+true //enable_export_compressed_files (true or false) (choose whether or not morphology file output is in compressed format)
+false //enable_export_cross_section (true or false) (choose whether or not to separately output uncompressed data for the cross-section at the x=0 plane)
 -------------------------------
 ## Smoothing Options
-true //enable_smoothing (true or false) (chose whether or not to execute the domain smoothing process)
-0.52 //smoothing_threshold (0.52 is optimal value determined when domain size > 5 nm)
+true //enable_smoothing (true or false) (choose whether or not to execute the domain smoothing process)
+0.52 //smoothing_threshold (0.52 is optimal value determined when domain size >= 5 nm)
 -------------------------------
 ## Rescale Morphology Options
-false //enable_rescale (true or false) (chose whether or not to rescale the lattice after phase separation is complete, smoothing is performed after rescaling if both are enabled)
+false //enable_rescale (true or false) (choose whether or not to rescale the lattice after phase separation is complete; smoothing is performed after rescaling if both are enabled)
 2 //rescale_factor (integer values only)
+false //enable_shrink (true or false) (choose whether or not to shrink the lattice by 1/rescale factor; smoothing is performed before shrinking if both are enabled)
 -------------------------------
 ## Interfacial Mixing Options
-false //enable_interfacial_mixing (true or false) (chose whether or not to introduce interfacial mixing after phase separation, smoothing, and rescaling is complete)
+false //enable_interfacial_mixing (true or false) (choose whether or not to introduce interfacial mixing after phase separation, smoothing, and rescaling is complete)
 4 //interface_width (nm) (specify the approximate width of the interfacial mixing region)
 0.5 //interface_conc (donor fraction) (specify the mixing concentration in the interfacial region)
 -------------------------------
-## Analysis
+## Analysis Options
 false //enable_analysis_only (true or false)
-true //enable_correlation_calc (true or false) (chose whether or not to calculate the domain size using the pair-pair correlation method)
-100000 // N_sampling_max (specify the maximum number of sites to randomly sample for the correlation calculation)
-true //enable_interfacial_distance_calc (true of false) (chose whether or not to calculate the interfacial distance histograms)
-true //enable_tortuosity_calc (true or false) (chose whether or not to determine the tortuosity histograms, calculate the island volume fraction, and collect the end-to-end path data)
+true //enable_correlation_calc (true or false) (choose whether or not to calculate the domain size using the pair-pair correlation method)
+100000 //N_sampling_max (specify the maximum number of sites to randomly sample for the correlation calculation)
+false //enable_extended_correlation_calc (true of false) (choose whether or not to extend the correlation function calculation to the second correlation maximum)
+true //enable_interfacial_distance_calc (true of false) (choose whether or not to calculate the interfacial distance histograms)
+true //enable_tortuosity_calc (true or false) (choose whether or not to determine the tortuosity histograms, calculate the island volume fraction, and collect the end-to-end path data)
+false //enable_reduced_memory_tortuosity_calc (true or false) (choose whether or not to enable a tortuosity calculation method that takes longer, but uses less memory)
+-------------------------------
+## Other Options
+false //enable_checkerboard_start (creates a 50:50 blend, works best with even lattice dimensions)
+false //enable_growth_pref
+3 //growth_direction (1=x,2=y,3=z)
+-0.1 //additional_interaction

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Michael C. Heiber
+// Copyright (c) 2016 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 
@@ -28,22 +28,32 @@ struct Input_Parameters{
     // Rescale Options
     bool enable_rescale; // choose whether to perform lattice rescaling
     int rescale_factor; // specify the rescale factor to be used (must be an integer greater than 1)
+    bool enable_shrink; // chose whether to shrink the lattice instead of expand it
     // Interfacial Mixing Options
     bool enable_interfacial_mixing; // choose whether to perform interfacial mixing
     double interface_width;  // specify the interfacial width
     double interface_conc; // specify the mixing concentration in the interfacial region
     // Analysis Options
     bool enable_analysis_only;  // choose whether to only perform analysis on an imported morphology
-    bool enable_correlation_calc; // chose whether to perform the domain size calculation using the pair-pair correlation method
+    bool enable_correlation_calc; // choose whether to perform the domain size calculation using the pair-pair correlation method
     int N_sampling_max; // specify the maximum number of sites to be sampled for calculating the correlation function
-    bool enable_interfacial_distance_calc; // chose whether to calculate the interfacial distance histograms
-    bool enable_tortuosity_calc; // chose whether to calculate the tortuosity histograms, end-to-end path distances, and island volume fraction
+    bool enable_extended_correlation_calc; // choose whether to extend the correlation function calculation to the second correlation maximum
+    bool enable_interfacial_distance_calc; // choose whether to calculate the interfacial distance histograms
+    bool enable_tortuosity_calc; // choose whether to calculate the tortuosity histograms, end-to-end tortuosity, and island volume fraction
+    bool enable_reduced_memory_tortuosity_calc; //choose whether or not to enable a tortuosity calculation method that takes longer, but uses less memory
+    // Other Options
+    bool enable_checkerboard_start; //choose whether or not to start from a alternating checkerboard-like configuration instead of a random blend (creates 0.5 mix fraction)
+    bool enable_growth_pref;
+    int growth_direction;
+    double additional_interaction;
 };
 
 double array_avg(const double data[],int size);
+double array_median(const double data[],int size);
 double array_stdev(const double data[],int size);
 float array_avg(const float data[],int size);
 float array_stdev(const float data[],int size);
+int array_which_median(const double data[],int size);
 vector<double> calculateAverageVector(vector<double> input_vector,int procid,int nproc);
 bool importParameters(ifstream * parameterfile,Input_Parameters * parameters);
 
@@ -51,10 +61,13 @@ int main(int argc, char * argv[]){
     // Input parameters
     Input_Parameters parameters;
     // Internal parameters
+    string version = "v3.0";
     bool enable_import_morphology;
     double mix_ratio = 0;
     double domain_size1 = 0;
     double domain_size2 = 0;
+    double domain_anisotropy1 = 0;
+    double domain_anisotropy2 = 0;
     double iav_ratio = 0;
     double iv_ratio = 0;
     double island_ratio1 = 0;
@@ -70,6 +83,7 @@ int main(int argc, char * argv[]){
     ofstream analysis_file;
     ofstream morphology_output_file;
     ofstream morphology_cross_section_file;
+    ofstream correlationfile_avg;
     ofstream interfacial_dist_hist_file;
     ofstream tortuosity_hist_file;
     ofstream path_data1_file;
@@ -79,6 +93,8 @@ int main(int argc, char * argv[]){
     double *mix_ratios = NULL;
     double *domain_sizes1 = NULL;
     double *domain_sizes2 = NULL;
+    double *domain_anisotropies1 = NULL;
+    double *domain_anisotropies2 = NULL;
     double *iav_ratios = NULL;
     double *iv_ratios = NULL;
     double *island_ratios1 = NULL;
@@ -100,6 +116,8 @@ int main(int argc, char * argv[]){
     vector<double> tortuosity_hist2_vect;
     vector<double> interfacial_dist_hist1_vect;
     vector<double> interfacial_dist_hist2_vect;
+    vector<double> correlation1_vect;
+    vector<double> correlation2_vect;
     string path = "";
     string input_morphology, input_file_path, compression_str, filename_prefix;
     bool is_file_compressed;
@@ -111,11 +129,9 @@ int main(int argc, char * argv[]){
     procid = MPI::COMM_WORLD.Get_rank();
     // Import parameters from text file.
     if(argc == 2){
-        cout << procid << ": Parameter file found." << endl;
         enable_import_morphology=false;
     }
     else if(argc == 3){
-        cout << procid << ": Parameter file and morphology file found." << endl;
         enable_import_morphology=true;
     }
     else{
@@ -125,8 +141,11 @@ int main(int argc, char * argv[]){
     parameter_file.open((argv[1]),ifstream::in);
     success = importParameters(&parameter_file,&parameters);
     parameter_file.close();
-    if(!success){
-        cout << procid << ": Error importing variables from file.  Program will now exit." << endl;
+    if(success){
+        cout << procid << ": Parameter file found and loaded successfully." << endl;
+    }
+    else{
+        cout << procid << ": Error importing variables from file!  Program will exit now." << endl;
         return 0;
     }
     if(parameters.enable_analysis_only && !enable_import_morphology){
@@ -137,7 +156,7 @@ int main(int argc, char * argv[]){
         cout << procid << ": Warning! Only morphology analysis will be performed." << endl;
     }
     // Create morphology data structure.
-    Morphology morph(parameters.length,parameters.width,parameters.height,parameters.enable_z_periodic_boundary,procid,time(0)+procid);
+    Morphology morph(parameters.length,parameters.width,parameters.height,parameters.enable_z_periodic_boundary,procid);
     // Import morphology if enabled.
     if(enable_import_morphology){
         size_t pos_comp, pos_path, pos_id;
@@ -166,7 +185,7 @@ int main(int argc, char * argv[]){
         // Determine if the input file is in the compressed format or not.
         pos_comp = input_morphology.find("compressed.txt");
         if(pos_comp==string::npos){
-            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now!" << endl;
+            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now." << endl;
             return 0;
         }
         compression_str = input_morphology.substr(pos_comp-1);
@@ -181,13 +200,13 @@ int main(int argc, char * argv[]){
             filename_prefix = input_morphology.substr((pos_path+os),pos_comp-3-(pos_path+os));
         }
         else{
-            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now!" << endl;
+            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now." << endl;
             return 0;
         }
         // Separate filename prefix from ID number.
         pos_id = filename_prefix.find_last_of("_");
         if(pos_id==string::npos){
-            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now!" << endl;
+            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now." << endl;
             return 0;
         }
         else{
@@ -212,12 +231,18 @@ int main(int argc, char * argv[]){
         // Import the morphology from the given data file.
         morph.importMorphologyFile(&morphology_input_file,is_file_compressed);
         morphology_input_file.close();
-        cout << "complete!" << endl;
+        cout << procid << ": Morphology import complete!" << endl;
     }
-    // Create random morphology if import is disabled.
+    // Create new morphology if import is disabled.
     else{
-        cout << procid << ": Generating initial random morphology..." << endl;
-        morph.createRandomMorphology(parameters.mix_fraction);
+        if(parameters.enable_checkerboard_start){
+            cout << procid << ": Generating initial checkerboard morphology..." << endl;
+            morph.createCheckerboardMorphology();
+        }
+        else{
+            cout << procid << ": Generating initial random morphology..." << endl;
+            morph.createRandomMorphology(parameters.mix_fraction);
+        }
     }
     // Determine if any phase separation is to be executed on the morphology.
     if(parameters.MC_steps>0  && !parameters.enable_analysis_only){
@@ -226,31 +251,42 @@ int main(int argc, char * argv[]){
     else{
         N_steps = 0;
     }
-    // Output the number of MC steps to be executed.
-    if(procid==0){
-        cout << N_steps << " MC steps of site swapping will be executed." << endl;
-    }
     // Execute phase separation through Ising swapping.
     if(N_steps>0){
-        cout << procid << ": Executing site swapping..." << endl;
-        morph.executeIsingSwapping(N_steps,parameters.interaction_energy1,parameters.interaction_energy2);
+        cout << procid << ": Executing site swapping for " << N_steps << " MC steps..." << endl;
+        morph.executeIsingSwapping(N_steps,parameters.interaction_energy1,parameters.interaction_energy2,parameters.enable_growth_pref,parameters.growth_direction,parameters.additional_interaction);
     }
-    // Perform lattice rescale if enabled.
+    // Perform lattice rescaling and domain smoothing if enabled.
     if(parameters.enable_rescale && !parameters.enable_analysis_only){
-        cout << procid << ": Rescaling lattice by a factor of " << parameters.rescale_factor << " ..." << endl;
-        morph.rescaleLattice(parameters.rescale_factor);
-        parameters.length = parameters.length*parameters.rescale_factor;
-        parameters.width = parameters.width*parameters.rescale_factor;
-        parameters.height = parameters.height*parameters.rescale_factor;
+        if(parameters.enable_shrink){
+            cout << procid << ": Initial blend ratio is " << morph.getMixFraction() << endl;
+            if(parameters.enable_smoothing){
+                cout << procid << ": Executing standard smoothing with a smoothing threshold of " << parameters.smoothing_threshold << "..." << endl;
+                morph.executeSmoothing(parameters.smoothing_threshold,2);
+                cout << procid << ": Blend ratio after smoothing is " << morph.getMixFraction() << endl;
+            }
+            cout << procid << ": Shrinking lattice by a factor of " << parameters.rescale_factor << " ..." << endl;
+            morph.shrinkLattice(parameters.rescale_factor);
+            parameters.length = parameters.length/parameters.rescale_factor;
+            parameters.width = parameters.width/parameters.rescale_factor;
+            parameters.height = parameters.height/parameters.rescale_factor;
+            cout << procid << ": Blend ratio after shrinking lattice is " << morph.getMixFraction() << endl;
+        }
+        else{
+            cout << procid << ": Expanding lattice by a factor of " << parameters.rescale_factor << " ..." << endl;
+            morph.stretchLattice(parameters.rescale_factor);
+            parameters.length = parameters.length*parameters.rescale_factor;
+            parameters.width = parameters.width*parameters.rescale_factor;
+            parameters.height = parameters.height*parameters.rescale_factor;
+        }
     }
-    // Perform domain smoothing if enabled.
-    if(parameters.enable_smoothing && !parameters.enable_analysis_only){
+    if(parameters.enable_smoothing && !parameters.enable_shrink && !parameters.enable_analysis_only){
         if(!parameters.enable_rescale){
-            cout << procid << ": Executing standard smoothing..." << endl;
+            cout << procid << ": Executing standard smoothing with a smoothing threshold of " << parameters.smoothing_threshold << "..." << endl;
             morph.executeSmoothing(parameters.smoothing_threshold,2);
         }
         else{
-            cout << procid << ": Executing rescale factor dependent smoothing..." << endl;
+            cout << procid << ": Executing rescale factor dependent smoothing with a smoothing threshold of " << parameters.smoothing_threshold << "..." << endl;
             morph.executeSmoothing(parameters.smoothing_threshold,parameters.rescale_factor);
         }
     }
@@ -262,21 +298,37 @@ int main(int argc, char * argv[]){
     // Calculate domain size if enabled.
     if(parameters.enable_correlation_calc){
         cutoff_distance = 5;
-        cout << procid << ": Calculating the domain size from the pair-pair correlation function..." << endl;
+        if(parameters.enable_extended_correlation_calc){
+            cout << procid << ": Calculating the domain size using the extended pair-pair correlation function..." << endl;
+        }
+        else{
+            cout << procid << ": Calculating the domain size from the pair-pair correlation function..." << endl;
+        }
         success = false;
         // The correlation function calculation is called with an increasing cutoff distance until successful.
         while(!success){
-            if(cutoff_distance<morph.getLength() || cutoff_distance<morph.getWidth()){
-                success = morph.calculateCorrelationDistance(cutoff_distance,parameters.N_sampling_max);
-            }
-            else{
+            if(2*cutoff_distance>morph.getLength() || 2*cutoff_distance>morph.getWidth() || 2*cutoff_distance>morph.getHeight()){
                 break;
             }
+            success = morph.calculateCorrelationDistance(cutoff_distance,parameters.enable_extended_correlation_calc,parameters.N_sampling_max);
             cutoff_distance++;
         }
         if(success){
-            domain_size1 = morph.getDomainSize(1);
-            domain_size2 = morph.getDomainSize(2);
+            domain_size1 = morph.getDomainSize((char)1);
+            domain_size2 = morph.getDomainSize((char)2);
+        }
+        success = false;
+        cout << procid << ": Calculating the domain anisotropy..." << endl;
+        while(!success){
+            if(2*cutoff_distance>morph.getLength() || 2*cutoff_distance>morph.getWidth() || 2*cutoff_distance>morph.getHeight()){
+                break;
+            }
+            success = morph.calculateAnisotropies(cutoff_distance,parameters.N_sampling_max);
+            cutoff_distance++;
+        }
+        if(success){
+            domain_anisotropy1 = morph.getDomainAnisotropy((char)1);
+            domain_anisotropy2 = morph.getDomainAnisotropy((char)2);
         }
     }
     // Calculate interfacial distance histogram if enabled.
@@ -290,13 +342,22 @@ int main(int argc, char * argv[]){
     iv_ratio = morph.calculateInterfacialVolume()/(morph.getLength()*morph.getWidth()*morph.getHeight());
     // Get Final Mix ratio
     mix_ratio = morph.getMixFraction();
-    // Calculate end-to-end distances, tortuosity histogram, and island volume fraction.
+    // Calculate end-to-end tortuosity, tortuosity histogram, and island volume fraction.
     if(parameters.enable_tortuosity_calc){
-        cout << procid << ": Calculating tortuosity..." << endl;
-        success = morph.calculateTortuosity();
+        if(parameters.enable_reduced_memory_tortuosity_calc){
+            cout << procid << ": Calculating tortuosity using the reduced memory method..." << endl;
+        }
+        else{
+            cout << procid << ": Calculating tortuosity using the standard method..." << endl;
+        }
+        success = morph.calculateTortuosity(parameters.enable_reduced_memory_tortuosity_calc);
+        if(!success){
+            cout << procid << ": Error calculating tortuosity! Program will exit now." << endl;
+            return 0;
+        }
         // Calculate island volume ratio.
-        island_ratio1 = (double)morph.getIslandVolume(1)/(morph.getLength()*morph.getWidth()*morph.getHeight());
-        island_ratio2 = (double)morph.getIslandVolume(2)/(morph.getLength()*morph.getWidth()*morph.getHeight());
+        island_ratio1 = (double)morph.getIslandVolume((char)1)/(morph.getLength()*morph.getWidth()*morph.getHeight());
+        island_ratio2 = (double)morph.getIslandVolume((char)2)/(morph.getLength()*morph.getWidth()*morph.getHeight());
     }
     // Save final morphology to a text file.
     if(!parameters.enable_analysis_only){
@@ -346,8 +407,8 @@ int main(int argc, char * argv[]){
         cout << "Collecting morphology analysis data from each processor..." << endl;
     }
     if(parameters.enable_tortuosity_calc){
-        // Get path data for end-to-end path distance calculation.
-        vector<float> data = morph.getTortuosityData(1);
+        // Get path data for end-to-end tortuosity calculation.
+        vector<float> data = morph.getTortuosityData((char)1);
         // Determine size of the data vector.
         pathdata1_size = (int)data.size();
         // Allocate an array to store the data.
@@ -358,7 +419,7 @@ int main(int argc, char * argv[]){
         }
         data.clear();
         // Repeat for type 2 path data.
-        data = morph.getTortuosityData(2);
+        data = morph.getTortuosityData((char)2);
         pathdata2_size = (int)data.size();
         pathdata2 = (float *)malloc(sizeof(float)*pathdata2_size);
         for(int i=0;i<pathdata2_size;i++){
@@ -374,13 +435,18 @@ int main(int argc, char * argv[]){
         MPI_Gather(&pathdata1_size,1,MPI_INT,pathdata1_sizes,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Gather(&pathdata2_size,1,MPI_INT,pathdata2_sizes,1,MPI_INT,0,MPI_COMM_WORLD);
         // Calculate the average tortuosity histograms.
-        tortuosity_hist1_vect = calculateAverageVector(morph.getTortuosityHistogram(1),procid,nproc);
-        tortuosity_hist2_vect = calculateAverageVector(morph.getTortuosityHistogram(2),procid,nproc);
+        tortuosity_hist1_vect = calculateAverageVector(morph.getTortuosityHistogram((char)1),procid,nproc);
+        tortuosity_hist2_vect = calculateAverageVector(morph.getTortuosityHistogram((char)2),procid,nproc);
     }
     // Calculate the average interfacial distance histograms.
     if(parameters.enable_interfacial_distance_calc){
-        interfacial_dist_hist1_vect = calculateAverageVector(morph.getInterfacialHistogram(1),procid,nproc);
-        interfacial_dist_hist2_vect = calculateAverageVector(morph.getInterfacialHistogram(2),procid,nproc);
+        interfacial_dist_hist1_vect = calculateAverageVector(morph.getInterfacialHistogram((char)1),procid,nproc);
+        interfacial_dist_hist2_vect = calculateAverageVector(morph.getInterfacialHistogram((char)2),procid,nproc);
+    }
+    // Calculate the average pair-pair correlation functions.
+    if(parameters.enable_correlation_calc){
+        correlation1_vect = calculateAverageVector(morph.getCorrelationData((char)1),procid,nproc);
+        correlation2_vect = calculateAverageVector(morph.getCorrelationData((char)2),procid,nproc);
     }
     // Prepare root processor for data collection.
     if(procid==0){
@@ -392,6 +458,8 @@ int main(int argc, char * argv[]){
         if(parameters.enable_correlation_calc){
             domain_sizes1 = (double *)malloc(sizeof(double)*nproc);
             domain_sizes2 = (double *)malloc(sizeof(double)*nproc);
+            domain_anisotropies1 = (double *)malloc(sizeof(double)*nproc);
+            domain_anisotropies2 = (double *)malloc(sizeof(double)*nproc);
         }
         if(parameters.enable_tortuosity_calc){
             island_ratios1 = (double *)malloc(sizeof(double)*nproc);
@@ -422,6 +490,8 @@ int main(int argc, char * argv[]){
     if(parameters.enable_correlation_calc){
         MPI_Gather(&domain_size1,1,MPI_DOUBLE,domain_sizes1,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
         MPI_Gather(&domain_size2,1,MPI_DOUBLE,domain_sizes2,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+        MPI_Gather(&domain_anisotropy1,1,MPI_DOUBLE,domain_anisotropies1,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+        MPI_Gather(&domain_anisotropy2,1,MPI_DOUBLE,domain_anisotropies2,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
     }
     // Gather the path data arrays from each processor into the previously created full path data array on the root processor at the positions defined by the displacement array.
     if(parameters.enable_tortuosity_calc){
@@ -434,6 +504,30 @@ int main(int argc, char * argv[]){
     // Output the analysis results to text files.
     if(procid==0){
         cout << "Writing morphology analysis data to files..." << endl;
+        // Output the average pair-pair correlation function.
+        if(parameters.enable_correlation_calc){
+            if(!enable_import_morphology){
+                ss << path << "correlation_data_avg.txt";
+                correlationfile_avg.open(ss.str().c_str());
+                ss.str("");
+            }
+            else{
+                if(parameters.enable_analysis_only){
+                    ss << path << "correlation_data_avg_new.txt";
+                    correlationfile_avg.open(ss.str().c_str());
+                    ss.str("");
+                }
+                else{
+                    ss << path << "correlation_data_avg_mod.txt";
+                    correlationfile_avg.open(ss.str().c_str());
+                    ss.str("");
+                }
+            }
+            for(int i=0;i<(int)correlation1_vect.size();i++){
+                correlationfile_avg << (double)i/2 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
+            }
+            correlationfile_avg.close();
+        }
         // Output the average tortuosity histograms and the end-to-end path data.
         if(parameters.enable_tortuosity_calc){
             if(!enable_import_morphology){
@@ -527,16 +621,20 @@ int main(int argc, char * argv[]){
                 ss.str("");
             }
         }
+        analysis_file << "Summary of results for this morphology set containing " << nproc <<" morphologies created using Ising_OPV " << version << ":\n" << endl;
         analysis_file << "length,width,height,mix_ratio_avg,mix_ratio_stdev,domain1_size_avg,domain1_size_stdev,domain2_size_avg,domain2_size_stdev,";
+        analysis_file << "domain1_anisotropy_avg,domain1_anisotropy_stdev,domain2_anisotropy_avg,domain2_anisotropy_stdev,";
         analysis_file << "interfacial_area_volume_ratio_avg,interfacial_area_volume_ratio_stdev,interfacial_volume_ratio_avg,interfacial_volume_ratio_stdev,";
         analysis_file << "tortuosity1_avg,tortuosity1_stdev,tortuosity2_avg,tortuosity2_stdev,island_volume_ratio1_avg,island_volume_ratio1_stdev,";
         analysis_file << "island_volume_ratio2_avg,island_volume_ratio2_stdev,calc_time_avg(min),calc_time_stdev(min)" << endl;
         analysis_file << morph.getLength() << "," << morph.getWidth() << "," << morph.getHeight() << ",";
         analysis_file << array_avg(mix_ratios,nproc) << "," << array_stdev(mix_ratios,nproc) << ",";
-        if(parameters.enable_correlation_calc) {
+        if(parameters.enable_correlation_calc){
             analysis_file << array_avg(domain_sizes1,nproc) << "," << array_stdev(domain_sizes1,nproc) << "," << array_avg(domain_sizes2,nproc) << "," << array_stdev(domain_sizes2,nproc) << ",";
+            analysis_file << array_avg(domain_anisotropies1,nproc) << "," << array_stdev(domain_anisotropies1,nproc) << "," << array_avg(domain_anisotropies2,nproc) << "," << array_stdev(domain_anisotropies2,nproc) << ",";
         }
         else{
+            analysis_file << "-" << "," << "-" << "," << "-" << "," << "-" << ",";
             analysis_file << "-" << "," << "-" << "," << "-" << "," << "-" << ",";
         }
         analysis_file << array_avg(iav_ratios,nproc) << "," << array_stdev(iav_ratios,nproc) << "," << array_avg(iv_ratios,nproc) << "," << array_stdev(iv_ratios,nproc) << ",";
@@ -553,6 +651,50 @@ int main(int argc, char * argv[]){
             analysis_file << "-" << "," << "-" << ",";
         }
         analysis_file << array_avg(times,nproc) << "," << array_stdev(times,nproc) << endl;
+        analysis_file << endl;
+        analysis_file << "Detailed results for each of the morphologies in the set:" << endl;
+        analysis_file << "id#,length,width,height,mix_ratio,domain1_size,domain2_size,";
+        analysis_file << "domain1_anisotropy,domain2_anisotropy,";
+        analysis_file << "interfacial_area_volume_ratio,interfacial_volume_ratio,";
+        analysis_file << "tortuosity1,tortuosity2,island_volume_ratio1,island_volume_ratio2,calc_time(min)" << endl;
+        double *tortuosities1 = (double *)malloc(sizeof(double)*nproc);
+        double *tortuosities2 = (double *)malloc(sizeof(double)*nproc);
+        for(int i=0;i<nproc;i++){
+            analysis_file << i << "," << morph.getLength() << "," << morph.getWidth() << "," << morph.getHeight() << "," << mix_ratios[i] << ",";
+            if(parameters.enable_correlation_calc) {
+                analysis_file << domain_sizes1[i] << "," << domain_sizes2[i] << ",";
+                analysis_file << domain_anisotropies1[i] << "," << domain_anisotropies2[i] << ",";
+            }
+            else{
+                analysis_file << "-" << "," << "-" << ",";
+                analysis_file << "-" << "," << "-" << ",";
+            }
+            analysis_file << iav_ratios[i] << "," << iv_ratios[i] << ",";
+            if(parameters.enable_tortuosity_calc){
+                pathdata1 = (float *)malloc(sizeof(float)*pathdata1_sizes[i]);
+                pathdata2 = (float *)malloc(sizeof(float)*pathdata2_sizes[i]);
+                copy(pathdata1_all+pathdata1_displacement[i],pathdata1_all+pathdata1_displacement[i]+pathdata1_sizes[i],pathdata1);
+                copy(pathdata2_all+pathdata2_displacement[i],pathdata2_all+pathdata2_displacement[i]+pathdata2_sizes[i],pathdata2);
+                tortuosities1[i] = array_avg(pathdata1,pathdata1_sizes[i]);
+                tortuosities2[i] = array_avg(pathdata2,pathdata2_sizes[i]);
+                if(isnan(tortuosities1[i])){
+                    tortuosities1[i] = -1;
+                }
+                if(isnan(tortuosities2[i])){
+                    tortuosities2[i] = -1;
+                }
+                analysis_file << tortuosities1[i] << "," << tortuosities2[i] << ",";
+                analysis_file << island_ratios1[i] << "," << island_ratios2[i] << ",";
+            }
+            else{
+                analysis_file << "-" << "," << "-" << ",";
+                analysis_file << "-" << "," << "-" << ",";
+            }
+            analysis_file << times[i] << endl;
+        }
+        analysis_file << endl;
+        analysis_file << "Morphology number " << array_which_median(domain_sizes1,nproc) << " has the median domain1 size of " << array_median(domain_sizes1,nproc) << endl;
+        analysis_file << "Morphology number " << array_which_median(tortuosities1,nproc) << " has the median tortuosity1 of " << array_median(tortuosities1,nproc) << endl;
         analysis_file.close();
         cout << "Finished!" << endl;
     }
@@ -660,6 +802,17 @@ bool importParameters(ifstream * parameterfile,Input_Parameters * parameters){
     i++;
     (*parameters).rescale_factor = atoi(stringvars[i].c_str());
     i++;
+    if(stringvars[i].compare("true")==0){
+        (*parameters).enable_shrink = true;
+    }
+    else if(stringvars[i].compare("false")==0){
+        (*parameters).enable_shrink = false;
+    }
+    else{
+        cout << "Error setting morphology shrink options" << endl;
+        return false;
+    }
+    i++;
     //enable_interfacial_mixing
     if(stringvars[i].compare("true")==0){
         (*parameters).enable_interfacial_mixing = true;
@@ -702,6 +855,18 @@ bool importParameters(ifstream * parameterfile,Input_Parameters * parameters){
     i++;
     (*parameters).N_sampling_max = atoi(stringvars[i].c_str());
     i++;
+    //enable_extended_correlation_calc
+    if(stringvars[i].compare("true")==0){
+        (*parameters).enable_extended_correlation_calc = true;
+    }
+    else if(stringvars[i].compare("false")==0){
+        (*parameters).enable_extended_correlation_calc = false;
+    }
+    else{
+        cout << "Error setting extended correlation calculation options" << endl;
+        return false;
+    }
+    i++;
     //enable_interfacial_distance_calc
     if(stringvars[i].compare("true")==0){
         (*parameters).enable_interfacial_distance_calc = true;
@@ -725,6 +890,47 @@ bool importParameters(ifstream * parameterfile,Input_Parameters * parameters){
         cout << "Error setting tortuosity calculation options" << endl;
         return false;
     }
+    i++;
+    //enable_reduced_memory_tortuosity_calc
+    if(stringvars[i].compare("true")==0){
+        (*parameters).enable_reduced_memory_tortuosity_calc = true;
+    }
+    else if(stringvars[i].compare("false")==0){
+        (*parameters).enable_reduced_memory_tortuosity_calc = false;
+    }
+    else{
+        cout << "Error setting reduced memory tortuosity calculation options" << endl;
+        return false;
+    }
+    i++;
+    //enable_checkerboard_start
+    if(stringvars[i].compare("true")==0){
+        (*parameters).enable_checkerboard_start = true;
+    }
+    else if(stringvars[i].compare("false")==0){
+        (*parameters).enable_checkerboard_start = false;
+    }
+    else{
+        cout << "Error setting checkerboard starting condition" << endl;
+        return false;
+    }
+    i++;
+    //enable_growth_pref
+    if(stringvars[i].compare("true")==0){
+        (*parameters).enable_growth_pref = true;
+    }
+    else if(stringvars[i].compare("false")==0){
+        (*parameters).enable_growth_pref = false;
+    }
+    else{
+        cout << "Error setting growth preference conditions" << endl;
+        return false;
+    }
+    i++;
+    (*parameters).growth_direction = atoi(stringvars[i].c_str());
+    i++;
+    (*parameters).additional_interaction = atof(stringvars[i].c_str());
+    i++;
     return true;
 }
 
@@ -735,6 +941,16 @@ double array_avg(const double data[],int array_size){
         sum += data[i];
     }
     return sum/array_size;
+}
+
+double array_median(const double data[],int array_size){
+    vector<double> data_vect;
+    data_vect.assign(array_size,0);
+    for(int i=0;i<array_size;i++){
+        data_vect[i] = data[i];
+    }
+    sort(data_vect.begin(),data_vect.end());
+    return data_vect[array_size/2];
 }
 
 //  This function calculates the standard deviation of an array of doubles.
@@ -764,6 +980,23 @@ float array_stdev(const float data[],int array_size){
         sum += pow(data[i]-avg,2);
     }
     return sqrt(sum/(array_size-1));
+}
+
+int array_which_median(const double data[],int array_size){
+    vector<double> data_vect;
+    data_vect.assign(array_size,0);
+    for(int i=0;i<array_size;i++){
+        data_vect[i] = data[i];
+    }
+    sort(data_vect.begin(),data_vect.end());
+    double median = data_vect[array_size/2];
+    for(int i=0;i<array_size;i++){
+        if(data[i]==median){
+            return i;
+        }
+    }
+    cout << "Error! Median not found." << endl;
+    return -1;
 }
 
 // This function is uses the MPI Gather function to calculate the average vector from a set of vectors where one comes from each processor.
