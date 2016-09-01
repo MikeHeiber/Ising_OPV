@@ -21,7 +21,7 @@ Minor New Features:
 
 Performance Improvements:
 - Increased the speed of the phase separation process by increasing the speed of the energy calculation during the Ising swapping stage
-- Improved the speed of the tortuosity calculation by increasing the the speed of the pathfinding and path distance calculations
+- Improved the speed of the tortuosity calculation by increasing the speed of the pathfinding and path distance calculations
 - Added the ability to enable a reduced memory usage tortuosity calculation algorithm.  This algorithm is significantly slower, but it is useful when simulating very large lattices where memory limits are reached.
 
 Bug Fixes:
