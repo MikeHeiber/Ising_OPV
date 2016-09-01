@@ -76,7 +76,7 @@ Several peer-reviewed publications discuss the development and application of th
 - [M. C. Heiber, C. Baumbach, V. Dyakonov, and C. Deibel, Phys. Rev. Lett. **114**, 136602 (2015).](http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.114.136602) [[ResearchGate]](https://www.researchgate.net/publication/274375035_Encounter-Limited_Charge-Carrier_Recombination_in_Phase-Separated_Organic_Semiconductor_Blends)
 - [M. C. Heiber, T.-Q. Nguyen, and C. Deibel, Phys. Rev. B **93**, 205204 (2016).](http://journals.aps.org/prb/abstract/10.1103/PhysRevB.93.205204) [[ResearchGate]](https://www.researchgate.net/publication/302940594_Charge_Carrier_Concentration_Dependence_of_Encounter-Limited_Bimolecular_Recombination_in_Phase-Separated_Organic_Semiconductor_Blends)
 
-If you would like some assitance in customizing this software tool for your particular interest or application, please contact me to discuss collaboration options.
+If you would like some assistance in customizing this software tool for your particular interest or application, please contact me to discuss collaboration options.
 
 ### Acknowledgements
 Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0 and help with testing in v3.0.
