@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Michael C. Heiber
+// Copyright (c) 2017 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this package.
 
@@ -106,7 +106,7 @@ double Morphology::calculateAdditionalEnergyChange(long int main_site_index,long
                         continue;
                     }
                 }
-                calculateDZ(z1,k);
+                dz = calculateDZ(z1,k);
                 // Count the number of similar neighbors
                 if(lattice[getSite(x1,y1,z1+k+dz)].type==site1_type){
                     count1_i++;
@@ -315,6 +315,11 @@ bool Morphology::calculateAnisotropy(char site_type,int cutoff_distance,int N_sa
             Domain_anisotropy2 = -1;
         }
         return false;
+    }
+    if(4*correlation_length_x>Length || 4*correlation_length_y>Width){
+        cout << "Warning.  Correlation length in x- or y-direction is greater than L/4." << endl;
+        cout << "x-direction correlation length is " << correlation_length_x << "." << endl;
+        cout << "y-direction correlation length is " << correlation_length_y << "." << endl;
     }
     if(site_type==(char)1){
         Domain_anisotropy1 = (2*correlation_length_z)/(correlation_length_x+correlation_length_y);
