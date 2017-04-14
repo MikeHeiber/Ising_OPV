@@ -84,6 +84,7 @@ int main(int argc, char * argv[]){
     ofstream morphology_output_file;
     ofstream morphology_cross_section_file;
     ofstream correlationfile_avg;
+    ofstream correlationfile;
     ofstream interfacial_dist_hist_file;
     ofstream tortuosity_hist_file;
     ofstream path_data1_file;
@@ -316,11 +317,20 @@ int main(int argc, char * argv[]){
         if(success){
             domain_size1 = morph.getDomainSize((char)1);
             domain_size2 = morph.getDomainSize((char)2);
+            ss << path << "correlation_data_" << procid << ".txt";
+            correlationfile.open(ss.str().c_str());
+            ss.str("");
+            vector<double> correlation_data1 = morph.getCorrelationData((char)1);
+            vector<double> correlation_data2 = morph.getCorrelationData((char)2);
+            for(int i=0;i<correlation_data1.size();i++){
+                correlationfile << 0.5*(double)i << "," << correlation_data1[i] << "," << correlation_data2[i] << endl;
+            }
+            correlationfile.close();
         }
         success = false;
         cout << procid << ": Calculating the domain anisotropy..." << endl;
         while(!success){
-            if(2*cutoff_distance>morph.getLength() || 2*cutoff_distance>morph.getWidth() || 2*cutoff_distance>morph.getHeight()){
+            if(2*cutoff_distance>morph.getLength() && 2*cutoff_distance>morph.getWidth() && 2*cutoff_distance>morph.getHeight()){
                 break;
             }
             success = morph.calculateAnisotropies(cutoff_distance,parameters.N_sampling_max);
@@ -329,6 +339,9 @@ int main(int argc, char * argv[]){
         if(success){
             domain_anisotropy1 = morph.getDomainAnisotropy((char)1);
             domain_anisotropy2 = morph.getDomainAnisotropy((char)2);
+        }
+        else{
+            cout << procid << ": Warning! Could not calculate the domain anisotropy." << endl;
         }
     }
     // Calculate interfacial distance histogram if enabled.
@@ -621,7 +634,7 @@ int main(int argc, char * argv[]){
                 ss.str("");
             }
         }
-        analysis_file << "Summary of results for this morphology set containing " << nproc <<" morphologies created using Ising_OPV " << version << ":\n" << endl;
+        analysis_file << "Summary of results for this morphology set containing " << nproc <<" morphologies created using Ising_OPV " << version << ":" << endl;
         analysis_file << "length,width,height,mix_ratio_avg,mix_ratio_stdev,domain1_size_avg,domain1_size_stdev,domain2_size_avg,domain2_size_stdev,";
         analysis_file << "domain1_anisotropy_avg,domain1_anisotropy_stdev,domain2_anisotropy_avg,domain2_anisotropy_stdev,";
         analysis_file << "interfacial_area_volume_ratio_avg,interfacial_area_volume_ratio_stdev,interfacial_volume_ratio_avg,interfacial_volume_ratio_stdev,";
