@@ -1,32 +1,7 @@
-Ising_OPV v3.0
+Ising_OPV
 =========
 
-This software tool is used to generate and analyze model bulk heterojunction morphologies in a parallel computing environment.
-
-### What's New in v3.0?
-Version 3.0 fixes a significant bug present in the previous versions, adds several exciting new features, and contains several major performance improvements.
-
-Major New Features:
-- Added the ability to shrink the lattice by a specified integer factor
-- Added the ability to use a 3D checkerboard starting configuration instead of a random blend
-- Added the ability to modify the interaction energy in one of the directions to allow anisotropic domain growth
-- Improved the analysis file output to include a list of the properties of all morphologies in the set
-- Added output of the average correlation function for the morphology set to the correlation_data_avg.txt file
-
-Minor New Features:
-- Added the ability to extend the correlation function calculation out to the second correlation maximum
-- Added characterization of domain anisotropy as a standard metric
-- Improved the analysis file to include a header that specifies which version of the software was used to generate the morphology set
-- Improved the analysis file output to also specify which morphology has the median domain size and the median tortuosity
-
-Performance Improvements:
-- Increased the speed of the phase separation process by increasing the speed of the energy calculation during the Ising swapping stage
-- Improved the speed of the tortuosity calculation by increasing the speed of the pathfinding and path distance calculations
-- Added the ability to enable a reduced memory usage tortuosity calculation algorithm.  This algorithm is significantly slower, but it is useful when simulating very large lattices where memory limits are reached.
-
-Bug Fixes:
-- Corrected a major bug with the random number generator used to choose which neighboring site to use for a swapping attempt (This bug caused anisotropic domain growth in the previous versions of Ising_OPV)
-- Improved the correlation function to catch rare cases where the correlation function does not cross the mix fraction value, and in these cases the domain size is set to the position of the first correlation minimum
+This highly optimized software tool uses an Ising-based model to quickly and efficiently generate three-dimensional bulk heterojunction morphologies on a cubic lattice in a parallel computing environment. Generated or imported morphologies are then rigorously analyzed to determine important morphological features such as the domain size, tortuosity, interfacial area to volume ratio, and more.  Development of this tool represents an attempt to standardize the Ising-based morphology model for the reliable creation and analysis of morphologies to be further used in kinetic Monte Carlo simulations of organic photovoltaic devices. If you would like some assistance in customizing this software tool for your particular research interest or application, please contact me to discuss collaboration options or feel free to contribute to the development of this open-source software tool.
 
 ### Compiling
 Compiling requires the boost library for random number generation and an MPI library for parallel processing.
@@ -56,7 +31,7 @@ To import an entire set of morphologies in a parallel processing environment:
 
 This command will import 10 morphologies (morphology_0_compressed.txt, morphology_1_compressed.txt, etc) and assign one to each processor.
 
-These statements can be implemented into batch scripts for running Ising_OPV v3.0 in a supercomputing environment.
+These statements can be implemented into batch scripts for running Ising_OPV in a supercomputing environment.
 
 ### Output
 Ising_OPV will create several output files:
@@ -75,8 +50,6 @@ Several peer-reviewed publications discuss the development and application of th
 - [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **2**, 014008 (2014).](http://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008) [[ResearchGate]](https://www.researchgate.net/publication/264419218_Efficient_Generation_of_Model_Bulk_Heterojunction_Morphologies_for_Organic_Photovoltaic_Device_Modeling)
 - [M. C. Heiber, C. Baumbach, V. Dyakonov, and C. Deibel, Phys. Rev. Lett. **114**, 136602 (2015).](http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.114.136602) [[ResearchGate]](https://www.researchgate.net/publication/274375035_Encounter-Limited_Charge-Carrier_Recombination_in_Phase-Separated_Organic_Semiconductor_Blends)
 - [M. C. Heiber, T.-Q. Nguyen, and C. Deibel, Phys. Rev. B **93**, 205204 (2016).](http://journals.aps.org/prb/abstract/10.1103/PhysRevB.93.205204) [[ResearchGate]](https://www.researchgate.net/publication/302940594_Charge_Carrier_Concentration_Dependence_of_Encounter-Limited_Bimolecular_Recombination_in_Phase-Separated_Organic_Semiconductor_Blends)
-
-If you would like some assistance in customizing this software tool for your particular interest or application, please contact me to discuss collaboration options.
 
 ### Acknowledgements
 Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0 and help with testing in v3.0.
