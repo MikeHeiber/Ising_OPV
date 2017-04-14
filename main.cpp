@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Michael C. Heiber
+// Copyright (c) 2017 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 
@@ -61,7 +61,7 @@ int main(int argc, char * argv[]){
     // Input parameters
     Input_Parameters parameters;
     // Internal parameters
-    string version = "v3.0";
+    string version = "v3.1";
     bool enable_import_morphology;
     double mix_ratio = 0;
     double domain_size1 = 0;
