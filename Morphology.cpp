@@ -2005,6 +2005,11 @@ bool Morphology::importMorphologyFile(ifstream * input,bool compressed_files){
     string line;
     Site site;
     getline(*input,line);
+    if(line.substr(0,9).compare("Ising_OPV")==0){
+        // skip first line
+        // get next line
+        getline(*input,line);
+    }
     Length = atoi(line.c_str());
     getline(*input,line);
     Width = atoi(line.c_str());
