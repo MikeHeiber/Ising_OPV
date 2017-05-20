@@ -61,7 +61,7 @@ int main(int argc, char * argv[]){
     // Input parameters
     Input_Parameters parameters;
     // Internal parameters
-    string version = "v3.1";
+    string version = "v3.2";
     bool enable_import_morphology;
     double mix_ratio = 0;
     double domain_size1 = 0;
@@ -380,11 +380,13 @@ int main(int argc, char * argv[]){
                 ss << path << "morphology_" << procid << "_uncompressed.txt";
                 morphology_output_file.open(ss.str().c_str());
                 ss.str("");
+                morphology_output_file << "Ising_OPV " << version << " - uncompressed format" << endl;
             }
             else{
                 ss << path << "morphology_" << procid << "_compressed.txt";
                 morphology_output_file.open(ss.str().c_str());
                 ss.str("");
+                morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
             }
         }
         else{
@@ -392,11 +394,13 @@ int main(int argc, char * argv[]){
                 ss << path << filename_prefix << "mod_" << procid << "_uncompressed.txt";
                 morphology_output_file.open(ss.str().c_str());
                 ss.str("");
+                morphology_output_file << "Ising_OPV " << version << " - uncompressed format" << endl;
             }
             else{
                 ss << path << filename_prefix << "mod_" << procid << "_compressed.txt";
                 morphology_output_file.open(ss.str().c_str());
                 ss.str("");
+                morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
             }
         }
         morph.outputMorphologyFile(&morphology_output_file,parameters.enable_export_compressed_files);
