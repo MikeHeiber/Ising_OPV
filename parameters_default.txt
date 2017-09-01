@@ -1,4 +1,4 @@
-## Parameters for Ising_OPV v3.2
+## Parameters for Ising_OPV v4.0-alpha.1
 -------------------------------
 ## General Parameters
 50 //length (integer values only) (specify the x-direction size of the lattice)
