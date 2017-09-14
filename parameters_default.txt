@@ -42,3 +42,12 @@ false //enable_checkerboard_start (creates a 50:50 blend, works best with even l
 false //enable_growth_pref
 3 //growth_direction (1=x,2=y,3=z)
 -0.1 //additional_interaction
+-------------------------------
+## Tomogram Import Options
+false //Enable_cutoff_analysis
+10 //Mixed_greyscale_width
+0.5 //Mixed_conc (fraction of donor)
+false //Enable_probability_analysis
+0.05 //Probability_scaling_exponent
+16 //N_extracted_segments
+1 //N_variants

@@ -67,6 +67,8 @@ namespace Utils {
 	static constexpr double Pi = 3.14159265359;
 	static constexpr double Coulomb_constant = 8.987551787e9; // N m^2 C^-2
 
+	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& data);
+
 	//! \brief Calculates the probability histogram for the input data vector using the input number of bins.
 	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 
 	//! The function outputs bin-centered x values and probability y values in a x-y pair vector.
@@ -181,6 +183,17 @@ namespace Utils {
 			sum += data[i];
 		}
 		return sum / array_size;
+	}
+
+	template<typename T>
+	T array_median(const T data[], const int array_size) {
+		T element;
+		std::vector<T> data_vect(array_size, element);
+		for (int i = 0; i<array_size; i++) {
+			data_vect[i] = data[i];
+		}
+		sort(data_vect.begin(), data_vect.end());
+		return data_vect[array_size / 2];
 	}
 
 	//! \brief This template function calculates and returns the standard deviation in double format when given an array of numerical datatypes.

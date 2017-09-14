@@ -129,6 +129,8 @@ class Lattice{
 		//! \return false if a move event is not possible.
 		bool checkMoveValidity(const Coords& coords_initial, const int i, const int j, const int k) const;
 
+		Lattice extractSublattice(const int x, const int sublength, const int y, const int subwidth, const int z, const int subheight) const;
+
 		//! \brief Generates the coordinates for a randomly selected site in the lattice.
 		//! \return A Coords struct containing the coordinates of a randomly selected site from the lattice.
 		Coords generateRandomCoords();

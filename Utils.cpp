@@ -9,6 +9,15 @@ namespace Utils {
 
 	using namespace std;
 
+	vector<pair<double, double>> calculateCumulativeHist(const vector<pair<double, double>>& data) {
+		auto result = data;
+		result[0].second = 0;
+		for (int i = 1; i < (int)data.size(); i++) {
+			result[i].second = result[i-1].second + ((data[i - 1].second + data[i].second) / 2.0)*(data[i].first - data[i - 1].first);
+		}
+		return result;
+	}
+
 	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, int num_bins) {
 		// Determine data range
 		double min_val, max_val;
@@ -75,7 +84,7 @@ namespace Utils {
 		// Calculate bin-centered x values
 		vector<pair<double, double>> hist(num_bins, make_pair(0.0, 0.0));
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].first = min_val + 0.5*bin_size + bin_size*(i + 1);
+			hist[i].first = min_val + 0.5*bin_size + bin_size*i;
 		}
 		// Calculate histogram
 		vector<int> counts(num_bins, 0);
@@ -317,7 +326,7 @@ namespace Utils {
 	}
 
 	int round_int(const double num) {
-		return (num > 0.0) ? (num + 0.5) : (num - 0.5);
+		return (num > 0.0) ? (int)(num + 0.5) : (int)(num - 0.5);
 	}
 
 }

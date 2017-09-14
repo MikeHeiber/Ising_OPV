@@ -144,6 +144,30 @@ bool Lattice::checkMoveValidity(const Coords& coords_initial, const int i, const
 	return true;
 }
 
+Lattice Lattice::extractSublattice(const int x, const int sublength, const int y, const int subwidth, const int z, const int subheight) const {
+	Lattice sublattice;
+	Parameters_Lattice params;
+	params.Enable_periodic_x = false;
+	params.Enable_periodic_y = false;
+	params.Enable_periodic_z = false;
+	params.Length = sublength;
+	params.Width = subwidth;
+	params.Height = subheight;
+	params.Unit_size = Unit_size;
+	sublattice.init(params, gen_ptr);
+	Coords coords, coords_sub;
+	for (int i = 0; i < sublength; i++) {
+		for (int j = 0; j < subwidth; j++) {
+			for (int k = 0; k < subheight; k++) {
+				coords.setXYZ(x + i, y + j, z + k);
+				coords_sub.setXYZ(i, j, k);
+				sublattice.setSiteType(sublattice.getSiteIndex(coords_sub), getSiteType(coords));
+			}
+		}
+	}
+	return sublattice;
+}
+
 Coords Lattice::generateRandomCoords() {
 	Coords coords;
 	coords.x = generateRandomX();
