@@ -12,6 +12,7 @@
 #include <iostream>
 #include <memory>
 #include <mpi.h>
+#include <fstream>
 #include <random>
 #include <set>
 #include <string>
@@ -187,8 +188,7 @@ namespace Utils {
 
 	template<typename T>
 	T array_median(const T data[], const int array_size) {
-		T element;
-		std::vector<T> data_vect(array_size, element);
+		std::vector<T> data_vect(array_size);
 		for (int i = 0; i<array_size; i++) {
 			data_vect[i] = data[i];
 		}
@@ -244,7 +244,7 @@ namespace Utils {
 	//! \param filename is the input file name.
 	template<typename T>
 	void outputVectorToFile(std::vector<T>& vec, std::string filename) {
-		ofstream outfile;
+		std::ofstream outfile;
 		outfile.open(filename);
 		for (int i = 0; i < (int)vec.size(); i++) {
 			outfile << vec[i] << "\n";
@@ -258,7 +258,7 @@ namespace Utils {
 	//! \param filename is the input file name.
 	template<typename T>
 	void outputVectorToFile(std::vector<std::pair<T,T>>& vec, std::string filename) {
-		ofstream outfile;
+		std::ofstream outfile;
 		outfile.open(filename);
 		for (int i = 0; i < (int)vec.size(); i++) {
 			outfile << vec[i].first << "," << vec[i].second << "\n";

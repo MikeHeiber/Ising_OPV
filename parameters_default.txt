@@ -32,10 +32,14 @@ false //enable_interfacial_mixing (true or false) (choose whether or not to intr
 false //enable_analysis_only (true or false)
 true //enable_correlation_calc (true or false) (choose whether or not to calculate the domain size using the pair-pair correlation method)
 100000 //N_sampling_max (specify the maximum number of sites to randomly sample for the correlation calculation)
+false //enable_mix_frac_method
+true //enable_e_method
 false //enable_extended_correlation_calc (true of false) (choose whether or not to extend the correlation function calculation to the second correlation maximum)
+10 // Correlation_cutoff_distance
 true //enable_interfacial_distance_calc (true of false) (choose whether or not to calculate the interfacial distance histograms)
 true //enable_tortuosity_calc (true or false) (choose whether or not to determine the tortuosity histograms, calculate the island volume fraction, and collect the end-to-end path data)
 false //enable_reduced_memory_tortuosity_calc (true or false) (choose whether or not to enable a tortuosity calculation method that takes longer, but uses less memory)
+true //enable_depth_dependent_calc
 -------------------------------
 ## Other Options
 false //enable_checkerboard_start (creates a 50:50 blend, works best with even lattice dimensions)

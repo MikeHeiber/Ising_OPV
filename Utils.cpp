@@ -20,7 +20,8 @@ namespace Utils {
 
 	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, int num_bins) {
 		// Determine data range
-		double min_val, max_val;
+		double min_val = 0;
+		double max_val = 0;
 		auto min_it = min_element(data.begin(), data.end());
 		if (min_it != data.end()) {
 			min_val = *min_it;
@@ -46,7 +47,8 @@ namespace Utils {
 
 	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, double bin_size) {
 		// Determine data range
-		double min_val, max_val;
+		double min_val = 0;
+		double max_val = 0;
 		auto min_it = min_element(data.begin(), data.end());
 		if (min_it != data.end()) {
 			min_val = *min_it;
@@ -73,7 +75,7 @@ namespace Utils {
 
 	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, const double bin_size, const int num_bins) {
 		// Determine number of bins
-		double min_val;
+		double min_val = 0;
 		auto min_it = min_element(data.begin(), data.end());
 		if (min_it != data.end()) {
 			min_val = *min_it;

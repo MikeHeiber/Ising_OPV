@@ -70,12 +70,10 @@ void Morphology::addSiteType(const char site_type) {
 	Tortuosity_data.resize(Tortuosity_data.size() + 1);
 	InterfacialHistogram_data.resize(InterfacialHistogram_data.size() + 1);
 	TortuosityHistogram_data.resize(TortuosityHistogram_data.size() + 1);
-	Domain_size_updated.push_back(false);
 	Domain_anisotropy_updated.push_back(false);
-	Domain_size.push_back(-1);
-	Domain_anisotropy.push_back(-1);
+	Domain_sizes.push_back(-1);
+	Domain_anisotropies.push_back(-1);
 	Island_volume.push_back(-1);
-	Correlation_sites_data.resize(Correlation_sites_data.size()+1);
 }
 
 //  This function calculates the additional change in energy of the system that would occur if the adjacent sites at (x1,y1,z1) and (x2,y2,z2) were to be swapped with
@@ -86,7 +84,11 @@ void Morphology::addSiteType(const char site_type) {
 double Morphology::calculateAdditionalEnergyChange(const long int site_index_main, const long int site_index_neighbor, const int growth_direction,const double additional_interaction) const{
     int x1,y1,z1,x2,y2,z2;
     int dx,dy,dz;
-    int total_sites,count1_i,count2_i,count1_f,count2_f;
+	int total_sites = 0;
+	int count1_i = 0;
+	int count2_i = 0;
+	int count1_f = 0;
+	int count2_f = 0;
     char site1_type,site2_type;
 	Coords coords_main = lattice.getSiteCoords(site_index_main);
     x1 = coords_main.x;
@@ -98,8 +100,6 @@ double Morphology::calculateAdditionalEnergyChange(const long int site_index_mai
     y2 = coords_neighbor.y;
     z2 = coords_neighbor.z;
     site2_type = lattice.getSiteType(coords_neighbor);
-    count1_i = 0;
-    count2_i = 0;
     switch(growth_direction){
         case 1: // x-direction
             total_sites = 2;
@@ -185,10 +185,11 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max){
 	cout << ID << ": Calculating the domain anisotropy..." << endl;
 	// Select sites for correlation function calculation.
 	// Site indices for each selected site are stored in the Correlation_sites vector.
+	vector<vector<long int>> correlation_sites_data(Site_types.size());
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		if ((int)Correlation_sites_data[n].size() == 0) {
+		if ((int)correlation_sites_data[n].size() == 0) {
 			// Only N_sampling_max sites are randomly selected
-			getSiteSampling(Correlation_sites_data[n], Site_types[n], N_sampling_max);
+			getSiteSampling(correlation_sites_data[n], Site_types[n], N_sampling_max);
 		}
 	}
 	Domain_anisotropy_updated.assign(Site_types.size(), false);
@@ -201,8 +202,8 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max){
 		}
 		for (int i = 0; i < (int)Site_types.size(); i++) {
 			if (!Domain_anisotropy_updated[i] && Site_type_counts[i] > 100) {
-				cout << ID << ": Performing sampling anisotropy calculation with " << (int)Correlation_sites_data[i].size() << " sites for site type " << (int)Site_types[i] << " with a cutoff of " << cutoff_distance << "..." << endl;
-				Domain_anisotropy_updated[i] = calculateAnisotropy(Site_types[i], cutoff_distance, N_sampling_max);
+				cout << ID << ": Performing sampling anisotropy calculation with " << (int)correlation_sites_data[i].size() << " sites for site type " << (int)Site_types[i] << " with a cutoff of " << cutoff_distance << "..." << endl;
+				Domain_anisotropy_updated[i] = calculateAnisotropy(correlation_sites_data[i], Site_types[i], cutoff_distance);
 			}
 		}
 		for (int i = 0; i < (int)Site_types.size(); i++) {
@@ -229,12 +230,12 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max){
 //  For large lattices, the correlation function does not need to be calculated starting from every site to collect enough statistics and instead a sampling of starting sites can be used.
 //  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
 //  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
-bool Morphology::calculateAnisotropy(const char site_type, const int cutoff_distance, const int N_sampling_max){
+bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, const char site_type, const int cutoff_distance){
 	int type_index = getSiteTypeIndex(site_type);
 	int N_sites = 0;
-    double correlation_length_x;
-    double correlation_length_y;
-    double correlation_length_z;
+    double correlation_length_x = 0;
+    double correlation_length_y = 0;
+    double correlation_length_z = 0;
     double d1,y1,y2,slope,intercept;
     Coords site_coords, coords_dest;
     vector<double> correlation_x;
@@ -245,12 +246,11 @@ bool Morphology::calculateAnisotropy(const char site_type, const int cutoff_dist
     correlation_z.assign(cutoff_distance+1,0);
     vector<int> site_count;
     vector<int> site_total;
-
-    for(int m=0;m<(int)Correlation_sites_data[type_index].size();m++){
-        if(lattice.getSiteType(Correlation_sites_data[type_index][m])!=site_type){
+    for(int m=0;m<(int)correlation_sites.size();m++){
+        if(lattice.getSiteType(correlation_sites[m])!=site_type){
             continue;
         }
-        site_coords = lattice.getSiteCoords(Correlation_sites_data[type_index][m]);
+        site_coords = lattice.getSiteCoords(correlation_sites[m]);
         site_count.assign(cutoff_distance,0);
         for(int i=-cutoff_distance;i<=cutoff_distance;i++){
 			if (!lattice.checkMoveValidity(site_coords, i, 0, 0)) {
@@ -354,7 +354,7 @@ bool Morphology::calculateAnisotropy(const char site_type, const int cutoff_dist
     }
 	if (!success_x || !success_y || !success_z) {
 		cout << ID << ": Cutoff distance of " << cutoff_distance << " is too small to calculate anisotropy of domain type " << (int)site_type << "." << endl;
-		Domain_anisotropy[type_index] = -1;
+		Domain_anisotropies[type_index] = -1;
 		return false;
 	}
     if(4*correlation_length_x>lattice.getLength() || 4*correlation_length_y>lattice.getWidth()){
@@ -362,7 +362,7 @@ bool Morphology::calculateAnisotropy(const char site_type, const int cutoff_dist
         cout << "x-direction correlation length is " << correlation_length_x << "." << endl;
         cout << "y-direction correlation length is " << correlation_length_y << "." << endl;
     }
-    Domain_anisotropy[type_index] = (2*correlation_length_z)/(correlation_length_x+correlation_length_y);
+    Domain_anisotropies[type_index] = (2*correlation_length_z)/(correlation_length_x+correlation_length_y);
     return true;
 }
 
@@ -375,28 +375,27 @@ bool Morphology::calculateAnisotropy(const char site_type, const int cutoff_dist
 //  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
 //  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
 //  If the function returns false and the function is re-called with a larger cutoff_distance, the correlation function is not recalculated for close distances and only fills in the missing data for larger distances.
-bool Morphology::calculateCorrelationDistance(const char site_type, const int cutoff_distance, const bool enable_extended_calc, const int N_sampling_max) {
+double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const int cutoff_distance, const CorrelationCalcParams& params){
 	int type_index = getSiteTypeIndex(site_type);
 	vector<int> site_count, total_count;
 	double distance;
 	int bin;
-	double d1, y1, y2, slope, intercept, diff1, diff2;
-	bool success;
+	double d1, y1, y2, slope, intercept;
 	Coords site_coords, coords_dest;
 	if (cutoff_distance > lattice.getLength() || cutoff_distance > lattice.getWidth()) {
 		cout << ID << ": Error, cutoff distance is greater than the lattice length and/or width." << endl;
-		return false;
+		return -1;
 	}
 	// Resolution of correlation distance data is 0.5 lattice units
-	int correlation_size_old = (int)Correlation_data[type_index].size();
+	int correlation_size_old = (int)correlation_data.size();
 	int correlation_size_new = 2 * cutoff_distance + 1;
 	if (correlation_size_old >= correlation_size_new) {
 		cout << ID << ": Error, new cutoff distance is not greater than the previous cutoff distance and no new calculations have been performed." << endl;
-		return false;
+		return -1;
 	}
 	// Initialize vectors to store correlation function data
 	for (int m = 0; m < (correlation_size_new - correlation_size_old); m++) {
-		Correlation_data[type_index].push_back(0);
+		correlation_data.push_back(0);
 	}
 	// Loop through all selected sites and determine the correlation function for each
 	// The pair-pair correlation is determined based on the fraction of sites that are the same as the starting site and this function is calculated as a function of distance from the starting site.
@@ -406,8 +405,8 @@ bool Morphology::calculateCorrelationDistance(const char site_type, const int cu
 	// total_count vector stores the total number of sites in each bin
 	site_count.assign(2 * cutoff_distance + 1, 0);
 	total_count.assign(2 * cutoff_distance + 1, 0);
-	for (int m = 0; m < (int)Correlation_sites_data[type_index].size(); m++) {
-		site_coords = lattice.getSiteCoords(Correlation_sites_data[type_index][m]);
+	for (int m = 0; m < (int)correlation_sites.size(); m++) {
+		site_coords = lattice.getSiteCoords(correlation_sites[m]);
 		fill(site_count.begin(), site_count.end(), 0);
 		fill(total_count.begin(), total_count.end(), 0);
 		for (int i = -cutoff_distance; i <= cutoff_distance; i++) {
@@ -426,11 +425,11 @@ bool Morphology::calculateCorrelationDistance(const char site_type, const int cu
 					if (!lattice.checkMoveValidity(site_coords, i, j, k)) {
 						continue;
 					}
-lattice.calculateDestinationCoords(site_coords, i, j, k, coords_dest);
-if (lattice.getSiteType(site_coords) == lattice.getSiteType(coords_dest)) {
-	site_count[bin]++;
-}
-total_count[bin]++;
+					lattice.calculateDestinationCoords(site_coords, i, j, k, coords_dest);
+					if (lattice.getSiteType(site_coords) == lattice.getSiteType(coords_dest)) {
+						site_count[bin]++;
+					}
+					total_count[bin]++;
 				}
 			}
 		}
@@ -440,10 +439,10 @@ total_count[bin]++;
 				continue;
 			}
 			if (total_count[n] > 0) {
-				Correlation_data[type_index][n] += (double)site_count[n] / (double)total_count[n];
+				correlation_data[n] += (double)site_count[n] / (double)total_count[n];
 			}
 			else {
-				Correlation_data[type_index][n] += 1;
+				correlation_data[n] += 1;
 			}
 		}
 	}
@@ -452,131 +451,209 @@ total_count[bin]++;
 		if (n < (correlation_size_old - 1)) {
 			continue;
 		}
-		Correlation_data[type_index][n] = Correlation_data[type_index][n] / (double)Correlation_sites_data[type_index].size();
+		correlation_data[n] = correlation_data[n] / (double)correlation_sites.size();
 	}
-	// Determine if calculation is successful
-	if (!Domain_size_updated[type_index]) {
-		if (enable_extended_calc) {
-			// Check if correlation peak is reached
-			success = false;
-			for (int n = 2; n < (int)Correlation_data[type_index].size() - 1; n++) {
-				diff1 = (Correlation_data[type_index][n] - Correlation_data[type_index][n - 2]);
-				diff2 = (Correlation_data[type_index][n + 1] - Correlation_data[type_index][n - 1]);
-				if (diff1 > 0 && diff2 < 0) {
-					success = true;
-					Domain_size_updated[type_index] = true;
-					break;
-				}
-			}
-		}
-		// Find the bounds of where the pair-pair correlation function first reaches within 1/e of the Mix_fraction
-		success = false;
-		for (int n = 2; n < (int)Correlation_data[type_index].size(); n++) {
-			if (Correlation_data[type_index][n] < (((1.0 - Mix_fractions[type_index]) / exp(1.0)) + Mix_fractions[type_index])) {
+	// Find the bounds of where the pair-pair correlation function first reaches within 1/e of the Mix_fraction
+	if (params.Enable_mix_frac_method) {
+		for (int n = 2; n < (int)correlation_data.size(); n++) {
+			if (correlation_data[n] < Mix_fractions[type_index]) {
 				d1 = (double)(n - 1) * 0.5;
-				y1 = Correlation_data[type_index][n - 1];
-				y2 = Correlation_data[type_index][n];
+				y1 = correlation_data[n - 1];
+				y2 = correlation_data[n];
 				// Use linear interpolation to determine the cross-over point
 				slope = (y2 - y1) * 2.0;
 				intercept = y1 - slope*d1;
-				Domain_size[type_index] = 2.0 * ((((1.0 - Mix_fractions[type_index]) / exp(1.0)) + Mix_fractions[type_index]) - intercept) / slope;
-				success = true;
-				break;
+				return (Mix_fractions[type_index] - intercept) / slope;
 			}
-			if (!success && Correlation_data[type_index][n] > Correlation_data[type_index][n - 1]) {
-				Domain_size[type_index] = (double)(n - 1) / 2.0;
-				success = true;
+			if (correlation_data[n] > correlation_data[n - 1]) {
+				return (double)(n - 1) / 2.0;
 			}
 		}
-		if (!success) {
-			cout << ID << ": Cutoff distance of " << cutoff_distance << " is too small to calculate the size of domain type " << (int)Site_types[type_index] << "." << endl;
-			Domain_size[type_index] = -1;
+	}
+	// Find the bounds of where the pair-pair correlation function first crosses over the Mix_fraction
+	if (params.Enable_e_method) {
+		for (int n = 2; n < (int)correlation_data.size(); n++) {
+			if (correlation_data[n] < (((1.0 - Mix_fractions[type_index]) / exp(1.0)) + Mix_fractions[type_index])) {
+				d1 = (double)(n - 1) * 0.5;
+				y1 = correlation_data[n - 1];
+				y2 = correlation_data[n];
+				// Use linear interpolation to determine the cross-over point
+				slope = (y2 - y1) * 2.0;
+				intercept = y1 - slope*d1;
+				return 2.0 * ((((1.0 - Mix_fractions[type_index]) / exp(1.0)) + Mix_fractions[type_index]) - intercept) / slope;
+			}
 		}
 	}
-	if (Domain_size[type_index] < 0) {
-		return false;
-	}
-	if (enable_extended_calc && !Domain_size_updated[type_index]) {
-		return false;
-	}
-	return true;
+	cout << ID << ": Cutoff distance of " << cutoff_distance << " is too small to calculate the size of domain type " << (int)Site_types[type_index] << "." << endl;
+	return -1;
 }
 
-void Morphology::calculateCorrelationDistances(const bool enable_extended_calc, const int N_sampling_max) {
-	if (enable_extended_calc) {
-		cout << ID << ": Calculating the domain size using the extended pair-pair correlation function..." << endl;
+void Morphology::calculateCorrelationDistances(const CorrelationCalcParams& params) {
+	if (params.Enable_extended_correlation_calc) {
+		cout << ID << ": Calculating the domain size using the extended pair-pair correlation function using a cutoff radius of " << params.Correlation_cutoff_distance << "..." << endl;
 	}
-	else {
-		cout << ID << ": Calculating the domain size from the pair-pair correlation function..." << endl;
+	if (params.Enable_mix_frac_method) {
+		cout << ID << ": Calculating the domain size from the pair-pair correlation function using the mix fraction method..." << endl;
 	}
+	else if (params.Enable_e_method) {
+		cout << ID << ": Calculating the domain size from the pair-pair correlation function using the 1/e method..." << endl;
+	}
+	vector<vector<long int>> correlation_sites_data(Site_types.size());
 	// Select sites for correlation function calculation.
 	// Site indices for each selected site are stored in the Correlation_sites vector.
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		if ((int)Correlation_sites_data[n].size() == 0) {
-			getSiteSampling(Correlation_sites_data[n], Site_types[n], N_sampling_max);
+		if ((int)correlation_sites_data[n].size() == 0) {
+			getSiteSampling(correlation_sites_data[n], Site_types[n], params.N_sampling_max);
 		}
 	}
-	Domain_size_updated.assign(Site_types.size(), false);
-	int cutoff_distance = 5;
-	bool success = false;
-	// The correlation function calculation is called with an increasing cutoff distance until successful.
-	while (!success) {
-		if (2 * cutoff_distance > lattice.getLength() || 2 * cutoff_distance > lattice.getWidth() || 2 * cutoff_distance > lattice.getHeight()) {
-			success = false;
-			break;
+	vector<bool> domain_size_updated(Site_types.size(), false);
+	int cutoff_distance;
+	double domain_size;
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		if (params.Enable_extended_correlation_calc) {
+			cutoff_distance = params.Correlation_cutoff_distance;
 		}
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			if (!Domain_size_updated[n] && Site_type_counts[n]>100) {
-				cout << ID << ": Performing sampling domain size calculation with " << (int)Correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff of " << cutoff_distance << "..." << endl;
-				Domain_size_updated[n] = calculateCorrelationDistance(Site_types[n], cutoff_distance, enable_extended_calc, N_sampling_max);
-			}
+		else {
+			cutoff_distance = 5;
 		}
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			if (!Domain_size_updated[n] && Site_type_counts[n]>100) {
-				success = false;
+		domain_size = -1;
+		// The correlation function calculation is called with an increasing cutoff distance until successful.
+		while (!domain_size_updated[n]) {
+			if (2 * cutoff_distance > lattice.getLength() || 2 * cutoff_distance > lattice.getWidth() || 2 * cutoff_distance > lattice.getHeight()) {
+				cout << ID << ": Correlation calculation cutoff radius is now too large to continue accurately calculating the correlation function for site type " << (int)Site_types[n] << "." << endl;
 				break;
 			}
-			if (n == (int)Site_types.size() - 1) {
-				success = true;
+			if (Site_type_counts[n] > 100) {
+				cout << ID << ": Performing sampling domain size calculation with " << (int)correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff radius of " << cutoff_distance << "..." << endl;
+				domain_size = calculateCorrelationDistance(correlation_sites_data[n], Correlation_data[n], Site_types[n], cutoff_distance, params);
 			}
-		}
-		cutoff_distance++;
-	}
-	// Output Calculation Results
-	if (success) {
-		stringstream ss;
-		ss << "correlation_data_" << ID << ".txt";
-		ofstream correlationfile;
-		correlationfile.open(ss.str().c_str());
-		ss.str("");
-		int max_correlation_size = (int)Correlation_data[0].size();
-		for (int n = 1; n < (int)Site_types.size(); n++) {
-			if (Correlation_data[n].size() > max_correlation_size) {
-				max_correlation_size = (int)Correlation_data[n].size();
-			}
-		}
-		for (int i = 0; i < max_correlation_size; i++) {
-			if (i < (int)Correlation_data[0].size()) {
-				correlationfile << 0.5*(double)i << "," << Correlation_data[0][i];
+			if (domain_size > 0) {
+				domain_size_updated[n] = true;
+				Domain_sizes[n] = domain_size;
 			}
 			else {
-				correlationfile << 0.5*(double)i << "," << NAN;
+				cutoff_distance++;
 			}
-			for (int n = 1; n < (int)Site_types.size(); n++) {
-				if (i < (int)Correlation_data[n].size()) {
-					correlationfile << "," << Correlation_data[n][i];
+		}
+	}
+	// Output Calculation Results
+	stringstream ss;
+	ss << "correlation_data_" << ID << ".txt";
+	ofstream correlationfile;
+	correlationfile.open(ss.str().c_str());
+	ss.str("");
+	int max_correlation_size = (int)Correlation_data[0].size();
+	for (int n = 1; n < (int)Site_types.size(); n++) {
+		if ((int)Correlation_data[n].size() > max_correlation_size) {
+			max_correlation_size = (int)Correlation_data[n].size();
+		}
+	}
+	for (int i = 0; i < max_correlation_size; i++) {
+		if (i < (int)Correlation_data[0].size()) {
+			correlationfile << 0.5*(double)i << "," << Correlation_data[0][i];
+		}
+		else {
+			correlationfile << 0.5*(double)i << "," << NAN;
+		}
+		for (int n = 1; n < (int)Site_types.size(); n++) {
+			if (i < (int)Correlation_data[n].size()) {
+				correlationfile << "," << Correlation_data[n][i];
+			}
+			else {
+				correlationfile << "," << NAN;
+			}
+		}
+		correlationfile << endl;
+	}
+	correlationfile.close();
+}
+
+void Morphology::calculateDepthDependentData(const CorrelationCalcParams& correlation_params) {
+	if (correlation_params.Enable_mix_frac_method) {
+		cout << ID << ": Calculating the depth dependent domain size from the pair-pair correlation function using the mix fraction method..." << endl;
+	}
+	else if (correlation_params.Enable_e_method) {
+		cout << ID << ": Calculating the depth dependent domain size from the pair-pair correlation function using the 1/e method..." << endl;
+	}
+	vector<vector<long int>> correlation_sites_data(Site_types.size());
+	vector<double> correlation_data;
+	vector<bool> domain_size_updated(Site_types.size(), false);
+	Depth_composition_data.assign(Site_types.size(), vector<double>(lattice.getHeight(), 0));
+	Depth_domain_size_data.assign(Site_types.size(), vector<double>(lattice.getHeight(), 0));
+	vector<int> counts(Site_types.size());
+	int cutoff_distance;
+	double domain_size;
+	for (int z = 0; z < lattice.getHeight(); z++) {
+		//cout << ID << ": Calculating depth dependent data for z = " << z << endl;
+		// Calculate depth dependent composition
+		counts.assign(Site_types.size(), 0);
+		correlation_sites_data.assign(Site_types.size(), vector<long int>(0));
+		for (int x = 0; x < lattice.getLength(); x++) {
+			for (int y = 0; y < lattice.getWidth(); y++) {
+				counts[getSiteTypeIndex(lattice.getSiteType(x, y, z))]++;
+			}
+		}
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			Depth_composition_data[n][z] = (double)counts[n] / (double)(lattice.getLength()*lattice.getWidth());
+		}
+		// Select sites for correlation function calculation.
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			if ((int)correlation_sites_data[n].size() == 0) {
+				getSiteSamplingZ(correlation_sites_data[n], Site_types[n], correlation_params.N_sampling_max, z);
+			}
+		}
+		// Calculate depth dependent domain size
+		domain_size_updated.assign(Site_types.size(), false);
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			cutoff_distance = 5;
+			correlation_data.clear();
+			domain_size = -1;
+			// The correlation function calculation is called with an increasing cutoff distance until successful.
+			while (!domain_size_updated[n]) {
+				if (2 * cutoff_distance > lattice.getLength() || 2 * cutoff_distance > lattice.getWidth() || 2 * cutoff_distance > lattice.getHeight()) {
+					//cout << ID << ": Correlation calculation cutoff radius is now too large to continue accurately calculating the correlation function for site type " << (int)Site_types[n] << "." << endl;
+					break;
+				}
+				if (Site_type_counts[n] > 10) {
+					//cout << ID << ": Performing sampling domain size calculation with " << (int)correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff radius of " << cutoff_distance << "..." << endl;
+					domain_size = calculateCorrelationDistance(correlation_sites_data[n], correlation_data, Site_types[n], cutoff_distance, correlation_params);
+				}
+				if (domain_size > 0) {
+					Depth_domain_size_data[n][z] = domain_size;
+					domain_size_updated[n] = true;
 				}
 				else {
-					correlationfile << "," << NAN;
+					cutoff_distance++;
 				}
 			}
-			correlationfile << endl;
 		}
-		correlationfile.close();
+		// Calculate depth dependent anisotropy
 	}
-	else {
-		cout << ID << ": Warning! One or more domain sizes could not be calculated." << endl;
+	// Output Data to File
+	stringstream ss;
+	ss << "depth_dependent_data_" << ID << ".txt";
+	ofstream outfile;
+	outfile.open(ss.str().c_str());
+	ss.str("");
+	outfile << "Z-Position";
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		outfile << ",Type" << (int)Site_types[n] << "_composition";
 	}
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		outfile << ",Type" << (int)Site_types[n] << "_domain_size";
+	}
+	outfile << endl;
+	for (int z = 0; z < lattice.getHeight(); z++) {
+		outfile << z;
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			outfile << "," << Depth_composition_data[n][z];
+		}
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			outfile << "," << Depth_domain_size_data[n][z];
+		}
+		outfile << endl;
+	}
+	outfile.close();
 }
 
 //  This function calculates the fraction of nearby sites the site at (x,y,z) that are not the same type.
@@ -1746,16 +1823,25 @@ vector<double> Morphology::getCorrelationData(const char site_type) const {
 	return Correlation_data[getSiteTypeIndex(site_type)];
 }
 
+vector<double> Morphology::getDepthCompositionData(const char site_type) const {
+	return Depth_composition_data[getSiteTypeIndex(site_type)];
+}
+
+
+vector<double> Morphology::getDepthDomainSizeData(const char site_type) const {
+	return Depth_domain_size_data[getSiteTypeIndex(site_type)];
+}
+
 //  This function returns the domain anisotropy determined for the specified site type.
 //  This function will return zero if the calculateAnisotropy function has not been called.
 double Morphology::getDomainAnisotropy(const char site_type) const {
-	return Domain_anisotropy[getSiteTypeIndex(site_type)];
+	return Domain_anisotropies[getSiteTypeIndex(site_type)];
 }
 
 //  This function returns the domain size determined for the specified site type.
 //  This function will return zero if the calculateCorrelationDistance function has not been called.
 double Morphology::getDomainSize(char site_type) const {
-	return Domain_size[getSiteTypeIndex(site_type)];
+	return Domain_sizes[getSiteTypeIndex(site_type)];
 }
 
 //  This function returns the height or z-direction size of the lattice.
@@ -1794,6 +1880,24 @@ void Morphology::getSiteSampling(vector<long int>& site_indices,const char site_
 	}
 	shuffle(all_sites.begin(), all_sites.end(), gen);
 	if (N_sites_max > (int)all_sites.size()) {
+		site_indices.assign(all_sites.begin(), all_sites.end());
+	}
+	else {
+		site_indices.assign(all_sites.begin(), all_sites.begin() + N_sites_max);
+	}
+}
+
+void Morphology::getSiteSamplingZ(vector<long int>& site_indices, const char site_type, const int N_sites_max, const int z) {
+	vector<long int> all_sites;
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			if (lattice.getSiteType(x,y,z)==site_type) {
+				all_sites.push_back(lattice.getSiteIndex(x,y,z));
+			}
+		}
+	}
+	shuffle(all_sites.begin(), all_sites.end(), gen);
+	if (N_sites_max >(int)all_sites.size()) {
 		site_indices.assign(all_sites.begin(), all_sites.end());
 	}
 	else {
@@ -1879,13 +1983,11 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string filenam
 			cout << "Error! The imported tomogram binary file does not contain the correct number of sites." << endl;
 			return morphologies;
 		}
-		double median = (double)array_median(byte_block_unsigned, (int)size);
+		//double median = (double)array_median(byte_block_unsigned, (int)size);
 		vector<double> data_vec((int)size, 0);
 		for (int i = 0; i < (int)size; i++) {
 			data_vec[i] = (double)byte_block_unsigned[i];
 		}
-		//delete[] byte_block;
-		//delete[] byte_block_unsigned;
 		// Analyze the loaded data vector
 		auto prob = calculateProbabilityHist(data_vec, 2.0);
 		outputVectorToFile(prob, "hist_data1.txt");
@@ -2055,7 +2157,7 @@ bool Morphology::importMorphologyFile(ifstream * input,bool compressed_files){
 		}
 		for (int n = 0; n < num_types; n++) {
 			getline(*input, line);
-			Domain_size[n] = atof(line.c_str());
+			Domain_sizes[n] = atof(line.c_str());
 		}
 		for (int n = 0; n < num_types; n++) {
 			getline(*input, line);
@@ -2066,9 +2168,9 @@ bool Morphology::importMorphologyFile(ifstream * input,bool compressed_files){
 		addSiteType((char)1);
 		addSiteType((char)2);
 		getline(*input, line);
-		Domain_size[0] = atof(line.c_str());
+		Domain_sizes[0] = atof(line.c_str());
 		getline(*input, line);
-		Domain_size[1] = atof(line.c_str());
+		Domain_sizes[1] = atof(line.c_str());
 		getline(*input, line);
 		Mix_fractions[0] = atof(line.c_str());
 		Mix_fractions[1] = 1 - Mix_fractions[0];
@@ -2272,7 +2374,7 @@ bool Morphology::outputMorphologyCrossSection(ofstream * output){
 	int x = lattice.getLength() / 2;
 	//for (int x = 0; x < lattice.getLength(); x++) {
 		for (int y = 0; y < lattice.getWidth(); y++) {
-			int z = lattice.getHeight() / 2;
+			//int z = lattice.getHeight() / 2;
 			for (int z = 0; z < lattice.getHeight(); z++) {
 				*output << x << "," << y << "," << z << "," << (int)lattice.getSiteType(x, y, z) << endl;
 			}
@@ -2292,7 +2394,7 @@ bool Morphology::outputMorphologyFile(ofstream * output,bool enable_export_compr
 	*output << lattice.isZPeriodic() << endl;
 	*output << (int)Site_types.size() << endl;
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		*output << Domain_size[n] << endl;
+		*output << Domain_sizes[n] << endl;
 	}
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		*output << Mix_fractions[n] << endl;
