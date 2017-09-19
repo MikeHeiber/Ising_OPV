@@ -27,26 +27,30 @@ struct Input_Parameters{
     bool Enable_export_compressed_files; // choose whether the output morphology data file is in compressed format or not
     bool Enable_export_cross_section; // choose whether to output data for an uncompressed cross section (x=0 plane) of the morphology
     // Smoothing Options
-    bool Enable_smoothing; // choose whether to perform domain smoothing
+    bool Enable_smoothing; // choose whether to perform domain smoothing or not
     double Smoothing_threshold;  // specify the degree of smoothing
     // Rescale Options
-    bool Enable_rescale; // choose whether to perform lattice rescaling
+    bool Enable_rescale; // choose whether to perform lattice rescaling or not
     int Rescale_factor; // specify the rescale factor to be used (must be an integer greater than 1)
     bool Enable_shrink; // chose whether to shrink the lattice instead of expand it
     // Interfacial Mixing Options
-    bool Enable_interfacial_mixing; // choose whether to perform interfacial mixing
+    bool Enable_interfacial_mixing; // choose whether to perform interfacial mixing or not
     double Interface_width;  // specify the interfacial width
     double Interface_conc; // specify the mixing concentration in the interfacial region
     // Analysis Options
-    bool Enable_analysis_only;  // choose whether to only perform analysis on an imported morphology
-    bool Enable_correlation_calc; // choose whether to perform the domain size calculation using the pair-pair correlation method
+    bool Enable_analysis_only;  // choose whether to only perform analysis on an imported morphology or not
+    bool Enable_correlation_calc; // choose whether to perform the domain size calculation using the pair-pair correlation method or not
     int N_sampling_max; // specify the maximum number of sites to be sampled for calculating the correlation function
-    bool Enable_extended_correlation_calc; // choose whether to extend the correlation function calculation to the second correlation maximum
-    bool Enable_interfacial_distance_calc; // choose whether to calculate the interfacial distance histograms
-    bool Enable_tortuosity_calc; // choose whether to calculate the tortuosity histograms, end-to-end tortuosity, and island volume fraction
-    bool Enable_reduced_memory_tortuosity_calc; //choose whether or not to enable a tortuosity calculation method that takes longer, but uses less memory
+	bool Enable_mix_frac_method; // choose whether to use the mix fraction method for determining the domain size or not
+	bool Enable_e_method; // choose whether to use the 1/e method for determining the domain size or not
+    bool Enable_extended_correlation_calc; // choose whether to extend the correlation function calculation to the specified cutoff distance or not
+	int Correlation_cutoff_distance; // specify the maximum cutoff distnace for the extended correlation function calculation
+    bool Enable_interfacial_distance_calc; // choose whether to calculate the interfacial distance histograms or not
+    bool Enable_tortuosity_calc; // choose whether to calculate the tortuosity histograms, end-to-end tortuosity, and island volume fraction or not
+    bool Enable_reduced_memory_tortuosity_calc; //choose whether to enable a tortuosity calculation method that takes longer, but uses less memory or not
+	bool Enable_depth_dependent_calc;
     // Other Options
-    bool Enable_checkerboard_start; //choose whether or not to start from a alternating checkerboard-like configuration instead of a random blend (creates 0.5 mix fraction)
+    bool Enable_checkerboard_start; //choose whether to start from a alternating checkerboard-like configuration instead of a random blend (creates 0.5 mix fraction) or not
     bool Enable_growth_pref;
     int Growth_direction;
     double Additional_interaction;
@@ -61,11 +65,12 @@ struct Input_Parameters{
 };
 
 int array_which_median(const double data[],int size);
-bool importParameters(ifstream * parameterfile,Input_Parameters& params);
+bool importParameters(ifstream * parameterfile,Input_Parameters& params, CorrelationCalcParams& correlation_params);
 
 int main(int argc, char * argv[]){
     // Input parameters
     Input_Parameters parameters;
+	CorrelationCalcParams correlation_params;
     // Internal parameters
     string version = "v4.0-alpha.1";
     bool Enable_import_morphology = false;
@@ -90,12 +95,13 @@ int main(int argc, char * argv[]){
     ofstream analysis_file;
     ofstream morphology_output_file;
     ofstream morphology_cross_section_file;
-    ofstream correlationfile_avg;
+    ofstream correlation_avg_file;
     ofstream correlationfile;
     ofstream interfacial_dist_hist_file;
     ofstream tortuosity_hist_file;
     ofstream path_data1_file;
     ofstream path_data2_file;
+	ofstream depth_dependent_avg_file;
     bool success;
     double *mix_ratios = NULL;
     double *domain_sizes1 = NULL;
@@ -125,6 +131,10 @@ int main(int argc, char * argv[]){
     vector<double> interfacial_dist_hist2_vect;
     vector<double> correlation1_vect;
     vector<double> correlation2_vect;
+	vector<double> depth_comp1_vect;
+	vector<double> depth_comp2_vect;
+	vector<double> depth_size1_vect;
+	vector<double> depth_size2_vect;
     string path = "";
     string input_morphology, input_file_path, compression_str, filename_prefix;
     bool is_file_compressed;
@@ -145,12 +155,15 @@ int main(int argc, char * argv[]){
 			Enable_import_morphology = true;
 		}
     }
+	else if (argc == 2) {
+		// Standard operation
+	}
     else{
         cout << procid << ": Incorrect arguments. There needs to be at least one argument which is the filename of a parameter file. Second optional argument needs to be a morphology file of the form 'filename_procid_compressed.txt' or 'filename_procid_uncompressed.txt'. Program will exit now!" << endl;
         return 0;
     }
     parameter_file.open((argv[1]),ifstream::in);
-    success = importParameters(&parameter_file,parameters);
+    success = importParameters(&parameter_file,parameters,correlation_params);
     parameter_file.close();
     if(success){
         cout << procid << ": Parameter file found and loaded successfully." << endl;
@@ -358,7 +371,7 @@ int main(int argc, char * argv[]){
     }
     // Calculate domain size if enabled.
 	if (parameters.Enable_correlation_calc) {
-		morph.calculateCorrelationDistances(parameters.Enable_extended_correlation_calc, parameters.N_sampling_max);
+		morph.calculateCorrelationDistances(correlation_params);
 		domain_size1 = morph.getDomainSize((char)1);
 		domain_size2 = morph.getDomainSize((char)2);
 		morph.calculateAnisotropies(parameters.N_sampling_max);
@@ -393,6 +406,10 @@ int main(int argc, char * argv[]){
         island_fraction1 = (double)morph.getIslandVolumeFraction((char)1);
         island_fraction2 = (double)morph.getIslandVolumeFraction((char)2);
     }
+	if (parameters.Enable_depth_dependent_calc) {
+		cout << procid << ": Calculating the depth dependent composition and domain size..." << endl;
+		morph.calculateDepthDependentData(correlation_params);
+	}
     // Save final morphology to a text file.
     if(!parameters.Enable_analysis_only || Enable_import_tomogram){
         cout << procid << ": Writing morphology to file..." << endl;
@@ -486,6 +503,13 @@ int main(int argc, char * argv[]){
         correlation1_vect = MPI_calculateVectorAvg(morph.getCorrelationData((char)1));
         correlation2_vect = MPI_calculateVectorAvg(morph.getCorrelationData((char)2));
     }
+	// Calculate the average depth dependent characteristics
+	if (parameters.Enable_depth_dependent_calc) {
+		depth_comp1_vect = MPI_calculateVectorAvg(morph.getDepthCompositionData((char)1));
+		depth_comp2_vect = MPI_calculateVectorAvg(morph.getDepthCompositionData((char)2));
+		depth_size1_vect = MPI_calculateVectorAvg(morph.getDepthDomainSizeData((char)1));
+		depth_size2_vect = MPI_calculateVectorAvg(morph.getDepthDomainSizeData((char)2));
+	}
     // Prepare root processor for data collection.
     if(procid==0){
         // Create arrays to store property values gathered from each processor.
@@ -546,25 +570,25 @@ int main(int argc, char * argv[]){
         if(parameters.Enable_correlation_calc){
             if(!Enable_import_morphology || Enable_import_tomogram){
                 ss << path << "correlation_data_avg.txt";
-                correlationfile_avg.open(ss.str().c_str());
+                correlation_avg_file.open(ss.str().c_str());
                 ss.str("");
             }
             else{
                 if(parameters.Enable_analysis_only){
                     ss << path << "correlation_data_avg_new.txt";
-                    correlationfile_avg.open(ss.str().c_str());
+                    correlation_avg_file.open(ss.str().c_str());
                     ss.str("");
                 }
                 else{
                     ss << path << "correlation_data_avg_mod.txt";
-                    correlationfile_avg.open(ss.str().c_str());
+                    correlation_avg_file.open(ss.str().c_str());
                     ss.str("");
                 }
             }
             for(int i=0;i<(int)correlation1_vect.size();i++){
-                correlationfile_avg << (double)i/2 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
+                correlation_avg_file << (double)i/2 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
             }
-            correlationfile_avg.close();
+            correlation_avg_file.close();
         }
         // Output the average tortuosity histograms and the end-to-end path data.
         if(parameters.Enable_tortuosity_calc){
@@ -641,6 +665,31 @@ int main(int argc, char * argv[]){
             }
             interfacial_dist_hist_file.close();
         }
+		// Output the average depth dependent data.
+		if (parameters.Enable_depth_dependent_calc) {
+			if (!Enable_import_morphology || Enable_import_tomogram) {
+				ss << path << "depth_dependent_data_avg.txt";
+				depth_dependent_avg_file.open(ss.str().c_str());
+				ss.str("");
+			}
+			else {
+				if (parameters.Enable_analysis_only) {
+					ss << path << "depth_dependent_data_avg_new.txt";
+					depth_dependent_avg_file.open(ss.str().c_str());
+					ss.str("");
+				}
+				else {
+					ss << path << "depth_dependent_data_avg_mod.txt";
+					depth_dependent_avg_file.open(ss.str().c_str());
+					ss.str("");
+				}
+			}
+			depth_dependent_avg_file << "Z-Position,Type1_composition,Type2_composition,Type1_domain_size,Type2_domain_size" << endl;
+			for (int i = 0; i<(int)depth_size1_vect.size(); i++) {
+				depth_dependent_avg_file << i << "," << depth_comp1_vect[i] << "," << depth_comp2_vect[i] << "," << depth_size1_vect[i] << "," << depth_size2_vect[i] << endl;
+			}
+			depth_dependent_avg_file.close();
+		}
         // Output the final morphology set analysis summary to a text file.
         if(!Enable_import_morphology || Enable_import_tomogram){
             ss << path << "analysis_summary.txt";
@@ -715,10 +764,10 @@ int main(int argc, char * argv[]){
                 copy(pathdata2_all+pathdata2_displacement[i],pathdata2_all+pathdata2_displacement[i]+pathdata2_sizes[i],pathdata2);
                 tortuosities1[i] = array_avg(pathdata1,pathdata1_sizes[i]);
                 tortuosities2[i] = array_avg(pathdata2,pathdata2_sizes[i]);
-                if(isnan(tortuosities1[i])){
+                if(std::isnan(tortuosities1[i])){
                     tortuosities1[i] = -1;
                 }
-                if(isnan(tortuosities2[i])){
+                if(std::isnan(tortuosities2[i])){
                     tortuosities2[i] = -1;
                 }
                 analysis_file << tortuosities1[i] << "," << tortuosities2[i] << ",";
@@ -746,7 +795,7 @@ int main(int argc, char * argv[]){
 }
 
 //  This function imports the parameters from an input parameter text file into the Input_Parameters data structure.
-bool importParameters(ifstream * parameterfile,Input_Parameters& params){
+bool importParameters(ifstream * parameterfile,Input_Parameters& params, CorrelationCalcParams& correlation_params){
     string line;
     string var;
     size_t pos;
@@ -853,6 +902,20 @@ bool importParameters(ifstream * parameterfile,Input_Parameters& params){
     i++;
     params.N_sampling_max = atoi(stringvars[i].c_str());
     i++;
+	//enable_mix_frac_method
+	params.Enable_mix_frac_method = importBooleanParam(stringvars[i], error_status);
+	if (error_status) {
+		cout << "Error setting correlation calculation domain size determination method options" << endl;
+		return false;
+	}
+	i++;
+	//enable_e_method
+	params.Enable_e_method = importBooleanParam(stringvars[i], error_status);
+	if (error_status) {
+		cout << "Error setting correlation calculation domain size determination method  options" << endl;
+		return false;
+	}
+	i++;
     //enable_extended_correlation_calc
     params.Enable_extended_correlation_calc = importBooleanParam(stringvars[i], error_status);
     if(error_status){
@@ -860,6 +923,8 @@ bool importParameters(ifstream * parameterfile,Input_Parameters& params){
         return false;
     }
     i++;
+	params.Correlation_cutoff_distance = atoi(stringvars[i].c_str());
+	i++;
     //enable_interfacial_distance_calc
     params.Enable_interfacial_distance_calc = importBooleanParam(stringvars[i], error_status);
     if(error_status){
@@ -881,6 +946,13 @@ bool importParameters(ifstream * parameterfile,Input_Parameters& params){
         return false;
     }
     i++;
+	//enable_depth_dependent_cal
+	params.Enable_depth_dependent_calc = importBooleanParam(stringvars[i], error_status);
+	if (error_status) {
+		cout << "Error setting depth dependent calculation options" << endl;
+		return false;
+	}
+	i++;
     //enable_checkerboard_start
     params.Enable_checkerboard_start = importBooleanParam(stringvars[i], error_status);
     if(error_status){
@@ -922,6 +994,11 @@ bool importParameters(ifstream * parameterfile,Input_Parameters& params){
 	i++;
 	params.N_variants = atoi(stringvars[i].c_str());
 	i++;
+	correlation_params.N_sampling_max = params.N_sampling_max;
+	correlation_params.Enable_mix_frac_method = params.Enable_mix_frac_method;
+	correlation_params.Enable_e_method = params.Enable_e_method;
+	correlation_params.Enable_extended_correlation_calc = params.Enable_extended_correlation_calc;
+	correlation_params.Correlation_cutoff_distance = params.Correlation_cutoff_distance;
     return true;
 }
 

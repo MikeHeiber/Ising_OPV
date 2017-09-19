@@ -36,8 +36,15 @@ struct NeighborInfo{
     char total3;
 };
 
+struct CorrelationCalcParams {
+	int N_sampling_max;
+	bool Enable_mix_frac_method;
+	bool Enable_e_method;
+	bool Enable_extended_correlation_calc;
+	int Correlation_cutoff_distance;
+};
+
 struct TomogramImportParams {
-	// Tomogram Import Options
 	bool Enable_cutoff_analysis;
 	int Mixed_greyscale_width;
 	double Mixed_conc;
@@ -54,10 +61,10 @@ public:
 	Morphology(const Lattice& input_lattice, const int id);
     virtual ~Morphology();
     bool calculateAnisotropies(const int N_sampling_max);
-	void calculateCorrelationDistances(const bool enable_extended_calc, const int N_sampling_max);
+	void calculateCorrelationDistances(const CorrelationCalcParams& parameters);
+	void calculateDepthDependentData(const CorrelationCalcParams& correlation_params);
     double calculateInterfacialAreaVolumeRatio() const;
     bool calculateInterfacialDistance();
-    //bool calculateInterfacialDistanceOld();
     double calculateInterfacialVolumeFraction() const;
 	void calculateMixFractions();
     bool calculateTortuosity(const bool enable_reduced_memory);
@@ -68,6 +75,8 @@ public:
     void executeMixing(const double width, const double interfacial_conc);
     void executeSmoothing(const double smoothing_threshold, const int rescale_factor);
     std::vector<double> getCorrelationData(const char site_type) const;
+	std::vector<double> getDepthCompositionData(const char site_type) const;
+	std::vector<double> getDepthDomainSizeData(const char site_type) const;
     double getDomainSize(const char site_type) const;
     double getDomainAnisotropy(const char site_type) const;
     int getHeight() const;
@@ -108,7 +117,7 @@ private:
     };
     // properties
     int ID;
-    std::vector<double> Mix_fractions; // Fraction of each component to total
+    std::vector<double> Mix_fractions; // Volume fraction of each component to total
     bool Enable_third_neighbor_interaction;
 	Lattice lattice;
 	std::vector<char> Site_types;
@@ -117,13 +126,13 @@ private:
 	std::vector<std::vector<float>> Tortuosity_data;
 	std::vector<std::vector<double>> InterfacialHistogram_data;
 	std::vector<std::vector<double>> TortuosityHistogram_data;
-    std::vector<bool> Domain_size_updated;
+	std::vector<std::vector<double>> Depth_composition_data;
+	std::vector<std::vector<double>> Depth_domain_size_data;
     std::vector<bool> Domain_anisotropy_updated;
-    std::vector<double> Domain_size;
-    std::vector<double> Domain_anisotropy;
+    std::vector<double> Domain_sizes;
+    std::vector<double> Domain_anisotropies;
     std::vector<int> Island_volume;
 	std::vector<long int> Interfacial_sites;
-	std::vector<std::vector<long int>> Correlation_sites_data;
 	std::vector<NeighborCounts> Neighbor_counts;
 	std::vector<NeighborInfo> Neighbor_info;
     NeighborCounts Temp_counts1;
@@ -132,8 +141,8 @@ private:
     // functions
 	void addSiteType(const char site_type);
     double calculateAdditionalEnergyChange(const long int site_index_main, const long int site_index_neighbor,const int growth_direction,const double additional_interaction) const;
-    bool calculateAnisotropy(const char site_type,const int cutoff_distance,const int N_sampling_max);
-	bool calculateCorrelationDistance(const char site_type, const int cutoff_distance, const bool enable_extended_calc, const int N_sampling_max);
+    bool calculateAnisotropy(const std::vector<long int>& correlation_sites, const char site_type,const int cutoff_distance);
+	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const char site_type, const int cutoff_distance, const CorrelationCalcParams& params);
     double calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const;
     double calculateEnergyChangeSimple(const long int site_index1, const long int site_index2, const double interaction_energy1, const double interaction_energy2);
     double calculateEnergyChange(const Coords& coords1, const Coords& coords2,const double interaction_energy1,const double interaction_energy2) const;
@@ -142,6 +151,7 @@ private:
     bool calculatePathDistances_ReducedMemory(std::vector<float>& path_distances);
     void createNode(Node& node,const Coords& coords);
     void getSiteSampling(std::vector<long int>& sites, const char site_type, const int N_sites);
+	void getSiteSamplingZ(std::vector<long int>& sites, const char site_type, const int N_sites, const int z);
 	int getSiteTypeIndex(const char site_type) const;
     void initializeNeighborInfo();
 	bool isNearInterface(const Coords& coords, const double distance) const;
