@@ -1,4 +1,4 @@
-## Parameters for Ising_OPV v4.0-alpha.1
+## Parameters for Ising_OPV v4.0-alpha.2
 -------------------------------
 ## General Parameters
 50 //length (integer values only) (specify the x-direction size of the lattice)
@@ -40,6 +40,7 @@ true //enable_interfacial_distance_calc (true of false) (choose whether or not t
 true //enable_tortuosity_calc (true or false) (choose whether or not to determine the tortuosity histograms, calculate the island volume fraction, and collect the end-to-end path data)
 false //enable_reduced_memory_tortuosity_calc (true or false) (choose whether or not to enable a tortuosity calculation method that takes longer, but uses less memory)
 true //enable_depth_dependent_calc
+true //enable_areal_maps_calc (true or false) (choose whether or not to enable calculation and output of areal mappings of morphology characteristics)
 -------------------------------
 ## Other Options
 false //enable_checkerboard_start (creates a 50:50 blend, works best with even lattice dimensions)

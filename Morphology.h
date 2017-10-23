@@ -67,7 +67,7 @@ public:
     bool calculateInterfacialDistance();
     double calculateInterfacialVolumeFraction() const;
 	void calculateMixFractions();
-    bool calculateTortuosity(const bool enable_reduced_memory);
+    bool calculateTortuosity(const char site_tye, const bool electrode_num, const bool enable_reduced_memory);
     void createCheckerboardMorphology();
     void createRandomMorphology(const std::vector<double>& mix_fractions);
     void enableThirdNeighborInteraction();
@@ -77,6 +77,7 @@ public:
     std::vector<double> getCorrelationData(const char site_type) const;
 	std::vector<double> getDepthCompositionData(const char site_type) const;
 	std::vector<double> getDepthDomainSizeData(const char site_type) const;
+	std::vector<double> getDepthIVData(const char site_type) const;
     double getDomainSize(const char site_type) const;
     double getDomainAnisotropy(const char site_type) const;
     int getHeight() const;
@@ -88,9 +89,11 @@ public:
     std::vector<double> getTortuosityHistogram(const char site_type) const;
     int getWidth() const;
 	std::vector<Morphology> importTomogramMorphologyFile(const std::string filename, const TomogramImportParams& params);
-    bool importMorphologyFile(std::ifstream * input, const bool compressed_files);
-    bool outputMorphologyFile(std::ofstream * output, const bool enable_export_compressed_files);
-    bool outputMorphologyCrossSection(std::ofstream * output);
+    bool importMorphologyFile(std::ifstream& infile, const bool compressed_files);
+	void outputCompositionMaps(std::ofstream& outfile) const;
+    void outputMorphologyFile(std::ofstream& outfile, const bool enable_export_compressed_files) const;
+    void outputMorphologyCrossSection(std::ofstream& outfile) const;
+	void outputTortuosityMaps(std::ofstream& outfile) const;
     void shrinkLattice(const int rescale_factor);
     void stretchLattice(const int rescale_factor);
 protected:
@@ -127,6 +130,7 @@ private:
 	std::vector<std::vector<double>> InterfacialHistogram_data;
 	std::vector<std::vector<double>> TortuosityHistogram_data;
 	std::vector<std::vector<double>> Depth_composition_data;
+	std::vector<std::vector<double>> Depth_iv_data;
 	std::vector<std::vector<double>> Depth_domain_size_data;
     std::vector<bool> Domain_anisotropy_updated;
     std::vector<double> Domain_sizes;
@@ -142,7 +146,7 @@ private:
 	void addSiteType(const char site_type);
     double calculateAdditionalEnergyChange(const long int site_index_main, const long int site_index_neighbor,const int growth_direction,const double additional_interaction) const;
     bool calculateAnisotropy(const std::vector<long int>& correlation_sites, const char site_type,const int cutoff_distance);
-	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const char site_type, const int cutoff_distance, const CorrelationCalcParams& params);
+	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalcParams& params);
     double calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const;
     double calculateEnergyChangeSimple(const long int site_index1, const long int site_index2, const double interaction_energy1, const double interaction_energy2);
     double calculateEnergyChange(const Coords& coords1, const Coords& coords2,const double interaction_energy1,const double interaction_energy2) const;
