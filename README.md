@@ -52,6 +52,8 @@ Several peer-reviewed publications discuss the development and application of th
 - [M. C. Heiber, T.-Q. Nguyen, and C. Deibel, Phys. Rev. B **93**, 205204 (2016).](http://journals.aps.org/prb/abstract/10.1103/PhysRevB.93.205204) [[ResearchGate]](https://www.researchgate.net/publication/302940594_Charge_Carrier_Concentration_Dependence_of_Encounter-Limited_Bimolecular_Recombination_in_Phase-Separated_Organic_Semiconductor_Blends)
 - [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **8**, 019902 (2017).](https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.8.019902) [[ResearchGate]](https://www.researchgate.net/publication/318592832_Erratum_Efficient_Generation_of_Model_Bulk_Heterojunction_Morphologies_for_Organic_Photovoltaic_Device_Modeling_Phys_Rev_Applied_2_014008_2014)
 
+- [M.C. Heiber, K. Kister, A. Baumann, V. Dyakonov, C. Deibel, and T.-Q. Nguyen, Phys. Rev. Appl. **8**, 054043 (2017).](https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.8.054043) [[ResearchGate]](https://www.researchgate.net/publication/321226076_Impact_of_Tortuosity_on_Charge-Carrier_Transport_in_Organic_Bulk_Heterojunction_Blends)
+
 ### Acknowledgements
 Thank you to Dr. Dean DeLongchamp at NIST for providing access to computing resources that support the ongoing development of v4.0. Development of v4.0 is supported by financial assistance award 70NANB14H012 from U.S. Department of Commerce, National Institute of Standards and Technology as part of the Center for Hierarchical Materials Design (CHiMaD).
 
