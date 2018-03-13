@@ -1,6 +1,6 @@
 COMPILER = mpicxx
 FLAGS = -Wall -Wextra -O3 -std=c++11
-OBJS = main.o Morphology.o Lattice.o Utils.o
+OBJS = main.o Morphology.o Lattice.o Utils.o tinyxml2.o
 
 Ising_OPV.exe : $(OBJS)
 	$(COMPILER) $(FLAGS) $(OBJS) -o Ising_OPV.exe
@@ -17,5 +17,8 @@ Lattice.o : Lattice.h Lattice.cpp Utils.h
 Utils.o : Utils.h Utils.cpp
 	$(COMPILER) $(FLAGS) -c Utils.cpp
 	
+tinyxml2.o : tinyxml2/tinyxml2.h tinyxml2/tinyxml2.cpp
+	$(COMPILER) $(FLAGS) -c tinyxml2/tinyxml2.cpp
+
 clean:
 	\rm *.o *~ Ising_OPV.exe

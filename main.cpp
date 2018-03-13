@@ -56,6 +56,7 @@ struct Input_Parameters{
     int Growth_direction;
     double Additional_interaction;
 	// Tomogram Import Options
+	double Desired_unit_size;
 	bool Enable_cutoff_analysis;
 	int Mixed_greyscale_width;
 	double Mixed_conc;
@@ -73,7 +74,7 @@ int main(int argc, char * argv[]){
     Input_Parameters parameters;
 	CorrelationCalcParams correlation_params;
     // Internal parameters
-    string version = "v4.0-alpha.2";
+    string version = "v4.0-alpha.3";
     bool Enable_import_morphology = false;
 	bool Enable_import_tomogram = false;
     double mix_ratio = 0;
@@ -139,8 +140,8 @@ int main(int argc, char * argv[]){
 	vector<double> depth_size1_vect;
 	vector<double> depth_size2_vect;
     string path = "";
-    string input_morphology, input_file_path, compression_str, filename_prefix;
-    bool is_file_compressed;
+	string input_morphology, input_file_path, filename_prefix;
+	string tomo_info_filename, tomo_data_filename;
     // Begin
     start_time = time(NULL);
     // Initialize parallel processing.
@@ -148,12 +149,14 @@ int main(int argc, char * argv[]){
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 	MPI_Comm_rank(MPI_COMM_WORLD, &procid);
     // Import parameters from text file.
-    if(argc == 4){
+    if(argc > 3){
 		string argument = string(argv[2]);
 		if (argument.compare("-import")==0) {
+			cout << procid << ": Attempting to import Ising_OPV morphology data..." << endl;
 			Enable_import_morphology = true;
 		}
 		else if (argument.compare("-importTomogram")==0) {
+			cout << procid << ": Attempting to import tomogram data..." << endl;
 			Enable_import_tomogram = true;
 			Enable_import_morphology = true;
 		}
@@ -162,7 +165,7 @@ int main(int argc, char * argv[]){
 		// Standard operation
 	}
     else{
-        cout << procid << ": Incorrect arguments. There needs to be at least one argument which is the filename of a parameter file. Second optional argument needs to be a morphology file of the form 'filename_procid_compressed.txt' or 'filename_procid_uncompressed.txt'. Program will exit now!" << endl;
+        cout << procid << ": Incorrect arguments. There needs to be at least one argument which is the filename of a parameter file. Program will exit now!" << endl;
         return 0;
     }
     parameter_file.open((argv[1]),ifstream::in);
@@ -175,6 +178,7 @@ int main(int argc, char * argv[]){
         cout << procid << ": Error importing variables from file!  Program will exit now." << endl;
         return 0;
     }
+	// Parameter checks
     if(parameters.Enable_analysis_only && !Enable_import_morphology && !Enable_import_tomogram){
         cout << procid << ": Error!  The 'analysis only' option can only be used when a morphology is imported from a file." << endl;
         return 0;
@@ -182,6 +186,10 @@ int main(int argc, char * argv[]){
     if(parameters.Enable_analysis_only){
         cout << procid << ": Warning! Only morphology analysis will be performed." << endl;
     }
+	if (Enable_import_tomogram && ((parameters.Enable_cutoff_analysis && parameters.Enable_probability_analysis) || (!parameters.Enable_cutoff_analysis && !parameters.Enable_probability_analysis))) {
+		cout << procid << " Error! When importing a tomogram the cutoff analysis or the probability analysis option must be enabled, but not both." << endl;
+		return 0;
+	}
 	// Wait until all processors have loaded the parameters.
 	MPI_Barrier(MPI_COMM_WORLD);
     // Create morphology data structure.
@@ -199,6 +207,7 @@ int main(int argc, char * argv[]){
 			Morphology morph_tomo(procid);
 			// Collect tomogram import options
 			TomogramImportParams import_params;
+			import_params.Desired_unit_size = parameters.Desired_unit_size;
 			import_params.Enable_cutoff_analysis = parameters.Enable_cutoff_analysis;
 			import_params.Mixed_greyscale_width = parameters.Mixed_greyscale_width;
 			import_params.Mixed_conc = parameters.Mixed_conc;
@@ -206,15 +215,22 @@ int main(int argc, char * argv[]){
 			import_params.Probability_scaling_exponent = parameters.Probability_scaling_exponent;
 			import_params.N_extracted_segments = parameters.N_extracted_segments;
 			cout << procid << ": Loading and analyzing tomogram data." << endl;
-			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(string(argv[3]), import_params);
+			tomo_info_filename = string(argv[3]);
+			tomo_data_filename = string(argv[4]);
+			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename, import_params);
+			// Check that a set of morphologies has been produced
+			if (morphology_set.size() == 0) {
+				cout << procid << ": Error! Morphology set could not be generated from the input tomogram." << endl;
+				return 0;
+			}
 			for (int i = 1; i < parameters.N_variants; i++) {
-				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(string(argv[3]), import_params);
+				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename, import_params);
 				morphology_set.insert(morphology_set.end(), morphology_set2.begin(), morphology_set2.end());
 			}
 			// Output morphology set to separate files
 			for (int i = 0; i < (int)morphology_set.size();i++) {
 				cout << procid << ": Writing morphology " << i << " to an output file." << endl;
-				ss << "morphology_" << i << "_compressed.txt";
+				ss << "morphology_" << i << ".txt";
 				morphology_output_file.open(ss.str().c_str());
 				ss.str("");
 				morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
@@ -226,68 +242,40 @@ int main(int argc, char * argv[]){
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
     if(Enable_import_morphology){
-        size_t pos_comp, pos_path, pos_id;
+        size_t pos_path, pos_id;
 		// Filename from tomogram set
 		if (Enable_import_tomogram) {
-			input_morphology = "morphology_#_compressed.txt";
+			input_morphology = "morphology_#.txt";
 		}
         // Get filename of imported morphology from command line arguments.
 		else {
 			input_morphology = (argv[3]);
 		}
         // Separate filepath and differentiate between Windows (1) and Linux (2) filepaths.
-        int os;
         // Linux filepaths
         if(input_morphology.substr(0,1).compare("/")==0){
             pos_path = input_morphology.find_last_of("/");
             input_file_path = input_morphology.substr(0,pos_path)+"/";
-            os=1;
+			pos_path++;
         }
         // Windows filepaths
         else if(input_morphology.substr(0,2).compare("\\")==0){
             pos_path = input_morphology.find_last_of("\\");
             input_file_path = input_morphology.substr(0,pos_path)+"\\";
-            os=2;
+			pos_path += 2;
         }
         // Default to be used when the morphology data file is in the current working directory
         else{
             input_file_path = "";
-            pos_path = -1;
-            os=1;
-        }
-        // Determine if the input file is in the compressed format or not.
-        pos_comp = input_morphology.find("compressed.txt");
-        if(pos_comp==string::npos){
-            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now." << endl;
-            return 0;
-        }
-        compression_str = input_morphology.substr(pos_comp-1);
-        if(compression_str.substr(0,1).compare("_")==0){
-            is_file_compressed = true;
-            compression_str = input_morphology.substr(pos_comp-1);
-            filename_prefix = input_morphology.substr((pos_path+os),pos_comp-1-(pos_path+os));
-        }
-        else if(compression_str.substr(0,1).compare("n")==0){
-            is_file_compressed = false;
-            compression_str = input_morphology.substr(pos_comp-3);
-            filename_prefix = input_morphology.substr((pos_path+os),pos_comp-3-(pos_path+os));
-        }
-        else{
-            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now." << endl;
-            return 0;
+            pos_path = 0;
         }
         // Separate filename prefix from ID number.
-        pos_id = filename_prefix.find_last_of("_");
-        if(pos_id==string::npos){
-            cout << procid << ": Error! Format of the file needs to be 'filename_#_compressed.txt' or 'filename_#_uncompressed.txt'. Program will exit now." << endl;
-            return 0;
-        }
-        else{
-            filename_prefix = input_morphology.substr((pos_path+os),pos_id+1);
-        }
-        ss << input_file_path << filename_prefix << procid << compression_str;
-		cout << procid << ": Opening morphology file " << input_file_path << filename_prefix << procid << compression_str << endl;
+        pos_id = input_morphology.find_last_of("_");
+        filename_prefix = input_morphology.substr(pos_path,pos_id);
+		ss << filename_prefix << "_" << procid << ".txt";
+		cout << procid << ": Opening morphology file " << input_file_path << ss.str() << endl;
         morphology_input_file.open(ss.str().c_str());
+		ss.str("");
         if(morphology_input_file.is_open()) {
             cout << procid << ": Morphology file successfully opened!" << endl;
         }
@@ -295,15 +283,10 @@ int main(int argc, char * argv[]){
             cout << procid << ": Opening morphology file failed! Program will exit now!" << endl;
             return 0;
         }
-        ss.str("");
-        if(!is_file_compressed){
-            cout << procid << ": Importing morphology from uncompressed file..." << flush;
-        }
-        else{
-            cout << procid << ": Importing morphology from compressed file..." << flush;
-        }
+		
+        cout << procid << ": Importing morphology from file..." << flush;
         // Import the morphology from the given data file.
-        morph.importMorphologyFile(morphology_input_file,is_file_compressed);
+        morph.importMorphologyFile(morphology_input_file);
         morphology_input_file.close();
         cout << procid << ": Morphology import complete!" << endl;
     }
@@ -436,33 +419,28 @@ int main(int argc, char * argv[]){
     if(!parameters.Enable_analysis_only || Enable_import_tomogram){
         cout << procid << ": Writing morphology to file..." << endl;
         if(!Enable_import_morphology || Enable_import_tomogram){
+			ss << path << "morphology_" << procid << ".txt";
             if(!parameters.Enable_export_compressed_files){
-                ss << path << "morphology_" << procid << "_uncompressed.txt";
                 morphology_output_file.open(ss.str().c_str());
-                ss.str("");
                 morphology_output_file << "Ising_OPV " << version << " - uncompressed format" << endl;
             }
             else{
-                ss << path << "morphology_" << procid << "_compressed.txt";
                 morphology_output_file.open(ss.str().c_str());
-                ss.str("");
                 morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
             }
         }
         else{
+			ss << path << filename_prefix << "mod_" << procid << ".txt";
             if(!parameters.Enable_export_compressed_files){
-                ss << path << filename_prefix << "mod_" << procid << "_uncompressed.txt";
                 morphology_output_file.open(ss.str().c_str());
-                ss.str("");
                 morphology_output_file << "Ising_OPV " << version << " - uncompressed format" << endl;
             }
             else{
-                ss << path << filename_prefix << "mod_" << procid << "_compressed.txt";
                 morphology_output_file.open(ss.str().c_str());
-                ss.str("");
                 morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
             }
         }
+		ss.str("");
         morph.outputMorphologyFile(morphology_output_file,parameters.Enable_export_compressed_files);
         morphology_output_file.close();
     }
@@ -595,20 +573,18 @@ int main(int argc, char * argv[]){
             if(!Enable_import_morphology || Enable_import_tomogram){
                 ss << path << "correlation_data_avg.txt";
                 correlation_avg_file.open(ss.str().c_str());
-                ss.str("");
             }
             else{
                 if(parameters.Enable_analysis_only){
                     ss << path << "correlation_data_avg_new.txt";
                     correlation_avg_file.open(ss.str().c_str());
-                    ss.str("");
                 }
                 else{
                     ss << path << "correlation_data_avg_mod.txt";
                     correlation_avg_file.open(ss.str().c_str());
-                    ss.str("");
                 }
             }
+			ss.str("");
 			correlation_avg_file << "Distance (a),Correlation1,Correlation2" << endl;
             for(int i=0;i<(int)correlation1_vect.size();i++){
                 correlation_avg_file << (double)i/2 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
@@ -653,10 +629,23 @@ int main(int argc, char * argv[]){
                 }
             }
 			tortuosity_hist_file << "Distance (a),Tortuosity1,Tortuosity2" << endl;
-            tortuosity_hist_file << 0 << "," << tortuosity_hist1_vect[0] << "," << tortuosity_hist2_vect[0] << "\n";
-            for(int i=1;i<(int)tortuosity_hist1_vect.size();i++){
-                tortuosity_hist_file << (i+49.0)/50.0 << "," << tortuosity_hist1_vect[i] << "," << tortuosity_hist2_vect[i] << "\n";
-            }
+			tortuosity_hist_file << 0 << "," << tortuosity_hist1_vect[0] << "," << tortuosity_hist2_vect[0] << endl;
+			int hist_size = (tortuosity_hist1_vect.size() > tortuosity_hist2_vect.size()) ? (int)tortuosity_hist1_vect.size() : (int)tortuosity_hist2_vect.size();
+			for (int i = 1; i < hist_size; i++) {
+				tortuosity_hist_file << (i + 49.0) / 50.0 << ",";
+				if (i < tortuosity_hist1_vect.size()) {
+					tortuosity_hist_file << tortuosity_hist1_vect[i] << ",";
+				}
+				else {
+					tortuosity_hist_file << "0,";
+				}
+				if (i < tortuosity_hist2_vect.size()) {
+					tortuosity_hist_file << tortuosity_hist2_vect[i] << ",";
+				}
+				else {
+					tortuosity_hist_file << "0,";
+				}
+			}
             for(int i=0;i<pathdata1_count;i++){
                 path_data1_file << pathdata1_all[i] << "\n";
             }
@@ -812,6 +801,10 @@ int main(int argc, char * argv[]){
 		}
 		if (parameters.Enable_tortuosity_calc) {
 			analysis_file << "Morphology number " << array_which_median(tortuosities1, nproc) << " has the median tortuosity1 of " << array_median(tortuosities1, nproc) << endl;
+		}
+		if (Enable_import_tomogram) {
+			analysis_file << endl;
+			analysis_file << "Morphologies imported from tomogram file: " << tomo_data_filename << endl;
 		}
         analysis_file.close();
         cout << "Finished!" << endl;
@@ -1006,6 +999,8 @@ bool importParameters(ifstream& parameterfile,Input_Parameters& params, Correlat
     params.Additional_interaction = atof(stringvars[i].c_str());
     i++;
 	// Tomogram Import Options
+	params.Desired_unit_size = atof(stringvars[i].c_str());
+	i++;
 	params.Enable_cutoff_analysis = importBooleanParam(stringvars[i], error_status);
 	if (error_status) {
 		cout << "Error setting tomogram import conditions" << endl;

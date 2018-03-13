@@ -8,11 +8,13 @@
 
 #include "Lattice.h"
 #include "Utils.h"
+#include "tinyxml2/tinyxml2.h"
+#include <algorithm>
 #include <ctime>
 #include <fstream>
-#include <sstream>
-#include <algorithm>
 #include <functional>
+#include <numeric>
+#include <sstream>
 
 // Data structure that stores counts of the number of neighbors that have the same site type as the main site
 // sum1 keeps track of the first-nearest neighbors
@@ -45,6 +47,7 @@ struct CorrelationCalcParams {
 };
 
 struct TomogramImportParams {
+	double Desired_unit_size;
 	bool Enable_cutoff_analysis;
 	int Mixed_greyscale_width;
 	double Mixed_conc;
@@ -62,7 +65,7 @@ public:
     virtual ~Morphology();
     bool calculateAnisotropies(const int N_sampling_max);
 	void calculateCorrelationDistances(const CorrelationCalcParams& parameters);
-	void calculateDepthDependentData(const CorrelationCalcParams& correlation_params);
+	void calculateDepthDependentData(const CorrelationCalcParams& correlation_params_input);
     double calculateInterfacialAreaVolumeRatio() const;
     bool calculateInterfacialDistance();
     double calculateInterfacialVolumeFraction() const;
@@ -88,8 +91,15 @@ public:
     std::vector<float> getTortuosityData(const char site_type) const;
     std::vector<double> getTortuosityHistogram(const char site_type) const;
     int getWidth() const;
-	std::vector<Morphology> importTomogramMorphologyFile(const std::string filename, const TomogramImportParams& params);
-    bool importMorphologyFile(std::ifstream& infile, const bool compressed_files);
+
+	//! \brief imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters
+	//! \param info_filename is the name of the xml metadata file
+	//! \param data_filename is the name of the raw morphology data file
+	//! \param params is the TomogramImportParams data structure that contains the additional information needed to handle the tomogram data
+	//! \returns a vector of Morphology objects that consists of a series of subsections of the original tomogram data
+	std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename, const TomogramImportParams& params);
+
+    bool importMorphologyFile(std::ifstream& infile);
 	void outputCompositionMaps(std::ofstream& outfile) const;
     void outputMorphologyFile(std::ofstream& outfile, const bool enable_export_compressed_files) const;
     void outputMorphologyCrossSection(std::ofstream& outfile) const;

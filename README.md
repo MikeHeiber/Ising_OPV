@@ -1,36 +1,61 @@
 Ising_OPV
 =========
 
-This C++ software tool uses an Ising-based model to quickly and efficiently generate three-dimensional bulk heterojunction morphologies on a cubic lattice in a parallel computing environment. Generated or imported morphologies are then rigorously analyzed to determine important morphological features such as the domain size, tortuosity, interfacial area to volume ratio, and more.  Development of this tool represents an attempt to standardize the Ising-based morphology model for the reliable creation and analysis of morphologies to be further used in kinetic Monte Carlo simulations of organic photovoltaic devices. If you would like some assistance in customizing this software tool for your particular research interest or application, please contact me to discuss collaboration options or feel free to contribute to the development of this open-source software tool.
+This software tool creates and analyzes bulk heterojunction morphologies for further use in kinetic Monte Carlo simulations, such as the [Excimontec](https://github.com/MikeHeiber/Excimontec). 
+This package implements an Ising-based model to quickly and efficiently generate three-dimensional bulk heterojunction morphologies on a cubic lattice in a parallel computing environment. 
+In addition, morphologies derived from other simulations models or experimental measurements can be imported into the tool. 
+Generated or imported morphologies are then rigorously analyzed to determine important morphological features such as the domain size, tortuosity, interfacial area to volume ratio, and more. 
+If you would like some assistance in customizing this software tool for your particular research interest or application, please contact me to discuss collaboration options or feel free to contribute to the development of this open-source software tool.
 
-### Compiling
-Compiling requires an MPI library for parallel processing.
+#### Major Features:
+- Create controlled binary phase separated blends with using tunable interaction energies and duration of phase separation
+- Use smoothing to create idealized pure phase morphologies
+- Impart controlled interfacial mixing between domains
+- Create anisotropic morphologies using directionally dependent interaction energies
+- Create morphology sets from imported experimental three-dimensional tomograms
+- Calculate detailed structural analysis of the morphology set
 
-More information about these packages can be found here:
-- http://www.mpich.org/ or http://www.open-mpi.org/
+## How to try Ising_OPV?
 
-### Usage
-Ising_OPV.exe takes one required input argument, which is the filename of the input parameter file.
+#### Building an Executable
 
-An example parameter file is provided with parameters_default.txt
+This software tool uses Message Passing Interface (MPI) to utilize parallel computing power. 
+As a result, using Ising_OPV requires that an MPI library is pre-installed on your system, and the final Ising_OPV executable must be built on your specific system. 
+We cannot provide pre-built binaries for your system. 
+Contact your HPC admin to determine the protocols for building MPI applications on your HPC system. 
+In many cases, the HPC system will already be configured for you, and the package comes with a default makefile that can be used with the gcc compiler. 
 
-As an example, to create one morphology on a single processor, the command is:
->    Ising_OPV.exe parameters_default.txt
+If you wish, you can also install MPI on your own personal workstation and then build Excimontec there as well. For development and preliminary simulation tests, sometimes it is more efficient to run on your own workstation instead of an HPC system. More information about common MPI packages can be found here:
+- http://www.open-mpi.org/
+- http://www.mpich.org/
+- http://mvapich.cse.ohio-state.edu/
 
-To run in a parallel processing environment and create 10 morphologies on 10 processors, the command is:
+#### Usage
+In most cases, your HPC system will use a job scheduler to manage the computing workload. 
+For performing Ising_OPV simulations, it is recommended to submit batch jobs where you will request the resources needed to perform the simulation. 
+An example batch script for the SLURM job scheduling system is provided with this package (slurm_script.sh). 
+Similar batch scripts can also be written for TORQUE or other job schedulers.
+
+Regardless of the job scheduler, the program execution command is essentially the same. 
+For simple morphology generation jobs, Ising_OPV.exe takes one required input argument, which is the filename of the input parameter file. 
+An example parameter file is provided with this package (parameters_default.txt).
+
+For example, within the batch script, to create 10 morphologies using 10 processors, the command is:
+
 >    mpiexec -n 10 Ising_OPV.exe parameters_default.txt
 
 An optional second input argument is the path to an existing morphology file for importing a previously created morphology into the program for further modifications.
 
-As an example, to import a compressed morphology that is in current working directory on a single processor, the command is:
->    Ising_OPV.exe parameters_default.txt ./morphology_0_compressed.txt
+Users can also import morphology sets previously generated by the Ising_OPV tool for further modification and analysis.
+To import an entire set of 10 morphologies in a parallel processing environment:
 
-To import an entire set of morphologies in a parallel processing environment:
->    mpiexec -n 10 Ising_OPV.exe parameters_default.txt ./morphology_#_compressed.txt
+>    mpiexec -n 10 Ising_OPV.exe parameters_default.txt -import morphology_#.txt
 
-This command will import 10 morphologies (morphology_0_compressed.txt, morphology_1_compressed.txt, etc) and assign one to each processor.
+This command will import 10 morphologies (morphology_0.txt, morphology_1.txt, etc) and assign one to each processor.
+These morphology files must be located in the working directory to be found and imported into the simulation.
 
-These statements can be implemented into batch scripts for running Ising_OPV in a supercomputing environment.
+Finally, users can import experimental tomogram data, generate a morphology set from the data, and then perform further operations.
+
 
 ### Output
 Ising_OPV will create several output files:
