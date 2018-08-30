@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Michael C. Heiber
+// Copyright (c) 2014-2018 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -14,10 +14,6 @@ Morphology::Morphology(const int id) {
 	gen.seed((int)time(0)*(id + 1));
 }
 
-//  This constructor creates a Morphology object including a 3D lattice with a size defined by the input dimensions (length, width, height).
-//  Two-dimensional periodic boundaries in the x- and y- directions are implemented by default, but periodic boundaries in the z-direction can also be enabled upon construction.
-//  Morphology objects are also tagged with an integer identification number.
-//  Each morphology object has a random number generator that is seeded by the seed input parameter upon creation.
 Morphology::Morphology(const int length, const int width, const int height, const bool enable_z_periodic_boundary, const int id){
     ID = id;
 	Parameters_Lattice params;
@@ -52,7 +48,6 @@ Morphology::Morphology(const Lattice& input_lattice, const int id) {
 	}
 }
 
-//  Default deconstructor
 Morphology::~Morphology(){
     //dtor
 }
@@ -77,11 +72,6 @@ void Morphology::addSiteType(const char site_type) {
 	Island_volume.push_back(-1);
 }
 
-//  This function calculates the additional change in energy of the system that would occur if the adjacent sites at (x1,y1,z1) and (x2,y2,z2) were to be swapped with
-//  a given preferential domain growth direction.  This additional energy is to be used to modify the total energy change from swapping the two sites.
-//  Sites must be adjacent to each other for calculation to be correct. (Works for adjacent sites across periodic boundaries)
-//  When non-periodic/hard z-boundaries are used, it is assumed that neither site type has a preferential interaction with the z-boundary
-//  The values for growth_direction are 1 for x-direction, 2 for y-direction, and 3 for z-direction adjustment.
 double Morphology::calculateAdditionalEnergyChange(const long int site_index_main, const long int site_index_neighbor, const int growth_direction,const double additional_interaction) const{
     int x1,y1,z1,x2,y2,z2;
     int dx,dy,dz;
@@ -178,10 +168,6 @@ double Morphology::calculateAdditionalEnergyChange(const long int site_index_mai
     return -additional_interaction*((count1_f-count1_i)+(count2_f-count2_i));
 }
 
-//  This function calculates the anisotropy of each phase by calling the calculateAnisotropy function and keeps tracks of whether or not the anisotropy calculation
-//  has been successful yet or not.  The function returns false if the anisotropy cannot be calculated with the given cutoff radius.  N_sampling_max defines the maximum
-//  number of sites that will be sampled from the lattice when the lattice has more sites than the designated value of N_sampling_max.  See the calculateAnisotropy function
-//  for more information about how the cutoff_radius and N_sampling_max input parameters are used.
 bool Morphology::calculateAnisotropies(const int N_sampling_max){
 	cout << ID << ": Calculating the domain anisotropy..." << endl;
 	// Select sites for correlation function calculation.
@@ -224,13 +210,6 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max){
     return true;
 }
 
-//  This function calculates the anisotropy of the domains based on the directionally-dependent pair-pair correlation functions
-//  The correlation function is calculated from each starting site out to the cutoff distance.
-//  The correlation length in each direction is defined as the distance at which the pair-pair correlation function first crosses the value equal to the mixing fraction
-//  If this cross-over point is not reach within the cutoff distance, the function generates an error message and returns -1.
-//  For large lattices, the correlation function does not need to be calculated starting from every site to collect enough statistics and instead a sampling of starting sites can be used.
-//  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
-//  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
 bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, const char site_type, const int cutoff_distance){
 	int type_index = getSiteTypeIndex(site_type);
 	int N_sites = 0;
@@ -387,15 +366,6 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
     return true;
 }
 
-//  This function calculates the domain size of the morphology based on the pair-pair correlation function
-//  The correlation function is calculated from each starting site out to the cutoff distance.
-//  The domain size is defined as the distance at which the pair-pair correlation function first crosses the value equal to the mixing fraction
-//  If this cross-over point is not reach within the cutoff distance, the function returns false.
-//  When the extended calculation is enabled the correlation function must reach the next peak, otherwise the function returns false.
-//  For large lattices, the correlation function does not need to be calculated starting from every site to collect enough statistics and instead a sampling of starting sites can be used.
-//  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
-//  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
-//  If the function returns false and the function is re-called with a larger cutoff_distance, the correlation function is not recalculated for close distances and only fills in the missing data for larger distances.
 double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalcParams& params){
 	int type_index = getSiteTypeIndex(site_type);
 	vector<int> site_count, total_count;
@@ -731,9 +701,6 @@ void Morphology::calculateDepthDependentData(const CorrelationCalcParams& correl
 	outfile.close();
 }
 
-//  This function calculates the fraction of nearby sites the site at (x,y,z) that are not the same type.
-//  The radius that determines which sites are included as nearby sites is determined by the rescale factor parameter.
-//  This function is designed to be used by the executeSmoothing function and implement rescale factor dependent smoothing.
 double Morphology::calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const{
 	int site_count = 0;
 	int count_dissimilar = 0;
@@ -761,9 +728,6 @@ double Morphology::calculateDissimilarFraction(const Coords& coords, const int r
 	return (double)count_dissimilar / (double)site_count;
 }
 
-//  This function calculates the change in energy of the system that would occur if the adjacent sites at (x1,y1,z1) and (x2,y2,z2) were to be swapped
-//  Sites must be adjacent to each other for calculation to be correct. (Works for adjacent sites across periodic boundaries)
-//  When non-periodic/hard z-boundaries are used, it is assumed that neither site type has a preferential interaction with the z-boundary
 double Morphology::calculateEnergyChangeSimple(const long int site_index1, const long int site_index2, const double interaction_energy1, const double interaction_energy2){
     // Used with bond formation algorithm
     static const double one_over_sqrt2 = 1/sqrt(2);
@@ -814,9 +778,6 @@ double Morphology::calculateEnergyChangeSimple(const long int site_index1, const
     }
 }
 
-//  Calculates the change in energy of the system that would occur if the adjacent sites at (x1,y1,z1) and (x2,y2,z2) were to be swapped
-//  Sites must be adjacent to each other for calculation to be correct. (Works for adjacent sites across periodic boundaries)
-//  When non-periodic/hard z-boundaries are used, it is assumed that neither site type has a preferential interaction with the z-boundary
 double Morphology::calculateEnergyChange(const Coords& coords1, const Coords& coords2, const double interaction_energy1, const double interaction_energy2) const{
     // Used with bond formation algorithm
     char site1_type,site2_type;
@@ -955,7 +916,6 @@ double Morphology::calculateEnergyChange(const Coords& coords1, const Coords& co
     }
 }
 
-//  This function calculates the number of site faces that are between dissimilar sites, resulting in the interfacial area in units of lattice units squared.
 double Morphology::calculateInterfacialAreaVolumeRatio() const{
     unsigned long site_count = 0;
 	Coords coords, coords_dest;
@@ -991,8 +951,6 @@ double Morphology::calculateInterfacialAreaVolumeRatio() const{
     return (double)site_count/(double)lattice.getNumSites();
 }
 
-//  This function calculates the interfacial distance histograms that characterize the morphology, which gives the fraction of sites at a certain distance from the interface.
-//  This histogram is compiled by calculating the shortest distance from each each site to an interface.
 bool Morphology::calculateInterfacialDistance(){
 	Coords coords, coords_dest;
     int d_int;
@@ -1085,7 +1043,6 @@ bool Morphology::calculateInterfacialDistance(){
     return true;
 }
 
-//  This function calculates the number of sites that are adjacent to a site of the opposite type, which represents the interfacial volume in lattice units cubed.
 double Morphology::calculateInterfacialVolumeFraction() const{
     unsigned long site_count = 0;
 	Coords coords, coords_dest;
@@ -1116,7 +1073,6 @@ double Morphology::calculateInterfacialVolumeFraction() const{
     return (double)site_count/(double)lattice.getNumSites();
 }
 
-//  This function calculates the fraction of each type sites in the lattice to the total number of sites.
 void Morphology::calculateMixFractions(){
     //Calculate final Mix_fraction
 	vector<int> counts((int)Site_types.size(), 0);
@@ -1170,9 +1126,6 @@ NeighborCounts Morphology::calculateNeighborCounts(const Coords& coords) const{
     return counts;
 }
 
-//  This function calculates the shortest pathways through the domains in the morphology using Dijkstra's algorithm.
-//  For all type 1 sites, the shortest distance from each site along a path through other type 1 sites to the boundary at z=0 is calculated.
-//  For all type 2 sites, the shortest distance from each site along a path through other type 2 sites to the boundary at z=Height-1 is calculated.
 bool Morphology::calculatePathDistances(vector<float>& path_distances){
 	int z;
 	Coords coords;
@@ -1307,10 +1260,6 @@ bool Morphology::calculatePathDistances(vector<float>& path_distances){
     return true;
 }
 
-//  This function calculates the shortest pathways through the domains in the morphology using Dijkstra's algorithm.
-//  For all type 1 sites, the shortest distance from each site along a path through other type 1 sites to the boundary at z=0 is calculated.
-//  For all type 2 sites, the shortest distance from each site along a path through other type 2 sites to the boundary at z=Height-1 is calculated.
-//  As opposed to the calculatePathDistances function, this function uses less memory at the expense of more calculation time.
 bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distances){
     float d;
     float d_temp;
@@ -1472,11 +1421,6 @@ bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distan
     return true;
 }
 
-//  This function calculates the tortuosity histograms that characterize the morphology.
-//  For all type 1 sites, the shortest distance from the site along a path through other type 1 sites to the boundary at z=0 is calculated.
-//  For all type 2 sites, the shortest distance from the site along a path through other type 2 sites to the boundary at z=Height-1 is calculated.
-//  The resulting shortest path divided by the straight vertical path is the tortuosity of the pathway.
-//  The shortest paths are calculated using Dijkstra's algorithm
 bool Morphology::calculateTortuosity(const char site_type, const bool electrode_num, const bool enable_reduced_memory) {
 	int bin;
 	bool success;
@@ -1557,8 +1501,6 @@ bool Morphology::calculateTortuosity(const char site_type, const bool electrode_
 	return true;
 }
 
-//  This function enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart.
-//  By default third-neighbor interactions are disabled, so this function must be called to enable this option.
 void Morphology::enableThirdNeighborInteraction(){
     Enable_third_neighbor_interaction = true;
 }
@@ -1584,10 +1526,6 @@ void Morphology::createCheckerboardMorphology(){
     calculateMixFractions();
 }
 
-// This function writes the node data for the site at the given x, y, z coordinates to the specified input node variable.
-// Each node contains a vector with indices of all first- ,second-, and third-nearest neighbors (at most 26 neighbors).
-// Another vector stores the squared distance to each of the neighbors.
-// Each node also has an estimated distance from the destination and the corresponding site index.
 void Morphology::createNode(Node& node,const Coords& coords){
 	Coords coords_dest;
     for(int i=0;i<26;i++){
@@ -1616,8 +1554,6 @@ void Morphology::createNode(Node& node,const Coords& coords){
 	}
 }
 
-//  This function creates a randomly mixed morphology on the lattice.
-//  Sites are randomly assigned based on the mix_fractions.
 void Morphology::createRandomMorphology(const vector<double>& mix_fractions){
 	for (int n = 0; n < (int)mix_fractions.size(); n++) {
 		addSiteType((char)(n + 1));
@@ -1669,11 +1605,6 @@ void Morphology::createRandomMorphology(const vector<double>& mix_fractions){
     calculateMixFractions();
 }
 
-//  This function implements num_MCsteps iterations of the Ising site swapping process.
-//  This function uses the bond formation algorithm to determine the energy change in the system that results from swapping two neighboring sites.
-//  The energy change is determined by the input parameters interaction_energy1 and interaction_energy2, which are in units of kT.
-//  These parameters describe the preference for like-like interactions over like-unlike interactions for each site type.
-//  Positive values of the interaction energies result in a driving force for phase separation.
 void Morphology::executeIsingSwapping(const int num_MCsteps, const double interaction_energy1, const double interaction_energy2, const bool enable_growth_pref, const int growth_direction, const double additional_interaction){
     int loop_count = 0;
     // N counts the number of MC steps that have been executed
@@ -1741,9 +1672,6 @@ void Morphology::executeIsingSwapping(const int num_MCsteps, const double intera
     vector<NeighborInfo>().swap(Neighbor_info);
 }
 
-//  This function implements interfacial mixing with a specified interfacial width and a specified mixing concentration in the interfacial region.
-//  Mixing is implemented by first determining the bounds on either side of the interface where mixing should occur
-//  Then random swapping of type 1 and type 2 sites within the bounds creates mixing in the interfacial region.
 void Morphology::executeMixing(const double width, const double interfacial_conc){
     vector<int> sites_maj;
     vector<int> sites_min;
@@ -1822,10 +1750,6 @@ void Morphology::executeMixing(const double width, const double interfacial_conc
     }
 }
 
-//  This function smoothens out rough domain interfaces and removes small islands and island sites.
-//  This is done by determining a roughness factor for each site that is given by the fraction of surrounding sites that are a different type.
-//  Sites with a roughness factor is greater than the specified smoothing_threshold are switched to the opposite type.
-//  A rescale dependent smoothing process is executed when the rescale factor is greater than 1.
 void Morphology::executeSmoothing(const double smoothing_threshold, const int rescale_factor){
     double roughness_factor;
 	Coords coords, coords_dest;
@@ -1884,7 +1808,6 @@ void Morphology::executeSmoothing(const double smoothing_threshold, const int re
     calculateMixFractions();
 }
 
-//  This function returns a vector containing the pair-pair correlation function data for the specified site type.
 vector<double> Morphology::getCorrelationData(const char site_type) const {
 	if (Correlation_data[getSiteTypeIndex(site_type)][0] < 0) {
 		cout << ID << ": Error getting correlation data: Correlation data has not been calculated." << endl;
@@ -1905,39 +1828,30 @@ vector<double> Morphology::getDepthIVData(const char site_type) const {
 	return Depth_iv_data[getSiteTypeIndex(site_type)];
 }
 
-//  This function returns the domain anisotropy determined for the specified site type.
-//  This function will return zero if the calculateAnisotropy function has not been called.
 double Morphology::getDomainAnisotropy(const char site_type) const {
 	return Domain_anisotropies[getSiteTypeIndex(site_type)];
 }
 
-//  This function returns the domain size determined for the specified site type.
-//  This function will return zero if the calculateCorrelationDistance function has not been called.
 double Morphology::getDomainSize(char site_type) const {
 	return Domain_sizes[getSiteTypeIndex(site_type)];
 }
 
-//  This function returns the height or z-direction size of the lattice.
 int Morphology::getHeight() const {
 	return lattice.getHeight();
 }
 
-//  This function returns a vector containing the interfacial distance histogram data for the specified site type.
 vector<double> Morphology::getInterfacialHistogram(char site_type) const {
 	return InterfacialHistogram_data[getSiteTypeIndex(site_type)];
 }
 
-//  This function returns the island volume for the specified site type.
 double Morphology::getIslandVolumeFraction(char site_type) const {
 	return (double)Island_volume[getSiteTypeIndex(site_type)] / (double)lattice.getNumSites();
 }
 
-//  This function returns the length or x-direction size of the lattice.
 int Morphology::getLength() const {
 	return lattice.getLength();
 }
 
-//  This function return the mix fraction of the morphology.
 double Morphology::getMixFraction(const char site_type) const {
 	return Mix_fractions[getSiteTypeIndex(site_type)];
 }
@@ -1988,7 +1902,6 @@ int Morphology::getSiteTypeIndex(const char site_type) const {
 	return -1;
 }
 
-//  This function returns a vector containing the end-to-end tortuosity data for the specified site type.
 vector<float> Morphology::getTortuosityData(char site_type) const {
 	vector<float> output_data;
 	for (int i = 0; i < (int)Tortuosity_data[getSiteTypeIndex(site_type)].size(); i++) {
@@ -1999,12 +1912,10 @@ vector<float> Morphology::getTortuosityData(char site_type) const {
 	return output_data;
 }
 
-//  This function returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.
 vector<double> Morphology::getTortuosityHistogram(char site_type) const {
 	return TortuosityHistogram_data[getSiteTypeIndex(site_type)];
 }
 
-//  This function returns the width or y-direction size of the lattice.
 int Morphology::getWidth() const{
     return lattice.getWidth();
 }
@@ -2319,8 +2230,6 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 	return morphologies;
 }
 
-//  This function imports the morphology text file given by the input file stream.
-//  It must be specified whether or not the input file is in the compressed format.
 bool Morphology::importMorphologyFile(ifstream& infile) {
 	string var;
 	int x = 0;
@@ -2444,9 +2353,6 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 	return true;
 }
 
-//  This function initializes the neighbor_info and neighbor_counts vectors for the morphology.  The neighbor_info vector contains counts of the number of first, second, and
-//  third nearest-neighbors and three site index vectors, one for each type of neighbors, that point to each of the neighbors.  The neighbor_counts vector contains counts of the
-//  number of similar type first, second and third nearest-neighbors.
 void Morphology::initializeNeighborInfo(){
 	Coords coords, coords_dest;
     char sum1,sum2,sum3;
@@ -2557,8 +2463,6 @@ void Morphology::initializeNeighborInfo(){
     }
 }
 
-//  This function determines whether the site at (x,y,z) is within the specified distance from the interface.
-//  If so, the function returns true and if not, the function returns false.
 bool Morphology::isNearInterface(const Coords& coords,const double distance) const{
     int d = (int)floor(distance);
 	Coords coords_dest;
@@ -2612,7 +2516,6 @@ void Morphology::outputCompositionMaps(ofstream& outfile) const{
 	}
 }
 
-//  This function outputs to a text file a cross-section of the morphology at x=0 plane.
 void Morphology::outputMorphologyCrossSection(ofstream& outfile) const{
 	int x = lattice.getLength() / 2;
 	//for (int x = 0; x < lattice.getLength(); x++) {
@@ -2625,8 +2528,6 @@ void Morphology::outputMorphologyCrossSection(ofstream& outfile) const{
 	//}
 }
 
-//  This function outputs the morphology data to a text file specified by the output file stream.
-//  The user can specify whether to use the compress text format or not.
 void Morphology::outputMorphologyFile(ofstream& outfile,bool enable_export_compressed_files) const{
     outfile << lattice.getLength() << endl;
     outfile << lattice.getWidth() << endl;
@@ -2699,9 +2600,6 @@ void Morphology::outputTortuosityMaps(ofstream& outfile) const {
 	}
 }
 
-//  This function shrinks the existing lattice by a fraction of 1 over the integer value called rescale_factor.
-//  Each of the original lattice dimensions must be divisible by the rescale factor
-//  This original lattice is overwritten by the newly created smaller lattice
 void Morphology::shrinkLattice(int rescale_factor){
     // Error handling
     if(rescale_factor==0){
@@ -2755,8 +2653,6 @@ void Morphology::shrinkLattice(int rescale_factor){
     calculateMixFractions();
 }
 
-//  This function stretches the existing lattice by a integer value called rescale_factor.
-//  This original lattice is overwritten by the newly created larger rescale_factor lattice
 void Morphology::stretchLattice(int rescale_factor){
     // Construct the larger lattice
 	Lattice lattice_rescale = lattice;
@@ -2783,7 +2679,6 @@ double Morphology::rand01() {
 	return generate_canonical<double, std::numeric_limits<double>::digits>(gen);
 }
 
-//  This function is called after two sites are swapped, and it updates the neighbor_counts vector, which stores the number of similar type neighbors that each site has.
 void Morphology::updateNeighborCounts(long int site_index1,long int site_index2){
     char site_type1 = lattice.getSiteType(site_index1);
     char site_type2 = lattice.getSiteType(site_index2);

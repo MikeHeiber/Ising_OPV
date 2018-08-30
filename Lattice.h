@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Michael C. Heiber
+// Copyright (c) 2014-2018 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -12,7 +12,7 @@
 //! \brief This struct contains all of the main input parameters needed by the Lattice class.
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 //! \author Michael C. Heiber
-//! \date 2017
+//! \date 2014-2018
 struct Parameters_Lattice{
 	//! Determines whether the x-direction periodic boundaries will be enabled. 
 	bool Enable_periodic_x;
@@ -40,7 +40,7 @@ class Site {
 //! to record the Cartesian coordinates of each lattice site, and the Site class to assign properties to each site.
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 //! \author Michael C. Heiber
-//! \date 2017
+//! \date 2014-2018
 class Lattice{
     public:
 		//! \brief Default constructor that creates an empty Lattice object.

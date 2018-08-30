@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Michael C. Heiber
+// Copyright (c) 2014-2018 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -168,7 +168,7 @@ namespace Utils {
 		return NAN;
 	}
 
-	vector<double> MPI_calculateVectorAvg(const vector<double>& input_vector) {
+	std::vector<double> MPI_calculateVectorAvg(const std::vector<double>& input_vector) {
 		int data_size = 0;
 		int data_count = 0;
 		double *data = NULL;
@@ -183,11 +183,11 @@ namespace Utils {
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 		vector<double> output_vector;
 		if (procid == 0) {
-			data_sizes = (int *)malloc(sizeof(int)*nproc);
+			data_sizes = new int[nproc];
 		}
 		data_size = (int)input_vector.size();
-		data = (double *)malloc(sizeof(double)*data_size);
-		for (int i = 0; i < (int)input_vector.size(); i++) {
+		data = new double[data_size];
+		for (int i = 0; i < data_size; i++) {
 			data[i] = input_vector[i];
 		}
 		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -195,8 +195,8 @@ namespace Utils {
 			for (int i = 0; i < nproc; i++) {
 				data_count += data_sizes[i];
 			}
-			data_all = (double *)malloc(sizeof(double)*data_count);
-			data_displacement = (int *)malloc(sizeof(int)*nproc);
+			data_all = new double[data_count];
+			data_displacement = new int[nproc];
 			data_displacement[0] = 0;
 			for (int i = 1; i < nproc; i++) {
 				data_displacement[i] = data_displacement[i - 1] + data_sizes[i - 1];
@@ -220,14 +220,14 @@ namespace Utils {
 				output_vector.push_back(average);
 			}
 		}
-		delete data;
-		delete data_all;
-		delete data_sizes;
-		delete data_displacement;
+		delete[] data;
+		delete[] data_all;
+		delete[] data_sizes;
+		delete[] data_displacement;
 		return output_vector;
 	}
 
-	vector<double> MPI_calculateVectorSum(const vector<double>& input_vector) {
+	std::vector<double> MPI_calculateVectorSum(const std::vector<double>& input_vector) {
 		int data_size = 0;
 		double *data = NULL;
 		double *sum = NULL;
@@ -235,8 +235,8 @@ namespace Utils {
 		int procid;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		data_size = (int)input_vector.size();
-		data = (double *)malloc(sizeof(double)*data_size);
-		sum = (double *)malloc(sizeof(double)*data_size);
+		data = new double[data_size];
+		sum = new double[data_size];
 		for (int i = 0; i < (int)input_vector.size(); i++) {
 			data[i] = input_vector[i];
 		}
@@ -246,12 +246,12 @@ namespace Utils {
 				output_vector.push_back(sum[i]);
 			}
 		}
-		delete data;
-		delete sum;
+		delete[] data;
+		delete[] sum;
 		return output_vector;
 	}
 
-	vector<int> MPI_calculateVectorSum(const vector<int>& input_vector) {
+	std::vector<int> MPI_calculateVectorSum(const std::vector<int>& input_vector) {
 		int data_size = 0;
 		int *data = NULL;
 		int *sum = NULL;
@@ -259,8 +259,8 @@ namespace Utils {
 		int procid;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		data_size = (int)input_vector.size();
-		data = (int *)malloc(sizeof(int)*data_size);
-		sum = (int *)malloc(sizeof(int)*data_size);
+		data = new int[data_size];
+		sum = new int[data_size];
 		for (int i = 0; i < (int)input_vector.size(); i++) {
 			data[i] = input_vector[i];
 		}
@@ -270,12 +270,12 @@ namespace Utils {
 				output_vector.push_back(sum[i]);
 			}
 		}
-		delete data;
-		delete sum;
+		delete[] data;
+		delete[] sum;
 		return output_vector;
 	}
 
-	vector<double> MPI_gatherVectors(const vector<double>& input_vector) {
+	std::vector<double> MPI_gatherVectors(const std::vector<double>& input_vector) {
 		int data_size = 0;
 		int data_count = 0;
 		double *data = NULL;
@@ -288,10 +288,10 @@ namespace Utils {
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 		if (procid == 0) {
-			data_sizes = (int *)malloc(sizeof(int)*nproc);
+			data_sizes = new int[nproc];
 		}
 		data_size = (int)input_vector.size();
-		data = (double *)malloc(sizeof(double)*data_size);
+		data = new double[data_size];
 		for (int i = 0; i < (int)input_vector.size(); i++) {
 			data[i] = input_vector[i];
 		}
@@ -300,8 +300,8 @@ namespace Utils {
 			for (int i = 0; i < nproc; i++) {
 				data_count += data_sizes[i];
 			}
-			data_all = (double *)malloc(sizeof(double)*data_count);
-			data_displacement = (int *)malloc(sizeof(int)*nproc);
+			data_all = new double[data_count];
+			data_displacement = new int[nproc];
 			data_displacement[0] = 0;
 			for (int i = 1; i < nproc; i++) {
 				data_displacement[i] = data_displacement[i - 1] + data_sizes[i - 1];
@@ -313,18 +313,64 @@ namespace Utils {
 				output_vector.push_back(data_all[i]);
 			}
 		}
-		delete data;
-		delete data_all;
-		delete data_sizes;
-		delete data_displacement;
+		delete[] data;
+		delete[] data_all;
+		delete[] data_sizes;
+		delete[] data_displacement;
 		return output_vector;
 	}
 
-	string removeWhitespace(const string& str) {
-		auto strBegin = str.find_first_not_of(" ");
-		auto strEnd = str.find_last_not_of(" ");
-		auto range = strEnd - strBegin + 1;
-		return str.substr(strBegin, range);
+	std::vector<int> MPI_gatherVectors(const std::vector<int>& input_vector) {
+		int data_size = 0;
+		int data_count = 0;
+		int *data = NULL;
+		int *data_all = NULL;
+		int *data_sizes = NULL;
+		int *data_displacement = NULL;
+		vector<int> output_vector;
+		int procid;
+		int nproc;
+		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
+		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+		if (procid == 0) {
+			data_sizes = new int[nproc];
+		}
+		data_size = (int)input_vector.size();
+		data = new int[data_size];
+		for (int i = 0; i < (int)input_vector.size(); i++) {
+			data[i] = input_vector[i];
+		}
+		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		if (procid == 0) {
+			for (int i = 0; i < nproc; i++) {
+				data_count += data_sizes[i];
+			}
+			data_all = new int[data_count];
+			data_displacement = new int[nproc];
+			data_displacement[0] = 0;
+			for (int i = 1; i < nproc; i++) {
+				data_displacement[i] = data_displacement[i - 1] + data_sizes[i - 1];
+			}
+		}
+		MPI_Gatherv(data, data_size, MPI_INT, data_all, data_sizes, data_displacement, MPI_INT, 0, MPI_COMM_WORLD);
+		if (procid == 0) {
+			for (int i = 0; i < data_count; i++) {
+				output_vector.push_back(data_all[i]);
+			}
+		}
+		delete[] data;
+		delete[] data_all;
+		delete[] data_sizes;
+		delete[] data_displacement;
+		return output_vector;
+	}
+
+	std::string removeWhitespace(const std::string& str_input) {
+		// Remove tab characters
+		string str_out = str_input;
+		str_out.erase(remove(str_out.begin(), str_out.end(), '\t'), str_out.end());
+		str_out.erase(remove(str_out.begin(), str_out.end(), ' '), str_out.end());
+		return str_out;
 	}
 
 	int round_int(const double num) {
