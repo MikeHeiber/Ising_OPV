@@ -127,7 +127,7 @@
 		</xs:complexType>
 	</xs:element>
 	
-	<xs:element name ="tomogram_info">
+	<xs:element name ="tomogram_metadata">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="sample_info">
