@@ -1,3 +1,6 @@
 [submodule "tinyxml2"]
 	path = tinyxml2
 	url = https://github.com/leethomason/tinyxml2
+[submodule "googletest"]
+	path = googletest
+	url = https://github.com/google/googletest
