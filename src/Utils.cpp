@@ -18,51 +18,41 @@ namespace Utils {
 		return result;
 	}
 
-	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, int num_bins) {
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins) {
+		// Check for valid input data
+		if ((int)data.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
+			std::vector<std::pair<double, double>> null_output = { { 0.0,0.0 } };
+			return null_output;
+		}
 		// Determine data range
-		double min_val = 0;
-		double max_val = 0;
-		auto min_it = min_element(data.begin(), data.end());
-		if (min_it != data.end()) {
-			min_val = *min_it;
-		}
-		else {
-			cout << "Minimum value not found. Data vector has " << data.size() << " elements." << endl;
-		}
-		auto max_it = max_element(data.begin(), data.end());
-		if (max_it != data.end()) {
-			max_val = *max_it;
-		}
-		else {
-			cout << "Maximum value not found. Data vector has " << data.size() << " elements." << endl;
-		}
+		double min_val = *min_element(data.begin(), data.end());
+		double max_val = *max_element(data.begin(), data.end());
 		// Limit the number of bins to the number of data entries
 		if (num_bins > (int)data.size()) {
 			num_bins = (int)data.size();
 		}
+		// Extend the range a little bit to ensure all data fits in the range
+		min_val -= 1e-12*abs(min_val);
+		max_val += 1e-12*abs(max_val);
 		// Determine bin size
-		double bin_size = (max_val - min_val) / (double)num_bins;
+		double bin_size = (max_val - min_val) / num_bins;
 		return calculateProbabilityHist(data, bin_size, num_bins);
 	}
 
-	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, double bin_size) {
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, double bin_size) {
+		// Check for valid input data
+		if ((int)data.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
+			std::vector<std::pair<double, double>> null_output = { { 0.0,0.0 } };
+			return null_output;
+		}
 		// Determine data range
-		double min_val = 0;
-		double max_val = 0;
-		auto min_it = min_element(data.begin(), data.end());
-		if (min_it != data.end()) {
-			min_val = *min_it;
-		}
-		else {
-			cout << "Minimum value not found. Data vector has " << data.size() << " elements." << endl;
-		}
-		auto max_it = max_element(data.begin(), data.end());
-		if (max_it != data.end()) {
-			max_val = *max_it;
-		}
-		else {
-			cout << "Maximum value not found. Data vector has " << data.size() << " elements." << endl;
-		}
+		double min_val = *min_element(data.begin(), data.end());
+		double max_val = *max_element(data.begin(), data.end());
+		// Extend the range a little bit to ensure all data fits in the range
+		min_val -= 1e-12*abs(min_val);
+		max_val += 1e-12*abs(max_val);
 		// Determine number of bins
 		int num_bins = (int)ceil((max_val - min_val) / bin_size);
 		// Limit the number of bins to the number of data entries
@@ -73,20 +63,21 @@ namespace Utils {
 		return calculateProbabilityHist(data, bin_size, num_bins);
 	}
 
-	vector<pair<double, double>> calculateProbabilityHist(const vector<double>& data, const double bin_size, const int num_bins) {
-		// Determine number of bins
-		double min_val = 0;
-		auto min_it = min_element(data.begin(), data.end());
-		if (min_it != data.end()) {
-			min_val = *min_it;
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_size, const int num_bins) {
+		// Check for valid input data
+		if ((int)data.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
+			std::vector<std::pair<double, double>> null_output = { { 0.0,0.0 } };
+			return null_output;
 		}
-		else {
-			cout << "Minimum value not found. Data vector has " << data.size() << " elements." << endl;
-		}
+		// Determine the starting bin position
+		double min_val = *min_element(data.begin(), data.end());
+		// Extend the range a little bit to ensure all data fits in the range
+		min_val -= 1e-12*abs(min_val);
 		// Calculate bin-centered x values
 		vector<pair<double, double>> hist(num_bins, make_pair(0.0, 0.0));
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].first = min_val + 0.5*bin_size + bin_size*i;
+			hist[i].first = min_val + 0.5*bin_size + bin_size * i;
 		}
 		// Calculate histogram
 		vector<int> counts(num_bins, 0);
@@ -98,38 +89,13 @@ namespace Utils {
 		// Calculate total area
 		double area = 0.0;
 		for (int i = 0; i < num_bins; i++) {
-			area += (double)counts[i]*bin_size;
+			area += counts[i] * bin_size;
 		}
 		// Normalized histogram to get probability
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].second = (double)counts[i] / area;
+			hist[i].second = counts[i] / area;
 		}
 		return hist;
-	}
-
-	void createExponentialDOSVector(vector<double>& data, const double mode, const double urbach_energy, mt19937& gen) {
-		exponential_distribution<double> dist_exp(1.0 / urbach_energy);
-		auto rand_exp = bind(dist_exp, ref(gen));
-		normal_distribution<double> dist_gaus(0, 2.0*urbach_energy / sqrt(2.0 * Pi));
-		auto rand_gaus = bind(dist_gaus, ref(gen));
-		double energy;
-		for (int i = 0; i < (int)data.size(); i++) {
-			energy = rand_gaus();
-			if (energy > 0) {
-				data[i] = mode + energy;
-			}
-			else {
-				data[i] = mode - rand_exp();
-			}
-		}
-	}
-
-	void createGaussianDOSVector(vector<double>& data, const double mean, const double stdev, mt19937& gen) {
-		normal_distribution<double> dist(mean, stdev);
-		auto rand_gaus = bind(dist, ref(gen));
-		for (int i = 0; i < (int)data.size(); i++) {
-			data[i] = rand_gaus();
-		}
 	}
 
 	bool importBooleanParam(const string& input, bool& error_status) {

@@ -11,7 +11,7 @@ Lattice::Lattice() {
 
 }
 
-void Lattice::init(const Parameters_Lattice& params, mt19937* generator_ptr) {
+void Lattice::init(const Parameters_Lattice& params, mt19937_64* generator_ptr) {
 	Enable_periodic_x = params.Enable_periodic_x;
 	Enable_periodic_y = params.Enable_periodic_y;
 	Enable_periodic_z = params.Enable_periodic_z;
@@ -243,6 +243,10 @@ char Lattice::getSiteType(const int x, const int y, const int z) const {
 
 double Lattice::getUnitSize() const{
 	return Unit_size;
+}
+
+double Lattice::getVolume() const {
+	return ((Length*Width*Height*1e-7*Unit_size)*1e-7*Unit_size)*1e-7*Unit_size;
 }
 
 int Lattice::getWidth() const{

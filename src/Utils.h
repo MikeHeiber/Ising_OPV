@@ -76,7 +76,7 @@ namespace Utils {
 	//! \param data is the input data vector.
 	//! \param num_bins is the desired number of bins.
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
-	std::vector<std::pair<double,double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins);
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins);
 
 	//! \brief Calculates the probability histogram for the input data vector using the input bin size.
 	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 
@@ -94,23 +94,6 @@ namespace Utils {
 	//! \param bin_size is the input bin size.
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_size, const int num_bins);
-
-	//! \brief Creates a vector of doubles that has a custom asymmetric distribution with an exponential tail.
-	//! \details The created distribution is Gaussian in the positive direction relative to the mode and exponential in 
-	//! the negative direction. On the Gaussian side, the standard deviation is calculated relative to the urbach energy
-	//! chosen for the exponential side, so that the distribution function is continuous.
-	//! \param data is the data vector where the random numbers will be placed, which must be preallocated to the desired size.
-	//! \param mode is the value of the peak of the distribution.
-	//! \param urbach_energy is the parameter that detemines the shape of the exponential tail side of the distribution.
-	//! \param gen is a Mersenne twister random number generator used to randomly draw numbers from the distribution.
-	void createExponentialDOSVector(std::vector<double>& data, const double mode, const double urbach_energy, std::mt19937& gen);
-
-	//! \brief Creates a vector of doubles that has a Gaussian distribution.
-	//! \param data is the data vector where the numbers will be placed, which must be preallocated to the desired size.
-	//! \param mean is the position of the peak and center of the distribution.
-	//! \param stdev is the standard deviation of the distribution, which defines the width of the peak.
-	//! \param gen is a Mersenne twister random number generator used to randomly draw numbers from the distribution.
-	void createGaussianDOSVector(std::vector<double>& data, const double mean, const double stdev, std::mt19937& gen);
 
 	//! \brief Extracts a boolean value from a string containing "true" or "false".
 	//! \param input is the input string.

@@ -74,7 +74,7 @@ int main(int argc, char * argv[]){
     Input_Parameters parameters;
 	CorrelationCalcParams correlation_params;
     // Internal parameters
-    string version = "v4.0-alpha.3";
+    string version = "v4.0-beta.1";
     bool Enable_import_morphology = false;
 	bool Enable_import_tomogram = false;
     double mix_ratio = 0;

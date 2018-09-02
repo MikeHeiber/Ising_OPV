@@ -246,7 +246,7 @@ private:
 	std::vector<NeighborInfo> Neighbor_info;
     NeighborCounts Temp_counts1;
 	NeighborCounts Temp_counts2;
-	std::mt19937 gen;
+	std::mt19937_64 gen;
     // functions
 	void addSiteType(const char site_type);
 
