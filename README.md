@@ -15,6 +15,30 @@ If you would like some assistance in customizing this software tool for your par
 - Create morphology sets from imported experimental three-dimensional tomograms
 - Calculate detailed structural analysis of the morphology set
 
+## Current Status
+
+The current release is Ising_OPV
+[![GitHub (pre-)release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
+. All major planned features that are to be included in v4.0 are now implemented and have undergone preliminary testing. 
+However, this software tool is still under development, and as such, there may still be bugs that need to be fixed. 
+Please report any bugs or submit feature requests in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
+
+#### Continuous Integration and Testing Status:
+
+Excimontec is currently being tested on [Ubuntu](https://www.ubuntu.com/) v14.04 with the [GCC compiler](https://gcc.gnu.org/) (versions 4.7, 4.8, 4.9, 5, 6, 7, and 8) and on both [Open MPI](http://www.open-mpi.org/) v1.6.5 and [MPICH](http://www.mpich.org/) v3.04 using [Travis CI](https://travis-ci.com/).
+
+| Branch | Status |
+| :------: | ------ |
+| Master | [![Build Status](https://img.shields.io/travis/MikeHeiber/Ising_OPV/master.svg?style=for-the-badge)](https://travis-ci.org/MikeHeiber/Ising_OPV) |
+| Development | [![Build Status](https://img.shields.io/travis/MikeHeiber/Ising_OPV/development.svg?style=for-the-badge)](https://travis-ci.org/MikeHeiber/Ising_OPV) |
+
+Code is being tested using [googletest](https://github.com/google/googletest) with test coverage assessment by [Coveralls](https://coveralls.io/).
+
+| Branch | Status |
+| :------: | ------ |
+| Master | [![Coveralls github branch](https://img.shields.io/coveralls/github/MikeHeiber/Ising_OPV/master.svg?style=for-the-badge)](https://coveralls.io/github/MikeHeiber/Ising_OPV?branch=master) |
+| Development | [![Coveralls github branch](https://img.shields.io/coveralls/github/MikeHeiber/Ising_OPV/development.svg?style=for-the-badge)](https://coveralls.io/github/MikeHeiber/Ising_OPV?branch=development) |
+
 ## How to try Ising_OPV?
 
 #### Building an Executable
