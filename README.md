@@ -1,7 +1,7 @@
 Ising_OPV
 =========
 
-This software tool creates and analyzes bulk heterojunction morphologies for further use in kinetic Monte Carlo simulations, such as the [Excimontec](https://github.com/MikeHeiber/Excimontec). 
+This software tool creates and analyzes bulk heterojunction morphologies for further use in kinetic Monte Carlo simulation tools, such as [Excimontec](https://github.com/MikeHeiber/Excimontec). 
 This package implements an Ising-based model to quickly and efficiently generate three-dimensional bulk heterojunction morphologies on a cubic lattice in a parallel computing environment. 
 In addition, morphologies derived from other simulations models or experimental measurements can be imported into the tool. 
 Generated or imported morphologies are then rigorously analyzed to determine important morphological features such as the domain size, tortuosity, interfacial area to volume ratio, and more. 
@@ -18,8 +18,8 @@ If you would like some assistance in customizing this software tool for your par
 ## Current Status
 
 The current release is Ising_OPV
-[![GitHub (pre-)release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
-. All major planned features that are to be included in v4.0 are now implemented and have undergone preliminary testing. 
+[![GitHub (pre-)release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases). 
+All major planned features that are to be included in v4.0 are now implemented and have undergone preliminary testing. 
 However, this software tool is still under development, and as such, there may still be bugs that need to be fixed. 
 Please report any bugs or submit feature requests in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
@@ -56,7 +56,8 @@ We cannot provide pre-built binaries for your system.
 Contact your HPC admin to determine the protocols for building MPI applications on your HPC system. 
 In many cases, the HPC system will already be configured for you, and the package comes with a default makefile that can be used with the gcc compiler. 
 
-If you wish, you can also install MPI on your own personal workstation and then build Excimontec there as well. For development and preliminary simulation tests, sometimes it is more efficient to run on your own workstation instead of an HPC system. More information about common MPI packages can be found here:
+If you wish, you can also install MPI on your own personal workstation and then build Excimontec there as well. For development and preliminary simulation tests, sometimes it is more efficient to run on your own workstation instead of an HPC system. 
+More information about common MPI packages can be found here:
 - http://www.open-mpi.org/
 - http://www.mpich.org/
 - http://mvapich.cse.ohio-state.edu/
@@ -124,7 +125,8 @@ Several peer-reviewed publications discuss the development and application of th
 - [M.C. Heiber, K. Kister, A. Baumann, V. Dyakonov, C. Deibel, and T.-Q. Nguyen, Phys. Rev. Appl. **8**, 054043 (2017).](https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.8.054043) [[ResearchGate]](https://www.researchgate.net/publication/321226076_Impact_of_Tortuosity_on_Charge-Carrier_Transport_in_Organic_Bulk_Heterojunction_Blends)
 
 ## Acknowledgements
-Thank you to Dr. Dean DeLongchamp at NIST for providing access to computing resources that support the ongoing development of v4.0. Development of v4.0 is supported by financial assistance award 70NANB14H012 from U.S. Department of Commerce, National Institute of Standards and Technology as part of the Center for Hierarchical Materials Design (CHiMaD).
+Thank you to Dr. Dean DeLongchamp at NIST for providing access to computing resources that support the ongoing development of v4.0. 
+Development of v4.0 is supported by financial assistance award 70NANB14H012 from U.S. Department of Commerce, National Institute of Standards and Technology as part of the Center for Hierarchical Materials Design (CHiMaD).
 
 Thank you to Klaus Kister for contributing to the development of the updated domain smoothing algorithm and the simplified morphology import procedure in v2.0 and help with testing for v3.0.
 
