@@ -1975,22 +1975,22 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		return morphologies;
 	}
 	// Analyze xml info file based on metadata format version
-	string info_format = xml_doc.FirstChildElement("tomogram_info")->Attribute("format");
-	if (info_format.compare("MTMF v0.1-alpha")==0) {
+	string schema_version = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
+	if (schema_version.compare("1.0")==0) {
 		// Initialize lattice params based on xml data
-		lattice_params.Length = atoi(xml_doc.FirstChildElement("tomogram_info")->FirstChildElement("data_info")->FirstChildElement("length")->GetText());
-		lattice_params.Width = atoi(xml_doc.FirstChildElement("tomogram_info")->FirstChildElement("data_info")->FirstChildElement("width")->GetText());
-		lattice_params.Height = atoi(xml_doc.FirstChildElement("tomogram_info")->FirstChildElement("data_info")->FirstChildElement("height")->GetText());
-		lattice_params.Unit_size = atof(xml_doc.FirstChildElement("tomogram_info")->FirstChildElement("data_info")->FirstChildElement("pixel_size")->GetText());
+		lattice_params.Length = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("length")->GetText());
+		lattice_params.Width = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("width")->GetText());
+		lattice_params.Height = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("height")->GetText());
+		lattice_params.Unit_size = atof(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("pixel_size")->FirstChildElement("value")->GetText());
 		// Save additional xml data needed
-		data_format = xml_doc.FirstChildElement("tomogram_info")->FirstChildElement("data_info")->FirstChildElement("data_format")->GetText();
+		data_format = xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("data_format")->GetText();
 		// Initialize Morphology site types
 		int site_type_index = 0;
-		XMLElement* element_ptr = xml_doc.FirstChildElement("tomogram_info")->FirstChildElement("sample_info")->FirstChildElement("composition")->FirstChildElement("component");
+		XMLElement* element_ptr = xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("sample_info")->FirstChildElement("composition_info")->FirstChildElement("chemical_component");
 		while (element_ptr != 0) {
 			addSiteType((char)(site_type_index + 1));
 			Mix_fractions[site_type_index] = atof(element_ptr->FirstChildElement("vol_frac")->GetText());
-			element_ptr = element_ptr->NextSiblingElement("component");
+			element_ptr = element_ptr->NextSiblingElement("chemical_component");
 			site_type_index++;
 		}
 	}
