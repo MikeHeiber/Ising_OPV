@@ -14,8 +14,8 @@ Morphology::Morphology(const int id) {
 	gen.seed((int)time(0)*(id + 1));
 }
 
-Morphology::Morphology(const int length, const int width, const int height, const bool enable_z_periodic_boundary, const int id){
-    ID = id;
+Morphology::Morphology(const int length, const int width, const int height, const bool enable_z_periodic_boundary, const int id) {
+	ID = id;
 	Parameters_Lattice params;
 	params.Enable_periodic_x = true;
 	params.Enable_periodic_y = true;
@@ -24,7 +24,7 @@ Morphology::Morphology(const int length, const int width, const int height, cons
 	params.Width = width;
 	params.Height = height;
 	params.Unit_size = 1.0;
-    Enable_third_neighbor_interaction = false;
+	Enable_third_neighbor_interaction = false;
 	lattice.init(params, &gen);
 	gen.seed((int)time(0)*(id + 1));
 }
@@ -48,13 +48,13 @@ Morphology::Morphology(const Lattice& input_lattice, const int id) {
 	}
 }
 
-Morphology::~Morphology(){
-    //dtor
+Morphology::~Morphology() {
+	//dtor
 }
 
 void Morphology::addSiteType(const char site_type) {
 	// check to make sure site type has not already been added
-	for(int n = 0; n < (int)Site_types.size(); n++) {
+	for (int n = 0; n < (int)Site_types.size(); n++) {
 		if (Site_types[n] == site_type) {
 			return;
 		}
@@ -62,7 +62,7 @@ void Morphology::addSiteType(const char site_type) {
 	Site_types.push_back(site_type);
 	Site_type_counts.push_back(0);
 	Mix_fractions.push_back(0);
-	Correlation_data.resize(Correlation_data.size()+1);
+	Correlation_data.resize(Correlation_data.size() + 1);
 	Tortuosity_data.resize(Tortuosity_data.size() + 1);
 	InterfacialHistogram_data.resize(InterfacialHistogram_data.size() + 1);
 	TortuosityHistogram_data.resize(TortuosityHistogram_data.size() + 1);
@@ -72,103 +72,103 @@ void Morphology::addSiteType(const char site_type) {
 	Island_volume.push_back(-1);
 }
 
-double Morphology::calculateAdditionalEnergyChange(const long int site_index_main, const long int site_index_neighbor, const int growth_direction,const double additional_interaction) const{
-    int x1,y1,z1,x2,y2,z2;
-    int dx,dy,dz;
+double Morphology::calculateAdditionalEnergyChange(const long int site_index_main, const long int site_index_neighbor, const int growth_direction, const double additional_interaction) const {
+	int x1, y1, z1, x2, y2, z2;
+	int dx, dy, dz;
 	int total_sites = 0;
 	int count1_i = 0;
 	int count2_i = 0;
 	int count1_f = 0;
 	int count2_f = 0;
-    char site1_type,site2_type;
+	char site1_type, site2_type;
 	Coords coords_main = lattice.getSiteCoords(site_index_main);
-    x1 = coords_main.x;
-    y1 = coords_main.y;
-    z1 = coords_main.z;
-    site1_type = lattice.getSiteType(coords_main);
+	x1 = coords_main.x;
+	y1 = coords_main.y;
+	z1 = coords_main.z;
+	site1_type = lattice.getSiteType(coords_main);
 	Coords coords_neighbor = lattice.getSiteCoords(site_index_neighbor);
-    x2 = coords_neighbor.x;
-    y2 = coords_neighbor.y;
-    z2 = coords_neighbor.z;
-    site2_type = lattice.getSiteType(coords_neighbor);
-    switch(growth_direction){
-        case 1: // x-direction
-            total_sites = 2;
-            for(int i=-1;i<=1;i+=2){
-                dx = lattice.calculateDX(x1,i);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(x1 + i + dx, y1, z1)==site1_type){
-                    count1_i++;
-                }
-            }
-            count1_f = total_sites-count1_i;
-            for(int i=-1;i<=1;i+=2){
-                dx = lattice.calculateDX(x2,i);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(x2 + i + dx, y2, z2)==site2_type){
-                    count2_i++;
-                }
-            }
-            count2_f = total_sites-count2_i;
-            break;
-        case 2: // y-direction
-            total_sites = 2;
-            for(int j=-1;j<=1;j+=2){
-                dy = lattice.calculateDY(y1,j);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(x1, y1 + j + dy, z1) == site1_type){
-                    count1_i++;
-                }
-            }
-            count1_f = total_sites-count1_i;
-            for(int j=-1;j<=1;j+=2){
-                dy = lattice.calculateDY(y2,j);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(x2, y2 + j + dy, z2) == site2_type){
-                    count2_i++;
-                }
-            }
-            count2_f = total_sites-count2_i;
-            break;
-        case 3: // z-direction
-            total_sites = 2;
-            for(int k=-1;k<=1;k+=2){
-                if(!lattice.isZPeriodic()){
-                    if(z1+k>=lattice.getHeight() || z1+k<0 ){ // Check for z boundary
-                        total_sites--;
-                        continue;
-                    }
-                }
-                dz = lattice.calculateDZ(z1,k);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(x1, y1, z1 + k + dz)==site1_type){
-                    count1_i++;
-                }
-            }
-            count1_f = total_sites-count1_i;
-            for(int k=-1;k<=1;k+=2){
-                if(!lattice.isZPeriodic()){
-                    if(z2+k>=lattice.getHeight() || z2+k<0 ){ // Check for z boundary
-                        total_sites--;
-                        continue;
-                    }
-                }
-                dz = lattice.calculateDZ(z2,k);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(x2, y2, z2 + k + dz)==site2_type){
-                    count2_i++;
-                }
-            }
-            count2_f = total_sites-count2_i;
-            break;
-        default:
-            cout << "Error calculating the additional energy for the preferential growth direction!" << endl;
-            break;
-    }
-    return -additional_interaction*((count1_f-count1_i)+(count2_f-count2_i));
+	x2 = coords_neighbor.x;
+	y2 = coords_neighbor.y;
+	z2 = coords_neighbor.z;
+	site2_type = lattice.getSiteType(coords_neighbor);
+	switch (growth_direction) {
+	case 1: // x-direction
+		total_sites = 2;
+		for (int i = -1; i <= 1; i += 2) {
+			dx = lattice.calculateDX(x1, i);
+			// Count the number of similar neighbors
+			if (lattice.getSiteType(x1 + i + dx, y1, z1) == site1_type) {
+				count1_i++;
+			}
+		}
+		count1_f = total_sites - count1_i;
+		for (int i = -1; i <= 1; i += 2) {
+			dx = lattice.calculateDX(x2, i);
+			// Count the number of similar neighbors
+			if (lattice.getSiteType(x2 + i + dx, y2, z2) == site2_type) {
+				count2_i++;
+			}
+		}
+		count2_f = total_sites - count2_i;
+		break;
+	case 2: // y-direction
+		total_sites = 2;
+		for (int j = -1; j <= 1; j += 2) {
+			dy = lattice.calculateDY(y1, j);
+			// Count the number of similar neighbors
+			if (lattice.getSiteType(x1, y1 + j + dy, z1) == site1_type) {
+				count1_i++;
+			}
+		}
+		count1_f = total_sites - count1_i;
+		for (int j = -1; j <= 1; j += 2) {
+			dy = lattice.calculateDY(y2, j);
+			// Count the number of similar neighbors
+			if (lattice.getSiteType(x2, y2 + j + dy, z2) == site2_type) {
+				count2_i++;
+			}
+		}
+		count2_f = total_sites - count2_i;
+		break;
+	case 3: // z-direction
+		total_sites = 2;
+		for (int k = -1; k <= 1; k += 2) {
+			if (!lattice.isZPeriodic()) {
+				if (z1 + k >= lattice.getHeight() || z1 + k < 0) { // Check for z boundary
+					total_sites--;
+					continue;
+				}
+			}
+			dz = lattice.calculateDZ(z1, k);
+			// Count the number of similar neighbors
+			if (lattice.getSiteType(x1, y1, z1 + k + dz) == site1_type) {
+				count1_i++;
+			}
+		}
+		count1_f = total_sites - count1_i;
+		for (int k = -1; k <= 1; k += 2) {
+			if (!lattice.isZPeriodic()) {
+				if (z2 + k >= lattice.getHeight() || z2 + k < 0) { // Check for z boundary
+					total_sites--;
+					continue;
+				}
+			}
+			dz = lattice.calculateDZ(z2, k);
+			// Count the number of similar neighbors
+			if (lattice.getSiteType(x2, y2, z2 + k + dz) == site2_type) {
+				count2_i++;
+			}
+		}
+		count2_f = total_sites - count2_i;
+		break;
+	default:
+		cout << "Error calculating the additional energy for the preferential growth direction!" << endl;
+		break;
+	}
+	return -additional_interaction * ((count1_f - count1_i) + (count2_f - count2_i));
 }
 
-bool Morphology::calculateAnisotropies(const int N_sampling_max){
+bool Morphology::calculateAnisotropies(const int N_sampling_max) {
 	cout << ID << ": Calculating the domain anisotropy..." << endl;
 	// Select sites for correlation function calculation.
 	// Site indices for each selected site are stored in the Correlation_sites vector.
@@ -194,7 +194,7 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max){
 			}
 		}
 		for (int i = 0; i < (int)Site_types.size(); i++) {
-			if (!Domain_anisotropy_updated[i] && Site_type_counts[i]>100) {
+			if (!Domain_anisotropy_updated[i] && Site_type_counts[i] > 100) {
 				success = false;
 				break;
 			}
@@ -207,22 +207,22 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max){
 	if (!success) {
 		cout << ID << ": Warning! Could not calculate the domain anisotropy." << endl;
 	}
-    return true;
+	return true;
 }
 
-bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, const char site_type, const int cutoff_distance){
+bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, const char site_type, const int cutoff_distance) {
 	int type_index = getSiteTypeIndex(site_type);
 	int N_sites = 0;
-    double correlation_length_x = 0;
-    double correlation_length_y = 0;
-    double correlation_length_z = 0;
-    double d1,y1,y2,slope,intercept;
-    Coords site_coords, coords_dest;
-    vector<double> correlation_x(cutoff_distance + 1, 0.0);
-    vector<double> correlation_y(cutoff_distance + 1, 0.0);
-    vector<double> correlation_z(cutoff_distance + 1, 0.0);
-    vector<int> site_count(cutoff_distance + 1, 0);
-    vector<int> site_total(cutoff_distance + 1, 0);
+	double correlation_length_x = 0;
+	double correlation_length_y = 0;
+	double correlation_length_z = 0;
+	double d1, y1, y2, slope, intercept;
+	Coords site_coords, coords_dest;
+	vector<double> correlation_x(cutoff_distance + 1, 0.0);
+	vector<double> correlation_y(cutoff_distance + 1, 0.0);
+	vector<double> correlation_z(cutoff_distance + 1, 0.0);
+	vector<int> site_count(cutoff_distance + 1, 0);
+	vector<int> site_total(cutoff_distance + 1, 0);
 	// Check that correlation sites vector is not empty
 	if (!(correlation_sites.size() > 0)) {
 		cout << ID << ": Error! Vector of site tags to be used in the anisotropy calculation is empty." << endl;
@@ -234,7 +234,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 		}
 		site_coords = lattice.getSiteCoords(correlation_sites[m]);
 		// Calculate correlation length in the x-direction
-		site_count.assign(cutoff_distance+1, 0);
+		site_count.assign(cutoff_distance + 1, 0);
 		for (int i = -cutoff_distance; i <= cutoff_distance; i++) {
 			if (!lattice.checkMoveValidity(site_coords, i, 0, 0)) {
 				continue;
@@ -248,7 +248,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 			correlation_x[n] += (double)site_count[n] / 2;
 		}
 		// Calculate correlation length in the y-direction
-		site_count.assign(cutoff_distance+1, 0);
+		site_count.assign(cutoff_distance + 1, 0);
 		for (int j = -cutoff_distance; j <= cutoff_distance; j++) {
 			if (!lattice.checkMoveValidity(site_coords, 0, j, 0)) {
 				continue;
@@ -262,8 +262,8 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 			correlation_y[n] += (double)site_count[n] / 2;
 		}
 		// Calculate correlation length in the z-direction
-		site_total.assign(cutoff_distance+1, 0);
-		site_count.assign(cutoff_distance+1, 0);
+		site_total.assign(cutoff_distance + 1, 0);
+		site_count.assign(cutoff_distance + 1, 0);
 		for (int k = -cutoff_distance; k <= cutoff_distance; k++) {
 			if (!lattice.checkMoveValidity(site_coords, 0, 0, k)) {
 				continue;
@@ -283,10 +283,10 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 	}
 	// Average correlation data over all starting sites and normalize
 	double averaging = 1.0 / N_sites;
-    double norm = 1.0/(1.0-Mix_fractions[type_index]);
-    correlation_x[0] = 1.0;
-    correlation_y[0] = 1.0;
-    correlation_z[0] = 1.0;
+	double norm = 1.0 / (1.0 - Mix_fractions[type_index]);
+	correlation_x[0] = 1.0;
+	correlation_y[0] = 1.0;
+	correlation_z[0] = 1.0;
 	for (int n = 1; n <= cutoff_distance; n++) {
 		correlation_x[n] *= averaging;
 		correlation_x[n] -= Mix_fractions[type_index];
@@ -297,12 +297,12 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 		correlation_z[n] *= averaging;
 		correlation_z[n] -= Mix_fractions[type_index];
 		correlation_z[n] *= norm;
-		
+
 	}
-    // Find the bounds of where the pair-pair correlation functions reach 1/e
-    bool success_x = false;
-    bool success_y = false;
-    bool success_z = false;
+	// Find the bounds of where the pair-pair correlation functions reach 1/e
+	bool success_x = false;
+	bool success_y = false;
+	bool success_z = false;
 	for (int n = 2; n <= cutoff_distance; n++) {
 		if (!success_x && correlation_x[n] < (1.0 / exp(1.0))) {
 			d1 = n - 1;
@@ -310,7 +310,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 			y2 = correlation_x[n];
 			// Use linear interpolation to determine the cross-over point
 			slope = (y2 - y1);
-			intercept = y1 - slope*d1;
+			intercept = y1 - slope * d1;
 			correlation_length_x = 2.0 * (1.0 / exp(1.0) - intercept) / slope;
 			success_x = true;
 		}
@@ -320,7 +320,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 			y2 = correlation_y[n];
 			// Use linear interpolation to determine the cross-over point
 			slope = (y2 - y1);
-			intercept = y1 - slope*d1;
+			intercept = y1 - slope * d1;
 			correlation_length_y = 2.0 * (1.0 / exp(1.0) - intercept) / slope;
 			success_y = true;
 		}
@@ -330,7 +330,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 			y2 = correlation_z[n];
 			// Use linear interpolation to determine the cross-over point
 			slope = (y2 - y1);
-			intercept = y1 - slope*d1;
+			intercept = y1 - slope * d1;
 			correlation_length_z = 2.0 * (1.0 / exp(1.0) - intercept) / slope;
 			success_z = true;
 		}
@@ -357,16 +357,16 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 		Domain_anisotropies[type_index] = -1;
 		return false;
 	}
-    if(4*correlation_length_x>lattice.getLength() || 4*correlation_length_y>lattice.getWidth()){
-        cout << "Warning.  Correlation length in x- or y-direction is greater than L/4." << endl;
-        cout << "x-direction correlation length is " << correlation_length_x << "." << endl;
-        cout << "y-direction correlation length is " << correlation_length_y << "." << endl;
-    }
-    Domain_anisotropies[type_index] = (2*correlation_length_z)/(correlation_length_x+correlation_length_y);
-    return true;
+	if (4 * correlation_length_x > lattice.getLength() || 4 * correlation_length_y > lattice.getWidth()) {
+		cout << "Warning.  Correlation length in x- or y-direction is greater than L/4." << endl;
+		cout << "x-direction correlation length is " << correlation_length_x << "." << endl;
+		cout << "y-direction correlation length is " << correlation_length_y << "." << endl;
+	}
+	Domain_anisotropies[type_index] = (2 * correlation_length_z) / (correlation_length_x + correlation_length_y);
+	return true;
 }
 
-double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalcParams& params){
+double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalcParams& params) {
 	int type_index = getSiteTypeIndex(site_type);
 	vector<int> site_count, total_count;
 	double distance;
@@ -404,7 +404,7 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 			for (int j = -cutoff_distance; j <= cutoff_distance; j++) {
 				for (int k = -cutoff_distance; k <= cutoff_distance; k++) {
 					// The distance between two sites is rounded to the nearest half a lattice unit
-					bin = round_int(2.0 * sqrt(i*i + j*j + k*k));
+					bin = round_int(2.0 * sqrt(i*i + j * j + k * k));
 					// Calculation is skipped for bin values that have already been calculated during previous calls to the calculateCorrelationDistance function
 					if (bin < (correlation_size_old - 1)) {
 						continue;
@@ -457,7 +457,7 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 				y2 = correlation_data[n];
 				// Use linear interpolation to determine the cross-over point
 				slope = (y2 - y1) * 2.0;
-				intercept = y1 - slope*d1;
+				intercept = y1 - slope * d1;
 				return -intercept / slope;
 			}
 			if (correlation_data[n] > correlation_data[n - 1]) {
@@ -474,7 +474,7 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 				y2 = correlation_data[n];
 				// Use linear interpolation to determine the cross-over point
 				slope = (y2 - y1) * 2.0;
-				intercept = y1 - slope*d1;
+				intercept = y1 - slope * d1;
 				return 2.0 * (1.0 / exp(1.0) - intercept) / slope;
 			}
 		}
@@ -701,7 +701,7 @@ void Morphology::calculateDepthDependentData(const CorrelationCalcParams& correl
 	outfile.close();
 }
 
-double Morphology::calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const{
+double Morphology::calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const {
 	int site_count = 0;
 	int count_dissimilar = 0;
 	Coords coords_dest;
@@ -711,7 +711,7 @@ double Morphology::calculateDissimilarFraction(const Coords& coords, const int r
 	for (int i = -radius; i <= radius; i++) {
 		for (int j = -radius; j <= radius; j++) {
 			for (int k = -radius; k <= radius; k++) {
-				if ((i*i + j*j + k*k)>cutoff_squared) {
+				if ((i*i + j * j + k * k) > cutoff_squared) {
 					continue;
 				}
 				if (!lattice.checkMoveValidity(coords, i, j, k)) {
@@ -728,88 +728,88 @@ double Morphology::calculateDissimilarFraction(const Coords& coords, const int r
 	return (double)count_dissimilar / (double)site_count;
 }
 
-double Morphology::calculateEnergyChangeSimple(const long int site_index1, const long int site_index2, const double interaction_energy1, const double interaction_energy2){
-    // Used with bond formation algorithm
-    static const double one_over_sqrt2 = 1/sqrt(2);
-    static const double one_over_sqrt3 = 1/sqrt(3);
-    char sum1_1_delta, sum2_1_delta, sum3_1_delta, sum1_2_delta, sum2_2_delta, sum3_2_delta;
-    double sum_1_delta,sum_2_delta;
-    char site1_type = lattice.getSiteType(site_index1);
-    // Calculate change around site 1
-    char sum1_1i = Neighbor_counts[site_index1].sum1;
-    char sum2_1i = Neighbor_counts[site_index1].sum2;
-    char sum3_1i = Neighbor_counts[site_index1].sum3;
-    char sum1_2f = Neighbor_info[site_index1].total1-sum1_1i-1;
-    char sum2_2f = Neighbor_info[site_index1].total2-sum2_1i;
-    char sum3_2f = Neighbor_info[site_index1].total3-sum3_1i;
-    // Calculate change around site 2
-    char sum1_2i = Neighbor_counts[site_index2].sum1;
-    char sum2_2i = Neighbor_counts[site_index2].sum2;
-    char sum3_2i = Neighbor_counts[site_index2].sum3;
-    char sum1_1f = Neighbor_info[site_index2].total1-sum1_2i-1;
-    char sum2_1f = Neighbor_info[site_index2].total2-sum2_2i;
-    char sum3_1f = Neighbor_info[site_index2].total3-sum3_2i;
-    // Save swapped state into temp_counts1 and temp_counts2
-    Temp_counts1.sum1 = sum1_2f;
-    Temp_counts1.sum2 = sum2_2f;
-    Temp_counts1.sum3 = sum3_2f;
-    Temp_counts2.sum1 = sum1_1f;
-    Temp_counts2.sum2 = sum2_1f;
-    Temp_counts2.sum3 = sum3_1f;
-    // Calculate change
-    sum1_1_delta = sum1_1f-sum1_1i;
-    sum2_1_delta = sum2_1f-sum2_1i;
-    sum3_1_delta = sum3_1f-sum3_1i;
-    sum1_2_delta = sum1_2f-sum1_2i;
-    sum2_2_delta = sum2_2f-sum2_2i;
-    sum3_2_delta = sum3_2f-sum3_2i;
-    sum_1_delta = -(double)sum1_1_delta - (double)sum2_1_delta*one_over_sqrt2;
-    sum_2_delta = -(double)sum1_2_delta - (double)sum2_2_delta*one_over_sqrt2;
-    // By default interactions with the third-nearest neighbors are not included, but when enabled they are added here
-    if(Enable_third_neighbor_interaction){
-        sum_1_delta -= (double)sum3_1_delta*one_over_sqrt3;
-        sum_2_delta -= (double)sum3_2_delta*one_over_sqrt3;
-    }
-    if(site1_type==1){
-        return interaction_energy1*sum_1_delta+interaction_energy2*sum_2_delta;
-    }
-    else{
-        return interaction_energy2*sum_1_delta+interaction_energy1*sum_2_delta;
-    }
+double Morphology::calculateEnergyChangeSimple(const long int site_index1, const long int site_index2, const double interaction_energy1, const double interaction_energy2) {
+	// Used with bond formation algorithm
+	static const double one_over_sqrt2 = 1 / sqrt(2);
+	static const double one_over_sqrt3 = 1 / sqrt(3);
+	char sum1_1_delta, sum2_1_delta, sum3_1_delta, sum1_2_delta, sum2_2_delta, sum3_2_delta;
+	double sum_1_delta, sum_2_delta;
+	char site1_type = lattice.getSiteType(site_index1);
+	// Calculate change around site 1
+	char sum1_1i = Neighbor_counts[site_index1].sum1;
+	char sum2_1i = Neighbor_counts[site_index1].sum2;
+	char sum3_1i = Neighbor_counts[site_index1].sum3;
+	char sum1_2f = Neighbor_info[site_index1].total1 - sum1_1i - 1;
+	char sum2_2f = Neighbor_info[site_index1].total2 - sum2_1i;
+	char sum3_2f = Neighbor_info[site_index1].total3 - sum3_1i;
+	// Calculate change around site 2
+	char sum1_2i = Neighbor_counts[site_index2].sum1;
+	char sum2_2i = Neighbor_counts[site_index2].sum2;
+	char sum3_2i = Neighbor_counts[site_index2].sum3;
+	char sum1_1f = Neighbor_info[site_index2].total1 - sum1_2i - 1;
+	char sum2_1f = Neighbor_info[site_index2].total2 - sum2_2i;
+	char sum3_1f = Neighbor_info[site_index2].total3 - sum3_2i;
+	// Save swapped state into temp_counts1 and temp_counts2
+	Temp_counts1.sum1 = sum1_2f;
+	Temp_counts1.sum2 = sum2_2f;
+	Temp_counts1.sum3 = sum3_2f;
+	Temp_counts2.sum1 = sum1_1f;
+	Temp_counts2.sum2 = sum2_1f;
+	Temp_counts2.sum3 = sum3_1f;
+	// Calculate change
+	sum1_1_delta = sum1_1f - sum1_1i;
+	sum2_1_delta = sum2_1f - sum2_1i;
+	sum3_1_delta = sum3_1f - sum3_1i;
+	sum1_2_delta = sum1_2f - sum1_2i;
+	sum2_2_delta = sum2_2f - sum2_2i;
+	sum3_2_delta = sum3_2f - sum3_2i;
+	sum_1_delta = -(double)sum1_1_delta - (double)sum2_1_delta*one_over_sqrt2;
+	sum_2_delta = -(double)sum1_2_delta - (double)sum2_2_delta*one_over_sqrt2;
+	// By default interactions with the third-nearest neighbors are not included, but when enabled they are added here
+	if (Enable_third_neighbor_interaction) {
+		sum_1_delta -= (double)sum3_1_delta*one_over_sqrt3;
+		sum_2_delta -= (double)sum3_2_delta*one_over_sqrt3;
+	}
+	if (site1_type == 1) {
+		return interaction_energy1 * sum_1_delta + interaction_energy2 * sum_2_delta;
+	}
+	else {
+		return interaction_energy2 * sum_1_delta + interaction_energy1 * sum_2_delta;
+	}
 }
 
-double Morphology::calculateEnergyChange(const Coords& coords1, const Coords& coords2, const double interaction_energy1, const double interaction_energy2) const{
-    // Used with bond formation algorithm
-    char site1_type,site2_type;
-    int sum1_1_delta, sum2_1_delta, sum3_1_delta, sum1_2_delta, sum2_2_delta, sum3_2_delta;
-    double sum_1_delta,sum_2_delta;
-    static const double one_over_sqrt2 = 1/sqrt(2);
-    static const double one_over_sqrt3 = 1/sqrt(3);
+double Morphology::calculateEnergyChange(const Coords& coords1, const Coords& coords2, const double interaction_energy1, const double interaction_energy2) const {
+	// Used with bond formation algorithm
+	char site1_type, site2_type;
+	int sum1_1_delta, sum2_1_delta, sum3_1_delta, sum1_2_delta, sum2_2_delta, sum3_2_delta;
+	double sum_1_delta, sum_2_delta;
+	static const double one_over_sqrt2 = 1 / sqrt(2);
+	static const double one_over_sqrt3 = 1 / sqrt(3);
 	Coords coords_dest;
-    int sum1_1i = 0;
-    int sum2_1i = 0;
-    int sum3_1i = 0;
-    int sum1_2i = 0;
-    int sum2_2i = 0;
-    int sum3_2i = 0;
-    int sum1_1f = 0;
-    int sum2_1f = 0;
-    int sum3_1f = 0;
-    int sum1_2f = 0;
-    int sum2_2f = 0;
-    int sum3_2f = 0;
-    // There are in total 6 first-nearest, 12 second-nearest, and 8 third-nearest neighbors
-    int total1 = 6;
-    int total2 = 12;
-    int total3 = 8;
-    // Calculate change around x1,y1,z1
-    site1_type = lattice.getSiteType(coords1);
-    for(int i=-1;i<=1;i++){
-        for(int j=-1;j<=1;j++){
-            for(int k=-1;k<=1;k++){
+	int sum1_1i = 0;
+	int sum2_1i = 0;
+	int sum3_1i = 0;
+	int sum1_2i = 0;
+	int sum2_2i = 0;
+	int sum3_2i = 0;
+	int sum1_1f = 0;
+	int sum2_1f = 0;
+	int sum3_1f = 0;
+	int sum1_2f = 0;
+	int sum2_2f = 0;
+	int sum3_2f = 0;
+	// There are in total 6 first-nearest, 12 second-nearest, and 8 third-nearest neighbors
+	int total1 = 6;
+	int total2 = 12;
+	int total3 = 8;
+	// Calculate change around x1,y1,z1
+	site1_type = lattice.getSiteType(coords1);
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
 				if (!lattice.checkMoveValidity(coords1, i, j, k)) {
 					// Total site counts must be reduced if next to a hard boundary
-					switch (i*i + j*j + k*k) {
+					switch (i*i + j * j + k * k) {
 					case 1:
 						total1--;
 						break;
@@ -825,39 +825,39 @@ double Morphology::calculateEnergyChange(const Coords& coords1, const Coords& co
 					continue;
 				}
 				lattice.calculateDestinationCoords(coords1, i, j, k, coords_dest);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(coords_dest)==site1_type){
-                    switch(i*i+j*j+k*k){
-                        case 1:
-                            sum1_1i++;
-                            break;
-                        case 2:
-                            sum2_1i++;
-                            break;
-                        case 3:
-                            sum3_1i++;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-    }
-    sum1_2f = total1-sum1_1i-1;
-    sum2_2f = total2-sum2_1i;
-    sum3_2f = total3-sum3_1i;
-    // Calculate change around x2,y2,z2
-    site2_type = lattice.getSiteType(coords2);
-    // There are in total 6 first-nearest, 12 second-nearest, and 8 third-nearest neighbors
-    total1 = 6;
-    total2 = 12;
-    total3 = 8;
-    for(int i=-1;i<=1;i++){
-        for(int j=-1;j<=1;j++){
-            for(int k=-1;k<=1;k++){
+				// Count the number of similar neighbors
+				if (lattice.getSiteType(coords_dest) == site1_type) {
+					switch (i*i + j * j + k * k) {
+					case 1:
+						sum1_1i++;
+						break;
+					case 2:
+						sum2_1i++;
+						break;
+					case 3:
+						sum3_1i++;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
+	sum1_2f = total1 - sum1_1i - 1;
+	sum2_2f = total2 - sum2_1i;
+	sum3_2f = total3 - sum3_1i;
+	// Calculate change around x2,y2,z2
+	site2_type = lattice.getSiteType(coords2);
+	// There are in total 6 first-nearest, 12 second-nearest, and 8 third-nearest neighbors
+	total1 = 6;
+	total2 = 12;
+	total3 = 8;
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
 				if (!lattice.checkMoveValidity(coords2, i, j, k)) {
-					switch (i*i + j*j + k*k) {
+					switch (i*i + j * j + k * k) {
 					case 1:
 						total1--;
 						break;
@@ -873,53 +873,53 @@ double Morphology::calculateEnergyChange(const Coords& coords1, const Coords& co
 					continue;
 				}
 				lattice.calculateDestinationCoords(coords2, i, j, k, coords_dest);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(coords_dest)==site2_type){
-                    switch(i*i+j*j+k*k){
-                        case 1:
-                            sum1_2i++;
-                            break;
-                        case 2:
-                            sum2_2i++;
-                            break;
-                        case 3:
-                            sum3_2i++;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-    }
-    sum1_1f = total1-sum1_2i-1;
-    sum2_1f = total2-sum2_2i;
-    sum3_1f = total3-sum3_2i;
-    sum1_1_delta = sum1_1f-sum1_1i;
-    sum2_1_delta = sum2_1f-sum2_1i;
-    sum3_1_delta = sum3_1f-sum3_1i;
-    sum1_2_delta = sum1_2f-sum1_2i;
-    sum2_2_delta = sum2_2f-sum2_2i;
-    sum3_2_delta = sum3_2f-sum3_2i;
-    sum_1_delta = -(double)sum1_1_delta - (double)sum2_1_delta*one_over_sqrt2;
-    sum_2_delta = -(double)sum1_2_delta - (double)sum2_2_delta*one_over_sqrt2;
-    // By default interactions with the third-nearest neighbors are not included, but when enabled they are added here
-    if(Enable_third_neighbor_interaction){
-        sum_1_delta -= (double)sum3_1_delta*one_over_sqrt3;
-        sum_2_delta -= (double)sum3_2_delta*one_over_sqrt3;
-    }
-    if(site1_type==(char)1){
-        return interaction_energy1*sum_1_delta+interaction_energy2*sum_2_delta;
-    }
-    else{
-        return interaction_energy2*sum_1_delta+interaction_energy1*sum_2_delta;
-    }
+				// Count the number of similar neighbors
+				if (lattice.getSiteType(coords_dest) == site2_type) {
+					switch (i*i + j * j + k * k) {
+					case 1:
+						sum1_2i++;
+						break;
+					case 2:
+						sum2_2i++;
+						break;
+					case 3:
+						sum3_2i++;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
+	sum1_1f = total1 - sum1_2i - 1;
+	sum2_1f = total2 - sum2_2i;
+	sum3_1f = total3 - sum3_2i;
+	sum1_1_delta = sum1_1f - sum1_1i;
+	sum2_1_delta = sum2_1f - sum2_1i;
+	sum3_1_delta = sum3_1f - sum3_1i;
+	sum1_2_delta = sum1_2f - sum1_2i;
+	sum2_2_delta = sum2_2f - sum2_2i;
+	sum3_2_delta = sum3_2f - sum3_2i;
+	sum_1_delta = -(double)sum1_1_delta - (double)sum2_1_delta*one_over_sqrt2;
+	sum_2_delta = -(double)sum1_2_delta - (double)sum2_2_delta*one_over_sqrt2;
+	// By default interactions with the third-nearest neighbors are not included, but when enabled they are added here
+	if (Enable_third_neighbor_interaction) {
+		sum_1_delta -= (double)sum3_1_delta*one_over_sqrt3;
+		sum_2_delta -= (double)sum3_2_delta*one_over_sqrt3;
+	}
+	if (site1_type == (char)1) {
+		return interaction_energy1 * sum_1_delta + interaction_energy2 * sum_2_delta;
+	}
+	else {
+		return interaction_energy2 * sum_1_delta + interaction_energy1 * sum_2_delta;
+	}
 }
 
-double Morphology::calculateInterfacialAreaVolumeRatio() const{
-    unsigned long site_count = 0;
+double Morphology::calculateInterfacialAreaVolumeRatio() const {
+	unsigned long site_count = 0;
 	Coords coords, coords_dest;
-	for (int m = 0; m < (int)Site_types.size()-1; m++) {
+	for (int m = 0; m < (int)Site_types.size() - 1; m++) {
 		for (int n = m + 1; n < (int)Site_types.size(); n++) {
 			for (int x = 0; x < lattice.getLength(); x++) {
 				for (int y = 0; y < lattice.getWidth(); y++) {
@@ -948,79 +948,79 @@ double Morphology::calculateInterfacialAreaVolumeRatio() const{
 			}
 		}
 	}
-    return (double)site_count/(double)lattice.getNumSites();
+	return (double)site_count / (double)lattice.getNumSites();
 }
 
-bool Morphology::calculateInterfacialDistance(){
+bool Morphology::calculateInterfacialDistance() {
 	Coords coords, coords_dest;
-    int d_int;
-    float d;
-    float d_temp;
-    // The shortest distance from each site to the interface is stored in the path_distances vector
-    vector<float> path_distances;
-    path_distances.assign(lattice.getNumSites(),0);
-    // Calculate distances to the interface by expanding outward from the interface
-    // A first scan over the lattice is done to identify the sites at the interface, at a distance of less than 2 lattice units from the interface
-    // Subsequent scans expand outward 1 lattice unit at a time from these interfacial sites until no sites are left.
-    int calc_count = 1;
-    float d_current = (float)1.99;
-    while(calc_count>0){
-        calc_count = 0;
-        for(int x=0;x<lattice.getLength();x++){
-            for(int y=0;y<lattice.getWidth();y++){
-                for(int z=0;z<lattice.getHeight();z++){
+	int d_int;
+	float d;
+	float d_temp;
+	// The shortest distance from each site to the interface is stored in the path_distances vector
+	vector<float> path_distances;
+	path_distances.assign(lattice.getNumSites(), 0);
+	// Calculate distances to the interface by expanding outward from the interface
+	// A first scan over the lattice is done to identify the sites at the interface, at a distance of less than 2 lattice units from the interface
+	// Subsequent scans expand outward 1 lattice unit at a time from these interfacial sites until no sites are left.
+	int calc_count = 1;
+	float d_current = (float)1.99;
+	while (calc_count > 0) {
+		calc_count = 0;
+		for (int x = 0; x < lattice.getLength(); x++) {
+			for (int y = 0; y < lattice.getWidth(); y++) {
+				for (int z = 0; z < lattice.getHeight(); z++) {
 					coords.setXYZ(x, y, z);
-                    // Only perform the calculation on sites with a yet unknown interfacial distance
-                    if(path_distances[lattice.getSiteIndex(x,y,z)]<0.1){
-                        d = -1;
-                        // Look around at neighboring sites
-                        for(int i=-1;i<=1;i++){
-                            for(int j=-1;j<=1;j++){
-                                for(int k=-1;k<=1;k++){
-                                    if(!lattice.checkMoveValidity(coords,i,j,k)){
-                                        continue;
-                                    }
+					// Only perform the calculation on sites with a yet unknown interfacial distance
+					if (path_distances[lattice.getSiteIndex(x, y, z)] < 0.1) {
+						d = -1;
+						// Look around at neighboring sites
+						for (int i = -1; i <= 1; i++) {
+							for (int j = -1; j <= 1; j++) {
+								for (int k = -1; k <= 1; k++) {
+									if (!lattice.checkMoveValidity(coords, i, j, k)) {
+										continue;
+									}
 									lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
-                                    // Initial scan identifies interfacial sites
-                                    if(d_current<2){
-                                        if(lattice.getSiteType(coords_dest)!=lattice.getSiteType(x,y,z)){
-                                            d_temp = sqrt((float)(i*i+j*j+k*k));
-                                            if(d<0 || d_temp<d){
-                                                d = d_temp;
-                                            }
-                                        }
-                                    }
-                                    // Subsequent scans identify sites of the same type
-                                    // A temporary distance to the interface from the target site by way of the identified neighbor site is calculated
-                                    // The temporary distance is only stored if it is shorter than the previous temporary distance, ensuring that the shortest interfacial distance is calculated
-                                    else if(lattice.getSiteType(coords_dest)==lattice.getSiteType(x,y,z) && path_distances[lattice.getSiteIndex(coords_dest)]>0.1){
-                                        d_temp = path_distances[lattice.getSiteIndex(coords_dest)] + sqrt((float)(i*i+j*j+k*k));
-                                        if(d<0 || d_temp<d){
-                                            d = d_temp;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        // The temporary distance is only accepted if it less than the expansion limit (d_current).
-                        if(d>0 && d<d_current){
-                            path_distances[lattice.getSiteIndex(x,y,z)] = d;
-                            calc_count++;
-                        }
-                    }
-                }
-            }
-        }
-        // Incrementing the expansion limit (d_current) one lattice unit at a time ensures that the shortest path to the interface is determined.
-        d_current += 1;
-    }
-    // Construct interfacial distance histograms
+									// Initial scan identifies interfacial sites
+									if (d_current < 2) {
+										if (lattice.getSiteType(coords_dest) != lattice.getSiteType(x, y, z)) {
+											d_temp = sqrt((float)(i*i + j * j + k * k));
+											if (d < 0 || d_temp < d) {
+												d = d_temp;
+											}
+										}
+									}
+									// Subsequent scans identify sites of the same type
+									// A temporary distance to the interface from the target site by way of the identified neighbor site is calculated
+									// The temporary distance is only stored if it is shorter than the previous temporary distance, ensuring that the shortest interfacial distance is calculated
+									else if (lattice.getSiteType(coords_dest) == lattice.getSiteType(x, y, z) && path_distances[lattice.getSiteIndex(coords_dest)] > 0.1) {
+										d_temp = path_distances[lattice.getSiteIndex(coords_dest)] + sqrt((float)(i*i + j * j + k * k));
+										if (d < 0 || d_temp < d) {
+											d = d_temp;
+										}
+									}
+								}
+							}
+						}
+						// The temporary distance is only accepted if it less than the expansion limit (d_current).
+						if (d > 0 && d < d_current) {
+							path_distances[lattice.getSiteIndex(x, y, z)] = d;
+							calc_count++;
+						}
+					}
+				}
+			}
+		}
+		// Incrementing the expansion limit (d_current) one lattice unit at a time ensures that the shortest path to the interface is determined.
+		d_current += 1;
+	}
+	// Construct interfacial distance histograms
 	for (int i = 0; i < (int)Site_types.size(); i++) {
 		InterfacialHistogram_data[i].clear();
 	}
 	vector<int> counts((int)Site_types.size(), 0);
-    // The interfacial distance data in path_data is rounded to the nearest integer lattice unit
-    // One bin for each integer lattice unit is used to create the histograms.
+	// The interfacial distance data in path_data is rounded to the nearest integer lattice unit
+	// One bin for each integer lattice unit is used to create the histograms.
 	for (int m = 0; m < (int)path_distances.size(); m++) {
 		d_int = round_int(path_distances[m]);
 		for (int n = 0; n < (int)Site_types.size(); n++) {
@@ -1039,42 +1039,42 @@ bool Morphology::calculateInterfacialDistance(){
 		for (int i = 0; i < (int)InterfacialHistogram_data[n].size(); i++) {
 			InterfacialHistogram_data[n][i] /= (double)counts[n];
 		}
-    }
-    return true;
+	}
+	return true;
 }
 
-double Morphology::calculateInterfacialVolumeFraction() const{
-    unsigned long site_count = 0;
+double Morphology::calculateInterfacialVolumeFraction() const {
+	unsigned long site_count = 0;
 	Coords coords, coords_dest;
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            for(int z=0;z<lattice.getHeight();z++){
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
 				coords.setXYZ(x, y, z);
-                // For each site in the lattice, the neighboring sites are checked to see if there is one that is not the same type.
-                for(int i=-1;i<=1;i++){
-                    for(int j=-1;j<=1;j++){
-                        for(int k=-1;k<=1;k++){
-							if(!lattice.checkMoveValidity(coords,i,j,k)){
-                                continue;
-                            }
+				// For each site in the lattice, the neighboring sites are checked to see if there is one that is not the same type.
+				for (int i = -1; i <= 1; i++) {
+					for (int j = -1; j <= 1; j++) {
+						for (int k = -1; k <= 1; k++) {
+							if (!lattice.checkMoveValidity(coords, i, j, k)) {
+								continue;
+							}
 							lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
-                            if(lattice.getSiteType(x,y,z)!=lattice.getSiteType(coords_dest)){
-                                site_count++;
-                                i = 2;
-                                j = 2;
-                                k = 2;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return (double)site_count/(double)lattice.getNumSites();
+							if (lattice.getSiteType(x, y, z) != lattice.getSiteType(coords_dest)) {
+								site_count++;
+								i = 2;
+								j = 2;
+								k = 2;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return (double)site_count / (double)lattice.getNumSites();
 }
 
-void Morphology::calculateMixFractions(){
-    //Calculate final Mix_fraction
+void Morphology::calculateMixFractions() {
+	//Calculate final Mix_fraction
 	vector<int> counts((int)Site_types.size(), 0);
 	int type_index;
 	for (int x = 0; x < lattice.getLength(); x++) {
@@ -1090,88 +1090,88 @@ void Morphology::calculateMixFractions(){
 	}
 }
 
-NeighborCounts Morphology::calculateNeighborCounts(const Coords& coords) const{
+NeighborCounts Morphology::calculateNeighborCounts(const Coords& coords) const {
 	Coords coords_dest;
-    NeighborCounts counts;
-    counts.sum1 = 0;
-    counts.sum2 = 0;
-    counts.sum3 = 0;
-    // Calculate similar neighbors around x,y,z
-    for(int i=-1;i<=1;i++){
-        for(int j=-1;j<=1;j++){
-            for(int k=-1;k<=1;k++){
-				if(!lattice.checkMoveValidity(coords,i,j,k)){
+	NeighborCounts counts;
+	counts.sum1 = 0;
+	counts.sum2 = 0;
+	counts.sum3 = 0;
+	// Calculate similar neighbors around x,y,z
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
+				if (!lattice.checkMoveValidity(coords, i, j, k)) {
 					continue;
-                }
+				}
 				lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
-                // Count the number of similar neighbors
-                if(lattice.getSiteType(coords_dest)==lattice.getSiteType(coords)){
-                    switch(i*i+j*j+k*k){
-                        case 1:
-                            counts.sum1++;
-                            break;
-                        case 2:
-                            counts.sum2++;
-                            break;
-                        case 3:
-                            counts.sum3++;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-    }
-    return counts;
+				// Count the number of similar neighbors
+				if (lattice.getSiteType(coords_dest) == lattice.getSiteType(coords)) {
+					switch (i*i + j * j + k * k) {
+					case 1:
+						counts.sum1++;
+						break;
+					case 2:
+						counts.sum2++;
+						break;
+					case 3:
+						counts.sum3++;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
+	return counts;
 }
 
-bool Morphology::calculatePathDistances(vector<float>& path_distances){
+bool Morphology::calculatePathDistances(vector<float>& path_distances) {
 	int z;
 	Coords coords;
-    long int current_index;
-    long int neighbor_index;
-    float d;
-    float d_temp;
-    const static float sqrt_two = sqrt((float)2.0);
-    const static float sqrt_three = sqrt((float)3.0);
-    // Create and initialize a blank node.
-    // Each node contains a vector with indices of all first- ,second-, and third-nearest neighbors (at most 26 neighbors).
-    // Another vector stores the squared distance to each of the neighbors.
-    // Each node also has an estimated distance from the destination.
-    Node temp_node;
-    // Create a node vector that is the same size as the lattice and initialize with blank nodes.
-    vector<Node> Node_vector;
-    Node_vector.assign(lattice.getNumSites(),temp_node);
-    // The neighbor_nodes set is sorted by the estimated distance of nodes in the set.
-    // This set is used in Dijsktra's algorithm to keep a sorted list of all nodes that are neighboring nodes that have their path distances already determined.
-    // Once the path distance for a particular node is fixed, all of its neighboring nodes that have not yet been fixed are added to the neighbor_nodes set.
-    set<vector<Node>::iterator,NodeIteratorCompare> neighbor_nodes;
-    vector<Node>::iterator current_it;
-    set<vector<Node>::iterator>::iterator current_set_it;
-    set<vector<Node>::iterator>::iterator set_it;
-    // Determine node connectivity.
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            for(int z=0;z<lattice.getHeight();z++){
+	long int current_index;
+	long int neighbor_index;
+	float d;
+	float d_temp;
+	const static float sqrt_two = sqrt((float)2.0);
+	const static float sqrt_three = sqrt((float)3.0);
+	// Create and initialize a blank node.
+	// Each node contains a vector with indices of all first- ,second-, and third-nearest neighbors (at most 26 neighbors).
+	// Another vector stores the squared distance to each of the neighbors.
+	// Each node also has an estimated distance from the destination.
+	Node temp_node;
+	// Create a node vector that is the same size as the lattice and initialize with blank nodes.
+	vector<Node> Node_vector;
+	Node_vector.assign(lattice.getNumSites(), temp_node);
+	// The neighbor_nodes set is sorted by the estimated distance of nodes in the set.
+	// This set is used in Dijsktra's algorithm to keep a sorted list of all nodes that are neighboring nodes that have their path distances already determined.
+	// Once the path distance for a particular node is fixed, all of its neighboring nodes that have not yet been fixed are added to the neighbor_nodes set.
+	set<vector<Node>::iterator, NodeIteratorCompare> neighbor_nodes;
+	vector<Node>::iterator current_it;
+	set<vector<Node>::iterator>::iterator current_set_it;
+	set<vector<Node>::iterator>::iterator set_it;
+	// Determine node connectivity.
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
 				coords.setXYZ(x, y, z);
-                createNode(temp_node,coords);
-                Node_vector[lattice.getSiteIndex(x,y,z)] = temp_node;
-            }
-        }
-    }
-    // Initialize the path distances of top and bottom surfaces of the lattice.
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            if(lattice.getSiteType(x,y,0)==Site_types[0]){
-                path_distances[lattice.getSiteIndex(x,y,0)] = 1;
-            }
-            if(lattice.getSiteType(x,y,lattice.getHeight()-1)==Site_types[1]){
-                path_distances[lattice.getSiteIndex(x,y,lattice.getHeight()-1)] = 1;
-            }
-        }
-    }
-    // The pathfinding algorithm is performed for one domain type at a time.
+				createNode(temp_node, coords);
+				Node_vector[lattice.getSiteIndex(x, y, z)] = temp_node;
+			}
+		}
+	}
+	// Initialize the path distances of top and bottom surfaces of the lattice.
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			if (lattice.getSiteType(x, y, 0) == Site_types[0]) {
+				path_distances[lattice.getSiteIndex(x, y, 0)] = 1;
+			}
+			if (lattice.getSiteType(x, y, lattice.getHeight() - 1) == Site_types[1]) {
+				path_distances[lattice.getSiteIndex(x, y, lattice.getHeight() - 1)] = 1;
+			}
+		}
+	}
+	// The pathfinding algorithm is performed for one domain type at a time.
 	for (int n = 0; n < 2; n++) {
 		// Use Dijkstra's algorithm to fill in the remaining path distance data.
 		cout << ID << ": Executing Dijkstra's algorithm to calculate shortest paths through domain type " << (int)Site_types[n] << ".\n";
@@ -1255,36 +1255,36 @@ bool Morphology::calculatePathDistances(vector<float>& path_distances){
 			neighbor_nodes.erase(current_set_it);
 		}
 	}
-    // Clear allocated memory for the neighbor nodes set
-    set<vector<Node>::iterator,NodeIteratorCompare>().swap(neighbor_nodes);
-    return true;
+	// Clear allocated memory for the neighbor nodes set
+	set<vector<Node>::iterator, NodeIteratorCompare>().swap(neighbor_nodes);
+	return true;
 }
 
-bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distances){
-    float d;
-    float d_temp;
-    Coords coords;
-    const static float sqrt_two = sqrt((float)2.0);
-    const static float sqrt_three = sqrt((float)3.0);
-    // Create a temporary node to be used throughout the function.
-    // Each node contains a vector with indices of all first- ,second-, and third-nearest neighbors (at most 26 neighbors).
-    // Another vector stores the squared distance to each of the neighbors.
-    // Each node also has an estimated distance from the destination and the site index.
-    Node temp_node;
-    // Create Node vector to store neighbor nodes
-    // This vector is used in Dijsktra's algorithm to keep a list of all nodes that are neighboring sites that already have their path distances determined.
-    // Once the path distance for a particular node is finalized, it is removed from the neighbor node vector and
-    // all of its neighboring nodes that have not yet been finalized are added to the neighbor node vector.
-    vector<Node> Node_vector;
-    int Node_vector_count = 0;
-    long int node_index = -1;
-    long int current_index = -1;
-    long int neighbor_index = -1;
-    // Create a boolean vector that keeps track of whether or not nodes have already been added to the node vector
-    vector<bool> added;
-    added.assign(lattice.getNumSites(),false);
-    int z;
-    // The pathfinding algorithm is performed for one domain type at a time.
+bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distances) {
+	float d;
+	float d_temp;
+	Coords coords;
+	const static float sqrt_two = sqrt((float)2.0);
+	const static float sqrt_three = sqrt((float)3.0);
+	// Create a temporary node to be used throughout the function.
+	// Each node contains a vector with indices of all first- ,second-, and third-nearest neighbors (at most 26 neighbors).
+	// Another vector stores the squared distance to each of the neighbors.
+	// Each node also has an estimated distance from the destination and the site index.
+	Node temp_node;
+	// Create Node vector to store neighbor nodes
+	// This vector is used in Dijsktra's algorithm to keep a list of all nodes that are neighboring sites that already have their path distances determined.
+	// Once the path distance for a particular node is finalized, it is removed from the neighbor node vector and
+	// all of its neighboring nodes that have not yet been finalized are added to the neighbor node vector.
+	vector<Node> Node_vector;
+	int Node_vector_count = 0;
+	long int node_index = -1;
+	long int current_index = -1;
+	long int neighbor_index = -1;
+	// Create a boolean vector that keeps track of whether or not nodes have already been added to the node vector
+	vector<bool> added;
+	added.assign(lattice.getNumSites(), false);
+	int z;
+	// The pathfinding algorithm is performed for one domain type at a time.
 	for (int n = 0; n < 2; n++) {
 		// Use Dijkstra's algorithm to fill in the remaining path distance data.
 		cout << ID << ": Executing Dijkstra's algorithm to calculate shortest paths through domain type " << (int)Site_types[n] << "." << endl;
@@ -1310,7 +1310,7 @@ bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distan
 				if (n == 0) {
 					z = 1;
 				}
-				else if(n == 1){
+				else if (n == 1) {
 					z = lattice.getHeight() - 2;
 				}
 				else {
@@ -1418,7 +1418,7 @@ bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distan
 			Node_vector_count--;
 		}
 	}
-    return true;
+	return true;
 }
 
 bool Morphology::calculateTortuosity(const char site_type, const bool electrode_num, const bool enable_reduced_memory) {
@@ -1467,7 +1467,7 @@ bool Morphology::calculateTortuosity(const char site_type, const bool electrode_
 	// In addition to the overall tortuosity histograms from all sites, the end-to-end tortuosity distribution is collected.
 	// the end-to-end describes the distribution of tortuosities for the all pathways from the top surface to the bottom surface of the lattice.
 	int index;
-	Tortuosity_data[site_type_index].assign(lattice.getLength()*lattice.getWidth(),-1);
+	Tortuosity_data[site_type_index].assign(lattice.getLength()*lattice.getWidth(), -1);
 	for (int x = 0; x < lattice.getLength(); x++) {
 		for (int y = 0; y < lattice.getWidth(); y++) {
 			index = lattice.getWidth()*x + y;
@@ -1501,39 +1501,39 @@ bool Morphology::calculateTortuosity(const char site_type, const bool electrode_
 	return true;
 }
 
-void Morphology::enableThirdNeighborInteraction(){
-    Enable_third_neighbor_interaction = true;
+void Morphology::enableThirdNeighborInteraction() {
+	Enable_third_neighbor_interaction = true;
 }
 
-void Morphology::createCheckerboardMorphology(){
+void Morphology::createCheckerboardMorphology() {
 	addSiteType((char)1);
 	addSiteType((char)2);
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            for(int z=0;z<lattice.getHeight();z++){
-                if((x+y+z)%2==0){
-                    lattice.setSiteType(x,y,z,(char)1);
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
+				if ((x + y + z) % 2 == 0) {
+					lattice.setSiteType(x, y, z, (char)1);
 					Site_type_counts[0]++;
-                }
-                else{
-                    lattice.setSiteType(x,y,z,(char)2);
+				}
+				else {
+					lattice.setSiteType(x, y, z, (char)2);
 					Site_type_counts[1]++;
-                }
-            }
-        }
-    }
-    // This function calculates the actual mix fraction and updates Mix_fraction vector
-    calculateMixFractions();
+				}
+			}
+		}
+	}
+	// This function calculates the actual mix fraction and updates Mix_fraction vector
+	calculateMixFractions();
 }
 
-void Morphology::createNode(Node& node,const Coords& coords){
+void Morphology::createNode(Node& node, const Coords& coords) {
 	Coords coords_dest;
-    for(int i=0;i<26;i++){
-        node.neighbor_indices[i] = -1;
-        node.neighbor_distances_sq[i] = 0;
-    }
-    node.site_index = lattice.getSiteIndex(coords);
-    int neighbor_count = 0;
+	for (int i = 0; i < 26; i++) {
+		node.neighbor_indices[i] = -1;
+		node.neighbor_distances_sq[i] = 0;
+	}
+	node.site_index = lattice.getSiteIndex(coords);
+	int neighbor_count = 0;
 	for (int i = -1; i <= 1; i++) {
 		for (int j = -1; j <= 1; j++) {
 			for (int k = -1; k <= 1; k++) {
@@ -1546,7 +1546,7 @@ void Morphology::createNode(Node& node,const Coords& coords){
 				lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
 				if (lattice.getSiteType(coords) == lattice.getSiteType(coords_dest)) {
 					node.neighbor_indices[neighbor_count] = lattice.getSiteIndex(coords_dest);
-					node.neighbor_distances_sq[neighbor_count] = (char)(i*i + j*j + k*k);
+					node.neighbor_distances_sq[neighbor_count] = (char)(i*i + j * j + k * k);
 					neighbor_count++;
 				}
 			}
@@ -1554,7 +1554,7 @@ void Morphology::createNode(Node& node,const Coords& coords){
 	}
 }
 
-void Morphology::createRandomMorphology(const vector<double>& mix_fractions){
+void Morphology::createRandomMorphology(const vector<double>& mix_fractions) {
 	for (int n = 0; n < (int)mix_fractions.size(); n++) {
 		addSiteType((char)(n + 1));
 	}
@@ -1570,15 +1570,15 @@ void Morphology::createRandomMorphology(const vector<double>& mix_fractions){
 		}
 		sum += mix_fractions[n];
 	}
-    if((sum-1.0)>1e-6){
-        cout << ID << ": Error creating random morphology: Sum of all mix fractions must be equal to one." << endl;
-        return;
-    }
+	if ((sum - 1.0) > 1e-6) {
+		cout << ID << ": Error creating random morphology: Sum of all mix fractions must be equal to one." << endl;
+		return;
+	}
 	vector<double> thresholds = mix_fractions;
 	for (int n = 1; n < (int)Site_types.size(); n++) {
 		thresholds[n] += thresholds[n - 1];
 	}
-    Mix_fractions = mix_fractions;
+	Mix_fractions = mix_fractions;
 	double randn;
 	bool success = false;
 	for (int x = 0; x < lattice.getLength(); x++) {
@@ -1601,165 +1601,165 @@ void Morphology::createRandomMorphology(const vector<double>& mix_fractions){
 			}
 		}
 	}
-    // This function calculates the actual mix fraction and updates Mix_fraction
-    calculateMixFractions();
+	// This function calculates the actual mix fraction and updates Mix_fraction
+	calculateMixFractions();
 }
 
-void Morphology::executeIsingSwapping(const int num_MCsteps, const double interaction_energy1, const double interaction_energy2, const bool enable_growth_pref, const int growth_direction, const double additional_interaction){
-    int loop_count = 0;
-    // N counts the number of MC steps that have been executed
-    int N = 0;
-    int neighbor_count;
-    long int main_site_index;
-    long int neighbor_site_index;
-    char temp;
-    double energy_delta,probability;
-    Coords main_site_coords;
-    vector<long int> neighbors;
-    const long int *neighbor_pointer;
-    neighbors.assign(6,0);
-    initializeNeighborInfo();
-    // Begin site swapping
-    int m=1;
-    while(N<num_MCsteps){
-        // Randomly choose a site in the lattice
+void Morphology::executeIsingSwapping(const int num_MCsteps, const double interaction_energy1, const double interaction_energy2, const bool enable_growth_pref, const int growth_direction, const double additional_interaction) {
+	int loop_count = 0;
+	// N counts the number of MC steps that have been executed
+	int N = 0;
+	int neighbor_count;
+	long int main_site_index;
+	long int neighbor_site_index;
+	char temp;
+	double energy_delta, probability;
+	Coords main_site_coords;
+	vector<long int> neighbors;
+	const long int *neighbor_pointer;
+	neighbors.assign(6, 0);
+	initializeNeighborInfo();
+	// Begin site swapping
+	int m = 1;
+	while (N < num_MCsteps) {
+		// Randomly choose a site in the lattice
 		main_site_coords = lattice.generateRandomCoords();
 		main_site_index = lattice.getSiteIndex(main_site_coords);
-        // If site is not an interfacial site, start over again
-        // If total number of first-nearest neighbors = number of first-nearest neighbors of the same type, then the site is not at an interface
-        if(Neighbor_info[main_site_index].total1==Neighbor_counts[main_site_index].sum1) {
-            continue;
-        }
-        // Randomly choose a nearest neighbor site that has a different type
-        // First find all nearest neighbor sites of differing type
-        neighbor_count = 0;
-        neighbor_pointer = Neighbor_info[main_site_index].first_indices;
-        for(int i=0;i<6;i++){
-            if(*(neighbor_pointer+i)>=0 && lattice.getSiteType(main_site_index)!=lattice.getSiteType(*(neighbor_pointer+i))){
-                // Store site index of differing neighbor site
-                neighbors[neighbor_count] = *(neighbor_pointer+i);
-                neighbor_count++;
-            }
-        }
-        // Randomly select one of the differing neighbor sites
-        neighbor_site_index = neighbors[(int)floor(rand01()*neighbor_count)];
-        // Calculate energy change and swapping probability
-            energy_delta = calculateEnergyChangeSimple(main_site_index,neighbor_site_index,interaction_energy1,interaction_energy2);
-            if(enable_growth_pref){
-                energy_delta += calculateAdditionalEnergyChange(main_site_index,neighbor_site_index,growth_direction,additional_interaction);
-            }
-        probability = exp(-energy_delta)/(1+exp(-energy_delta));
-        if(rand01()<=probability){
-            // Swap Sites
-            temp = lattice.getSiteType(main_site_index);
-            lattice.setSiteType(main_site_index,lattice.getSiteType(neighbor_site_index));
-            lattice.setSiteType(neighbor_site_index,temp);
-            // Update neighbor counts
-            updateNeighborCounts(main_site_index,neighbor_site_index);
-        }
-        loop_count++;
-        // One MC step has been completed when loop_count is equal to the number of sites in the lattice
-        if(loop_count==lattice.getNumSites()){
-            N++;
-            loop_count = 0;
-        }
-        if(N==100*m){
-            cout << ID << ": " << N << " MC steps completed." << endl;
-            m++;
-        }
-    }
-    vector<NeighborCounts>().swap(Neighbor_counts);
-    vector<NeighborInfo>().swap(Neighbor_info);
+		// If site is not an interfacial site, start over again
+		// If total number of first-nearest neighbors = number of first-nearest neighbors of the same type, then the site is not at an interface
+		if (Neighbor_info[main_site_index].total1 == Neighbor_counts[main_site_index].sum1) {
+			continue;
+		}
+		// Randomly choose a nearest neighbor site that has a different type
+		// First find all nearest neighbor sites of differing type
+		neighbor_count = 0;
+		neighbor_pointer = Neighbor_info[main_site_index].first_indices;
+		for (int i = 0; i < 6; i++) {
+			if (*(neighbor_pointer + i) >= 0 && lattice.getSiteType(main_site_index) != lattice.getSiteType(*(neighbor_pointer + i))) {
+				// Store site index of differing neighbor site
+				neighbors[neighbor_count] = *(neighbor_pointer + i);
+				neighbor_count++;
+			}
+		}
+		// Randomly select one of the differing neighbor sites
+		neighbor_site_index = neighbors[(int)floor(rand01()*neighbor_count)];
+		// Calculate energy change and swapping probability
+		energy_delta = calculateEnergyChangeSimple(main_site_index, neighbor_site_index, interaction_energy1, interaction_energy2);
+		if (enable_growth_pref) {
+			energy_delta += calculateAdditionalEnergyChange(main_site_index, neighbor_site_index, growth_direction, additional_interaction);
+		}
+		probability = exp(-energy_delta) / (1 + exp(-energy_delta));
+		if (rand01() <= probability) {
+			// Swap Sites
+			temp = lattice.getSiteType(main_site_index);
+			lattice.setSiteType(main_site_index, lattice.getSiteType(neighbor_site_index));
+			lattice.setSiteType(neighbor_site_index, temp);
+			// Update neighbor counts
+			updateNeighborCounts(main_site_index, neighbor_site_index);
+		}
+		loop_count++;
+		// One MC step has been completed when loop_count is equal to the number of sites in the lattice
+		if (loop_count == lattice.getNumSites()) {
+			N++;
+			loop_count = 0;
+		}
+		if (N == 100 * m) {
+			cout << ID << ": " << N << " MC steps completed." << endl;
+			m++;
+		}
+	}
+	vector<NeighborCounts>().swap(Neighbor_counts);
+	vector<NeighborInfo>().swap(Neighbor_info);
 }
 
-void Morphology::executeMixing(const double width, const double interfacial_conc){
-    vector<int> sites_maj;
-    vector<int> sites_min;
-    int site_maj;
-    int site_min;
-    int target;
-    int site_count = 0;
-    char majority_type;
-    char minority_type;
-    double minority_conc;
+void Morphology::executeMixing(const double width, const double interfacial_conc) {
+	vector<int> sites_maj;
+	vector<int> sites_min;
+	int site_maj;
+	int site_min;
+	int target;
+	int site_count = 0;
+	char majority_type;
+	char minority_type;
+	double minority_conc;
 	Coords coords;
-    // Based on the interfacial concentration, the majority and minority types are defined
-    if(interfacial_conc<=0.5){
-        majority_type = (char)2;
-        minority_type = (char)1;
-        minority_conc = interfacial_conc;
-    }
-    else{
-        majority_type = (char)1;
-        minority_type = (char)2;
-        minority_conc = 1-interfacial_conc;
-    }
-    // The minority type sites are mixed into the majority type sites at the interface.
-    // First the majority site reservoir is determined by finding all majority type sites within (1-minority_conc)*width distance from the interface and adding them to a list
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            for(int z=0;z<lattice.getHeight();z++){
+	// Based on the interfacial concentration, the majority and minority types are defined
+	if (interfacial_conc <= 0.5) {
+		majority_type = (char)2;
+		minority_type = (char)1;
+		minority_conc = interfacial_conc;
+	}
+	else {
+		majority_type = (char)1;
+		minority_type = (char)2;
+		minority_conc = 1 - interfacial_conc;
+	}
+	// The minority type sites are mixed into the majority type sites at the interface.
+	// First the majority site reservoir is determined by finding all majority type sites within (1-minority_conc)*width distance from the interface and adding them to a list
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
 				coords.setXYZ(x, y, z);
-                if(lattice.getSiteType(x,y,z)==majority_type){
-                    if(isNearInterface(coords,(1-minority_conc)*width)){
-                        sites_maj.push_back(lattice.getSiteIndex(x,y,z));
-                        site_count++;
-                    }
-                }
-            }
-        }
-    }
-    // Then the minority site reservoir that will be used to be mix into the majority reservoir to yield the desired final interfacial concentration is determined
-    // More minority sites than the number of swaps must be included in the minority reservoir so that the desired interfacial concentration is also reached on the minority side of the interface.
-    target = (int)(site_count*minority_conc/(1-minority_conc));
-    int N = 0;
-    double range = 1;
-    // The minority type sites adjacent to the interface are identified, counted, and added to a list.
-    // If this does not yield enough minority sites for swapping, then the range is slowly incremented and minority sites farther from the interface are included until there are enough sites.
-    while(N<target){
-        sites_min.clear();
-        N = 0;
-        for(int x=0;x<lattice.getLength();x++){
-            for(int y=0;y<lattice.getWidth();y++){
-                for(int z=0;z<lattice.getHeight();z++){
+				if (lattice.getSiteType(x, y, z) == majority_type) {
+					if (isNearInterface(coords, (1 - minority_conc)*width)) {
+						sites_maj.push_back(lattice.getSiteIndex(x, y, z));
+						site_count++;
+					}
+				}
+			}
+		}
+	}
+	// Then the minority site reservoir that will be used to be mix into the majority reservoir to yield the desired final interfacial concentration is determined
+	// More minority sites than the number of swaps must be included in the minority reservoir so that the desired interfacial concentration is also reached on the minority side of the interface.
+	target = (int)(site_count*minority_conc / (1 - minority_conc));
+	int N = 0;
+	double range = 1;
+	// The minority type sites adjacent to the interface are identified, counted, and added to a list.
+	// If this does not yield enough minority sites for swapping, then the range is slowly incremented and minority sites farther from the interface are included until there are enough sites.
+	while (N < target) {
+		sites_min.clear();
+		N = 0;
+		for (int x = 0; x < lattice.getLength(); x++) {
+			for (int y = 0; y < lattice.getWidth(); y++) {
+				for (int z = 0; z < lattice.getHeight(); z++) {
 					coords.setXYZ(x, y, z);
-                    if(lattice.getSiteType(x,y,z)==minority_type){
-                        if(isNearInterface(coords,range)){
-                            sites_min.push_back(lattice.getSiteIndex(x,y,z));
-                            N++;
-                        }
-                    }
-                }
-            }
-        }
-        range += 0.1;
-    }
-    // Sites are randomly chosen from the minority and majority reservoirs and swapped until the desired interfacial concentration is reached.
-    for(int i=0;i<site_count*minority_conc;i++){
-		uniform_int_distribution<int> dist_maj(0, (int)sites_maj.size()-1);
+					if (lattice.getSiteType(x, y, z) == minority_type) {
+						if (isNearInterface(coords, range)) {
+							sites_min.push_back(lattice.getSiteIndex(x, y, z));
+							N++;
+						}
+					}
+				}
+			}
+		}
+		range += 0.1;
+	}
+	// Sites are randomly chosen from the minority and majority reservoirs and swapped until the desired interfacial concentration is reached.
+	for (int i = 0; i < site_count*minority_conc; i++) {
+		uniform_int_distribution<int> dist_maj(0, (int)sites_maj.size() - 1);
 		auto rand_maj = bind(dist_maj, ref(gen));
 		uniform_int_distribution<int> dist_min(0, (int)sites_min.size() - 1);
 		auto rand_min = bind(dist_min, ref(gen));
-        site_maj = rand_maj();
-        site_min = rand_min();
-        lattice.setSiteType(sites_maj[site_maj], minority_type);
-        lattice.setSiteType(sites_min[site_min], majority_type);
-        // Both site types are removed from the lists once they are swapped to prevent unswapping.
-        sites_maj.erase(sites_maj.begin()+site_maj);
-        sites_min.erase(sites_min.begin()+site_min);
-    }
+		site_maj = rand_maj();
+		site_min = rand_min();
+		lattice.setSiteType(sites_maj[site_maj], minority_type);
+		lattice.setSiteType(sites_min[site_min], majority_type);
+		// Both site types are removed from the lists once they are swapped to prevent unswapping.
+		sites_maj.erase(sites_maj.begin() + site_maj);
+		sites_min.erase(sites_min.begin() + site_min);
+	}
 }
 
-void Morphology::executeSmoothing(const double smoothing_threshold, const int rescale_factor){
-    double roughness_factor;
+void Morphology::executeSmoothing(const double smoothing_threshold, const int rescale_factor) {
+	double roughness_factor;
 	Coords coords, coords_dest;
-    static int radius=(int)ceil((double)(rescale_factor+1)/2);
-    static int cutoff_squared = (int)floor(((double)(rescale_factor+1)/2)*((double)(rescale_factor+1)/2));
-    // The boolean vector consider_smoothing keeps track of whether each site is near the interface and should be considered for smoothing.
-    // Sites in the interior of the domains or at very smooth interfaces do not need to be continually reconsidered for smoothing.
-    vector<bool> consider_smoothing;
-    consider_smoothing.assign(lattice.getNumSites(),true);
-    int site_count=1;
+	static int radius = (int)ceil((double)(rescale_factor + 1) / 2);
+	static int cutoff_squared = (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
+	// The boolean vector consider_smoothing keeps track of whether each site is near the interface and should be considered for smoothing.
+	// Sites in the interior of the domains or at very smooth interfaces do not need to be continually reconsidered for smoothing.
+	vector<bool> consider_smoothing;
+	consider_smoothing.assign(lattice.getNumSites(), true);
+	int site_count = 1;
 	while (site_count > 0) {
 		site_count = 0;
 		for (int x = 0; x < lattice.getLength(); x++) {
@@ -1784,7 +1784,7 @@ void Morphology::executeSmoothing(const double smoothing_threshold, const int re
 						for (int i = -radius; i <= radius; i++) {
 							for (int j = -radius; j <= radius; j++) {
 								for (int k = -radius; k <= radius; k++) {
-									if (i*i + j*j + k*k > cutoff_squared) {
+									if (i*i + j * j + k * k > cutoff_squared) {
 										continue;
 									}
 									if (!lattice.checkMoveValidity(coords, i, j, k)) {
@@ -1804,8 +1804,8 @@ void Morphology::executeSmoothing(const double smoothing_threshold, const int re
 			}
 		}
 	}
-    // The smoothing process can change the mix fraction, so the final mix fraction is recalculated and the Mix_fraction property is updated.
-    calculateMixFractions();
+	// The smoothing process can change the mix fraction, so the final mix fraction is recalculated and the Mix_fraction property is updated.
+	calculateMixFractions();
 }
 
 vector<double> Morphology::getCorrelationData(const char site_type) const {
@@ -1916,8 +1916,8 @@ vector<double> Morphology::getTortuosityHistogram(char site_type) const {
 	return TortuosityHistogram_data[getSiteTypeIndex(site_type)];
 }
 
-int Morphology::getWidth() const{
-    return lattice.getWidth();
+int Morphology::getWidth() const {
+	return lattice.getWidth();
 }
 
 vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename, const TomogramImportParams& import_params) {
@@ -1949,7 +1949,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		break;
 	case 64:
 		break;
-	case 81: 
+	case 81:
 		break;
 	case 100:
 		break;
@@ -1976,7 +1976,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 	}
 	// Analyze xml info file based on metadata format version
 	string schema_version = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
-	if (schema_version.compare("1.0")==0) {
+	if (schema_version.compare("1.0") == 0) {
 		// Initialize lattice params based on xml data
 		lattice_params.Length = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("length")->GetText());
 		lattice_params.Width = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("width")->GetText());
@@ -2065,9 +2065,9 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		for (int i = 0; i < lattice.getLength(); i++) {
 			for (int j = 0; j < lattice.getWidth(); j++) {
 				for (int k = 0; k < lattice.getHeight(); k++) {
-					double x = i*lattice.getUnitSize();
-					double y = j*lattice.getUnitSize();
-					double z = k*lattice.getUnitSize();
+					double x = i * lattice.getUnitSize();
+					double y = j * lattice.getUnitSize();
+					double z = k * lattice.getUnitSize();
 					static vector<float> weights(8, 0.0);
 					static vector<float> vals(8, 0.0);
 					int x1 = (int)floor(x / lattice_i.getUnitSize());
@@ -2076,7 +2076,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 					int y2 = (int)ceil(y / lattice_i.getUnitSize());
 					int z1 = (int)floor(z / lattice_i.getUnitSize());
 					int z2 = (int)ceil(z / lattice_i.getUnitSize());
-					if ((x - x1*lattice_i.getUnitSize()) < 1e-6 && (y - y1*lattice_i.getUnitSize()) < 1e-6 && (z - z1*lattice_i.getUnitSize()) < 1e-6) {
+					if ((x - x1 * lattice_i.getUnitSize()) < 1e-6 && (y - y1 * lattice_i.getUnitSize()) < 1e-6 && (z - z1 * lattice_i.getUnitSize()) < 1e-6) {
 						data_vec_final[lattice.getSiteIndex(i, j, k)] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z1)];
 						continue;
 					}
@@ -2097,16 +2097,16 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 					vals[5] = data_vec_new[lattice_i.getSiteIndex(x1, y2, z2)];
 					vals[6] = data_vec_new[lattice_i.getSiteIndex(x2, y1, z2)];
 					vals[7] = data_vec_new[lattice_i.getSiteIndex(x2, y2, z2)];
-					weights[0] = (float) (1.0 / (intpow(x - x1*lattice_i.getUnitSize(), 2) + intpow(y - y1*lattice_i.getUnitSize(), 2) + intpow(z - z1*lattice_i.getUnitSize(), 2)));
-					weights[1] = (float) (1.0 / (intpow(x - x1*lattice_i.getUnitSize(), 2) + intpow(y - y2*lattice_i.getUnitSize(), 2) + intpow(z - z1*lattice_i.getUnitSize(), 2)));
-					weights[2] = (float) (1.0 / (intpow(x - x2*lattice_i.getUnitSize(), 2) + intpow(y - y1*lattice_i.getUnitSize(), 2) + intpow(z - z1*lattice_i.getUnitSize(), 2)));
-					weights[3] = (float) (1.0 / (intpow(x - x2*lattice_i.getUnitSize(), 2) + intpow(y - y2*lattice_i.getUnitSize(), 2) + intpow(z - z1*lattice_i.getUnitSize(), 2)));
-					weights[4] = (float) (1.0 / (intpow(x - x1*lattice_i.getUnitSize(), 2) + intpow(y - y1*lattice_i.getUnitSize(), 2) + intpow(z - z2*lattice_i.getUnitSize(), 2)));
-					weights[5] = (float) (1.0 / (intpow(x - x1*lattice_i.getUnitSize(), 2) + intpow(y - y2*lattice_i.getUnitSize(), 2) + intpow(z - z2*lattice_i.getUnitSize(), 2)));
-					weights[6] = (float) (1.0 / (intpow(x - x2*lattice_i.getUnitSize(), 2) + intpow(y - y1*lattice_i.getUnitSize(), 2) + intpow(z - z2*lattice_i.getUnitSize(), 2)));
-					weights[7] = (float) (1.0 / (intpow(x - x2*lattice_i.getUnitSize(), 2) + intpow(y - y2*lattice_i.getUnitSize(), 2) + intpow(z - z2*lattice_i.getUnitSize(), 2)));
+					weights[0] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[1] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[2] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[3] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[4] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					weights[5] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					weights[6] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					weights[7] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
 					std::transform(vals.begin(), vals.end(), weights.begin(), vals.begin(), multiplies<float>());
-					data_vec_final[lattice.getSiteIndex(i,j,k)] = accumulate(vals.begin(), vals.end(), 0.0f) / accumulate(weights.begin(), weights.end(), 0.0f);
+					data_vec_final[lattice.getSiteIndex(i, j, k)] = accumulate(vals.begin(), vals.end(), 0.0f) / accumulate(weights.begin(), weights.end(), 0.0f);
 				}
 			}
 		}
@@ -2149,7 +2149,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 			for (int x = 0; x < lattice.getLength(); x++) {
 				for (int y = 0; y < lattice.getWidth(); y++) {
 					for (int z = 0; z < lattice.getHeight(); z++) {
-						if (rand01() < data_vec_final[lattice.getSiteIndex(x,y,z)]) {
+						if (rand01() < data_vec_final[lattice.getSiteIndex(x, y, z)]) {
 							lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)1);
 							Site_type_counts[getSiteTypeIndex((char)1)]++;
 						}
@@ -2209,8 +2209,8 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 				new_width--;
 			}
 			int size = (new_length < new_width) ? new_length : new_width;
-			int offset_x = (lattice.getLength() - size*dim) / 2;
-			int offset_y = (lattice.getWidth() - size*dim) / 2;
+			int offset_x = (lattice.getLength() - size * dim) / 2;
+			int offset_y = (lattice.getWidth() - size * dim) / 2;
 			Lattice sublattice;
 			for (int x = 0; x < dim; x++) {
 				for (int y = 0; y < dim; y++) {
@@ -2353,142 +2353,142 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 	return true;
 }
 
-void Morphology::initializeNeighborInfo(){
+void Morphology::initializeNeighborInfo() {
 	Coords coords, coords_dest;
-    char sum1,sum2,sum3;
-    char total1,total2,total3;
-    int first_neighbor_count,second_neighbor_count,third_neighbor_count;
-    char site_type;
-    // Initialize neighbor counts (this data is used in the calculateEnergyChangeSimple function)
-    NeighborCounts counts;
-    Neighbor_counts.assign(lattice.getNumSites(),counts);
-    NeighborInfo info;
-    Neighbor_info.assign(lattice.getNumSites(),info);
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            for(int z=0;z<lattice.getHeight();z++){
+	char sum1, sum2, sum3;
+	char total1, total2, total3;
+	int first_neighbor_count, second_neighbor_count, third_neighbor_count;
+	char site_type;
+	// Initialize neighbor counts (this data is used in the calculateEnergyChangeSimple function)
+	NeighborCounts counts;
+	Neighbor_counts.assign(lattice.getNumSites(), counts);
+	NeighborInfo info;
+	Neighbor_info.assign(lattice.getNumSites(), info);
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
 				coords.setXYZ(x, y, z);
-                sum1 = 0;
-                sum2 = 0;
-                sum3 = 0;
-                // There are in total 6 first-nearest, 12 second-nearest, and 8 third-nearest neighbors
-                total1 = 6;
-                total2 = 12;
-                total3 = 8;
-                // Keep track of which neighbors have been calculated
-                first_neighbor_count = 0;
-                second_neighbor_count = 0;
-                third_neighbor_count = 0;
-                // Calculate similar neighbors around x,y,z
-                site_type = lattice.getSiteType(x,y,z);
-                for(int i=-1;i<=1;i++){
-                    for(int j=-1;j<=1;j++){
-                        for(int k=-1;k<=1;k++){
-                            if(i==0 && j==0 && k==0){
-                                continue;
-                            }
-                            if(!lattice.isZPeriodic()){
-                                if(z+k>=lattice.getHeight() || z+k<0 ){ // Check for z boundary
-                                    // Total site counts must be reduced if next to a hard boundary
-                                    switch(i*i+j*j+k*k){
-                                        case 1:
-                                            total1--;
-                                            Neighbor_info[lattice.getSiteIndex(x,y,z)].first_indices[first_neighbor_count] = -1;
-                                            first_neighbor_count++;
-                                            break;
-                                        case 2:
-                                            total2--;
-                                            Neighbor_info[lattice.getSiteIndex(x,y,z)].second_indices[second_neighbor_count] = -1;
-                                            second_neighbor_count++;
-                                            break;
-                                        case 3:
-                                            total3--;
-                                            Neighbor_info[lattice.getSiteIndex(x,y,z)].third_indices[third_neighbor_count] = -1;
-                                            third_neighbor_count++;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    continue;
-                                }
-                            }
+				sum1 = 0;
+				sum2 = 0;
+				sum3 = 0;
+				// There are in total 6 first-nearest, 12 second-nearest, and 8 third-nearest neighbors
+				total1 = 6;
+				total2 = 12;
+				total3 = 8;
+				// Keep track of which neighbors have been calculated
+				first_neighbor_count = 0;
+				second_neighbor_count = 0;
+				third_neighbor_count = 0;
+				// Calculate similar neighbors around x,y,z
+				site_type = lattice.getSiteType(x, y, z);
+				for (int i = -1; i <= 1; i++) {
+					for (int j = -1; j <= 1; j++) {
+						for (int k = -1; k <= 1; k++) {
+							if (i == 0 && j == 0 && k == 0) {
+								continue;
+							}
+							if (!lattice.isZPeriodic()) {
+								if (z + k >= lattice.getHeight() || z + k < 0) { // Check for z boundary
+									// Total site counts must be reduced if next to a hard boundary
+									switch (i*i + j * j + k * k) {
+									case 1:
+										total1--;
+										Neighbor_info[lattice.getSiteIndex(x, y, z)].first_indices[first_neighbor_count] = -1;
+										first_neighbor_count++;
+										break;
+									case 2:
+										total2--;
+										Neighbor_info[lattice.getSiteIndex(x, y, z)].second_indices[second_neighbor_count] = -1;
+										second_neighbor_count++;
+										break;
+									case 3:
+										total3--;
+										Neighbor_info[lattice.getSiteIndex(x, y, z)].third_indices[third_neighbor_count] = -1;
+										third_neighbor_count++;
+										break;
+									default:
+										break;
+									}
+									continue;
+								}
+							}
 							lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
-                            // Count the number of similar neighbors
-                            if(lattice.getSiteType(coords_dest)==site_type){
-                                switch(i*i+j*j+k*k){
-                                    case 1:
-                                        sum1++;
-                                        break;
-                                    case 2:
-                                        sum2++;
-                                        break;
-                                    case 3:
-                                        sum3++;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                            // Determine neighbor site indices
-                            switch(i*i+j*j+k*k){
-                                case 1:
-                                    Neighbor_info[lattice.getSiteIndex(x,y,z)].first_indices[first_neighbor_count] = lattice.getSiteIndex(coords_dest);
-                                    first_neighbor_count++;
-                                    break;
-                                case 2:
-                                    Neighbor_info[lattice.getSiteIndex(x,y,z)].second_indices[second_neighbor_count] = lattice.getSiteIndex(coords_dest);
-                                    second_neighbor_count++;
-                                    break;
-                                case 3:
-                                    Neighbor_info[lattice.getSiteIndex(x,y,z)].third_indices[third_neighbor_count] = lattice.getSiteIndex(coords_dest);
-                                    third_neighbor_count++;
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
-                Neighbor_counts[lattice.getSiteIndex(x,y,z)].sum1 = sum1;
-                Neighbor_counts[lattice.getSiteIndex(x,y,z)].sum2 = sum2;
-                Neighbor_counts[lattice.getSiteIndex(x,y,z)].sum3 = sum3;
-                Neighbor_info[lattice.getSiteIndex(x,y,z)].total1 = total1;
-                Neighbor_info[lattice.getSiteIndex(x,y,z)].total2 = total2;
-                Neighbor_info[lattice.getSiteIndex(x,y,z)].total3 = total3;
-                if(!(Neighbor_counts[lattice.getSiteIndex(x,y,z)]==calculateNeighborCounts(coords))){
-                    cout << "Error initializing neighbor counts!" << endl;
-                }
-            }
-        }
-    }
+							// Count the number of similar neighbors
+							if (lattice.getSiteType(coords_dest) == site_type) {
+								switch (i*i + j * j + k * k) {
+								case 1:
+									sum1++;
+									break;
+								case 2:
+									sum2++;
+									break;
+								case 3:
+									sum3++;
+									break;
+								default:
+									break;
+								}
+							}
+							// Determine neighbor site indices
+							switch (i*i + j * j + k * k) {
+							case 1:
+								Neighbor_info[lattice.getSiteIndex(x, y, z)].first_indices[first_neighbor_count] = lattice.getSiteIndex(coords_dest);
+								first_neighbor_count++;
+								break;
+							case 2:
+								Neighbor_info[lattice.getSiteIndex(x, y, z)].second_indices[second_neighbor_count] = lattice.getSiteIndex(coords_dest);
+								second_neighbor_count++;
+								break;
+							case 3:
+								Neighbor_info[lattice.getSiteIndex(x, y, z)].third_indices[third_neighbor_count] = lattice.getSiteIndex(coords_dest);
+								third_neighbor_count++;
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
+				Neighbor_counts[lattice.getSiteIndex(x, y, z)].sum1 = sum1;
+				Neighbor_counts[lattice.getSiteIndex(x, y, z)].sum2 = sum2;
+				Neighbor_counts[lattice.getSiteIndex(x, y, z)].sum3 = sum3;
+				Neighbor_info[lattice.getSiteIndex(x, y, z)].total1 = total1;
+				Neighbor_info[lattice.getSiteIndex(x, y, z)].total2 = total2;
+				Neighbor_info[lattice.getSiteIndex(x, y, z)].total3 = total3;
+				if (!(Neighbor_counts[lattice.getSiteIndex(x, y, z)] == calculateNeighborCounts(coords))) {
+					cout << "Error initializing neighbor counts!" << endl;
+				}
+			}
+		}
+	}
 }
 
-bool Morphology::isNearInterface(const Coords& coords,const double distance) const{
-    int d = (int)floor(distance);
+bool Morphology::isNearInterface(const Coords& coords, const double distance) const {
+	int d = (int)floor(distance);
 	Coords coords_dest;
-    for(int i=-d;i<=d;i++){
-        for(int j=-d;j<=d;j++){
-            for(int k=-d;k<=d;k++){
-                if(d==1 && abs(i)+abs(j)+abs(k)>1){
+	for (int i = -d; i <= d; i++) {
+		for (int j = -d; j <= d; j++) {
+			for (int k = -d; k <= d; k++) {
+				if (d == 1 && abs(i) + abs(j) + abs(k) > 1) {
 					continue;
-                }
-                else if((double)(i*i+j*j+k*k)>distance*distance){
-                    continue;
-                }
+				}
+				else if ((double)(i*i + j * j + k * k) > distance*distance) {
+					continue;
+				}
 				if (!lattice.checkMoveValidity(coords, i, j, k)) {
 					continue;
 				}
 				lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
-                if(lattice.getSiteType(coords)!=lattice.getSiteType(coords_dest)){
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+				if (lattice.getSiteType(coords) != lattice.getSiteType(coords_dest)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
-void Morphology::outputCompositionMaps(ofstream& outfile) const{
+void Morphology::outputCompositionMaps(ofstream& outfile) const {
 	vector<int> counts(Site_types.size(), 0);
 	//outfile << "X-Position,Y-Position";
 	for (int n = 0; n < (int)Site_types.size(); n++) {
@@ -2516,22 +2516,22 @@ void Morphology::outputCompositionMaps(ofstream& outfile) const{
 	}
 }
 
-void Morphology::outputMorphologyCrossSection(ofstream& outfile) const{
+void Morphology::outputMorphologyCrossSection(ofstream& outfile) const {
 	int x = lattice.getLength() / 2;
 	//for (int x = 0; x < lattice.getLength(); x++) {
-		for (int y = 0; y < lattice.getWidth(); y++) {
-			//int z = lattice.getHeight() / 2;
-			for (int z = 0; z < lattice.getHeight(); z++) {
-				outfile << x << "," << y << "," << z << "," << (int)lattice.getSiteType(x, y, z) << endl;
-			}
+	for (int y = 0; y < lattice.getWidth(); y++) {
+		//int z = lattice.getHeight() / 2;
+		for (int z = 0; z < lattice.getHeight(); z++) {
+			outfile << x << "," << y << "," << z << "," << (int)lattice.getSiteType(x, y, z) << endl;
 		}
+	}
 	//}
 }
 
-void Morphology::outputMorphologyFile(ofstream& outfile,bool enable_export_compressed_files) const{
-    outfile << lattice.getLength() << endl;
-    outfile << lattice.getWidth() << endl;
-    outfile << lattice.getHeight() << endl;
+void Morphology::outputMorphologyFile(ofstream& outfile, bool enable_export_compressed_files) const {
+	outfile << lattice.getLength() << endl;
+	outfile << lattice.getWidth() << endl;
+	outfile << lattice.getHeight() << endl;
 	outfile << lattice.isXPeriodic() << endl;
 	outfile << lattice.isYPeriodic() << endl;
 	outfile << lattice.isZPeriodic() << endl;
@@ -2542,16 +2542,16 @@ void Morphology::outputMorphologyFile(ofstream& outfile,bool enable_export_compr
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		outfile << Mix_fractions[n] << endl;
 	}
-    if(!enable_export_compressed_files){
-        for(int x=0;x<lattice.getLength();x++){
-            for(int y=0;y<lattice.getWidth();y++){
-                for(int z=0;z<lattice.getHeight();z++){
-                    outfile << x << "," << y << "," << z << "," << (int)lattice.getSiteType(x,y,z) << endl;
-                }
-            }
-        }
-    }
-    else{
+	if (!enable_export_compressed_files) {
+		for (int x = 0; x < lattice.getLength(); x++) {
+			for (int y = 0; y < lattice.getWidth(); y++) {
+				for (int z = 0; z < lattice.getHeight(); z++) {
+					outfile << x << "," << y << "," << z << "," << (int)lattice.getSiteType(x, y, z) << endl;
+				}
+			}
+		}
+	}
+	else {
 		int count = 1;
 		char previous_type = lattice.getSiteType(0, 0, 0);
 		for (int x = 0; x < lattice.getLength(); x++) {
@@ -2572,7 +2572,7 @@ void Morphology::outputMorphologyFile(ofstream& outfile,bool enable_export_compr
 			}
 		}
 		outfile << (int)previous_type << count << "\n";
-    }
+	}
 }
 
 void Morphology::outputTortuosityMaps(ofstream& outfile) const {
@@ -2600,157 +2600,157 @@ void Morphology::outputTortuosityMaps(ofstream& outfile) const {
 	}
 }
 
-void Morphology::shrinkLattice(int rescale_factor){
-    // Error handling
-    if(rescale_factor==0){
-        cout << "Error! Lattice cannot be shrunken by a rescale factor of zero." << endl;
-        return;
-    }
-    if(lattice.getLength()%rescale_factor!=0 || lattice.getWidth()%rescale_factor!=0 || lattice.getHeight()%rescale_factor!=0){
-        cout << "Error! All lattice dimensions are not divisible by the rescale factor." << endl;
-        return;
-    }
-    // Construct the smaller lattice 
+void Morphology::shrinkLattice(int rescale_factor) {
+	// Error handling
+	if (rescale_factor == 0) {
+		cout << "Error! Lattice cannot be shrunken by a rescale factor of zero." << endl;
+		return;
+	}
+	if (lattice.getLength() % rescale_factor != 0 || lattice.getWidth() % rescale_factor != 0 || lattice.getHeight() % rescale_factor != 0) {
+		cout << "Error! All lattice dimensions are not divisible by the rescale factor." << endl;
+		return;
+	}
+	// Construct the smaller lattice 
 	Lattice lattice_rescale = lattice;
 	lattice_rescale.resize(lattice.getLength() / rescale_factor, lattice.getWidth() / rescale_factor, lattice.getHeight() / rescale_factor);
-    // Assign site types to the new lattice based on the existing lattice
-    int type1_count;
-    bool alternate = true;
-    for(int x=0;x<lattice_rescale.getLength();x++){
-        for(int y=0;y<lattice_rescale.getWidth();y++){
-            for(int z=0;z<lattice_rescale.getHeight();z++){
-                type1_count = 0;
-                for(int i=rescale_factor*x;i<(rescale_factor*x+rescale_factor);i++){
-                    for(int j=rescale_factor*y;j<(rescale_factor*y+rescale_factor);j++){
-                        for(int k=rescale_factor*z;k<(rescale_factor*z+rescale_factor);k++){
-                            if(lattice.getSiteType(i,j,k)==(char)1){
-                                type1_count++;
-                            }
-                        }
-                    }
-                }
-                if(2*type1_count>(rescale_factor*rescale_factor*rescale_factor)){
-                    lattice_rescale.setSiteType(x,y,z,(char)1);
-                }
-                else if(2*type1_count<(rescale_factor*rescale_factor*rescale_factor)){
-                    lattice_rescale.setSiteType(x,y,z,(char)2);
-                }
-                else{
-                    if(alternate){
-                        lattice_rescale.setSiteType(x,y,z,(char)1);
-                    }
-                    else{
-                        lattice_rescale.setSiteType(x,y,z,(char)2);
-                    }
-                    alternate = !alternate;
-                }
-            }
-        }
-    }
-    // Update the lattice
-    lattice = lattice_rescale;
-    // The shrinking process can change the mix fraction, so the Mix_fraction property is updated.
-    calculateMixFractions();
+	// Assign site types to the new lattice based on the existing lattice
+	int type1_count;
+	bool alternate = true;
+	for (int x = 0; x < lattice_rescale.getLength(); x++) {
+		for (int y = 0; y < lattice_rescale.getWidth(); y++) {
+			for (int z = 0; z < lattice_rescale.getHeight(); z++) {
+				type1_count = 0;
+				for (int i = rescale_factor * x; i < (rescale_factor*x + rescale_factor); i++) {
+					for (int j = rescale_factor * y; j < (rescale_factor*y + rescale_factor); j++) {
+						for (int k = rescale_factor * z; k < (rescale_factor*z + rescale_factor); k++) {
+							if (lattice.getSiteType(i, j, k) == (char)1) {
+								type1_count++;
+							}
+						}
+					}
+				}
+				if (2 * type1_count > (rescale_factor*rescale_factor*rescale_factor)) {
+					lattice_rescale.setSiteType(x, y, z, (char)1);
+				}
+				else if (2 * type1_count < (rescale_factor*rescale_factor*rescale_factor)) {
+					lattice_rescale.setSiteType(x, y, z, (char)2);
+				}
+				else {
+					if (alternate) {
+						lattice_rescale.setSiteType(x, y, z, (char)1);
+					}
+					else {
+						lattice_rescale.setSiteType(x, y, z, (char)2);
+					}
+					alternate = !alternate;
+				}
+			}
+		}
+	}
+	// Update the lattice
+	lattice = lattice_rescale;
+	// The shrinking process can change the mix fraction, so the Mix_fraction property is updated.
+	calculateMixFractions();
 }
 
-void Morphology::stretchLattice(int rescale_factor){
-    // Construct the larger lattice
+void Morphology::stretchLattice(int rescale_factor) {
+	// Construct the larger lattice
 	Lattice lattice_rescale = lattice;
 	lattice_rescale.resize(lattice.getLength()*rescale_factor, lattice.getWidth()*rescale_factor, lattice.getHeight()*rescale_factor);
-    // Assign site types to the new lattice based on the existing lattice
-    for(int x=0;x<lattice.getLength();x++){
-        for(int y=0;y<lattice.getWidth();y++){
-            for(int z=0;z<lattice.getHeight();z++){
-                for(int i=rescale_factor*x;i<rescale_factor*x+rescale_factor;i++){
-                    for(int j=rescale_factor*y;j<rescale_factor*y+rescale_factor;j++){
-                        for(int k=rescale_factor*z;k<rescale_factor*z+rescale_factor;k++){
-                            lattice_rescale.setSiteType(i,j,k,lattice.getSiteType(x,y,z));
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // Update the lattice
-    lattice = lattice_rescale;
+	// Assign site types to the new lattice based on the existing lattice
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
+				for (int i = rescale_factor * x; i < rescale_factor*x + rescale_factor; i++) {
+					for (int j = rescale_factor * y; j < rescale_factor*y + rescale_factor; j++) {
+						for (int k = rescale_factor * z; k < rescale_factor*z + rescale_factor; k++) {
+							lattice_rescale.setSiteType(i, j, k, lattice.getSiteType(x, y, z));
+						}
+					}
+				}
+			}
+		}
+	}
+	// Update the lattice
+	lattice = lattice_rescale;
 }
 
 double Morphology::rand01() {
 	return generate_canonical<double, std::numeric_limits<double>::digits>(gen);
 }
 
-void Morphology::updateNeighborCounts(long int site_index1,long int site_index2){
-    char site_type1 = lattice.getSiteType(site_index1);
-    char site_type2 = lattice.getSiteType(site_index2);
-    long int neighbor_index;
-    Neighbor_counts[site_index1] = Temp_counts1;
-    Neighbor_counts[site_index2] = Temp_counts2;
-    for(int i=0;i<6;i++){
-        neighbor_index = Neighbor_info[site_index1].first_indices[i];
-        if(neighbor_index>=0 && neighbor_index!=site_index2){
-            if(lattice.getSiteType(neighbor_index)==site_type1){
-                Neighbor_counts[neighbor_index].sum1++;
-            }
-            else{
-                Neighbor_counts[neighbor_index].sum1--;
-            }
-        }
-    }
-    for(int i=0;i<6;i++){
-        neighbor_index = Neighbor_info[site_index2].first_indices[i];
-        if(neighbor_index>=0 && neighbor_index!=site_index1){
-            if(lattice.getSiteType(neighbor_index)==site_type2){
-                Neighbor_counts[neighbor_index].sum1++;
-            }
-            else{
-                Neighbor_counts[neighbor_index].sum1--;
-            }
-        }
-    }
-    for(int i=0;i<12;i++){
-        neighbor_index = Neighbor_info[site_index1].second_indices[i];
-        if(neighbor_index>=0){
-            if(lattice.getSiteType(neighbor_index)==site_type1){
-                Neighbor_counts[neighbor_index].sum2++;
-            }
-            else{
-                Neighbor_counts[neighbor_index].sum2--;
-            }
-        }
-    }
-    for(int i=0;i<12;i++){
-        neighbor_index = Neighbor_info[site_index2].second_indices[i];
-        if(neighbor_index>=0){
-            if(lattice.getSiteType(neighbor_index)==site_type2){
-                Neighbor_counts[neighbor_index].sum2++;
-            }
-            else{
-                Neighbor_counts[neighbor_index].sum2--;
-            }
-        }
-    }
-    if(Enable_third_neighbor_interaction){
-        for(int i=0;i<8;i++){
-            neighbor_index = Neighbor_info[site_index1].third_indices[i];
-            if(neighbor_index>=0 && neighbor_index!=site_index2){
-                if(lattice.getSiteType(neighbor_index)==site_type1){
-                    Neighbor_counts[neighbor_index].sum3++;
-                }
-                else{
-                    Neighbor_counts[neighbor_index].sum3--;
-                }
-            }
-        }
-        for(int i=0;i<8;i++){
-            neighbor_index = Neighbor_info[site_index2].third_indices[i];
-            if(neighbor_index>=0 && neighbor_index!=site_index1){
-                if(lattice.getSiteType(neighbor_index)==site_type2){
-                    Neighbor_counts[neighbor_index].sum3++;
-                }
-                else{
-                    Neighbor_counts[neighbor_index].sum3--;
-                }
-            }
-        }
-    }
+void Morphology::updateNeighborCounts(long int site_index1, long int site_index2) {
+	char site_type1 = lattice.getSiteType(site_index1);
+	char site_type2 = lattice.getSiteType(site_index2);
+	long int neighbor_index;
+	Neighbor_counts[site_index1] = Temp_counts1;
+	Neighbor_counts[site_index2] = Temp_counts2;
+	for (int i = 0; i < 6; i++) {
+		neighbor_index = Neighbor_info[site_index1].first_indices[i];
+		if (neighbor_index >= 0 && neighbor_index != site_index2) {
+			if (lattice.getSiteType(neighbor_index) == site_type1) {
+				Neighbor_counts[neighbor_index].sum1++;
+			}
+			else {
+				Neighbor_counts[neighbor_index].sum1--;
+			}
+		}
+	}
+	for (int i = 0; i < 6; i++) {
+		neighbor_index = Neighbor_info[site_index2].first_indices[i];
+		if (neighbor_index >= 0 && neighbor_index != site_index1) {
+			if (lattice.getSiteType(neighbor_index) == site_type2) {
+				Neighbor_counts[neighbor_index].sum1++;
+			}
+			else {
+				Neighbor_counts[neighbor_index].sum1--;
+			}
+		}
+	}
+	for (int i = 0; i < 12; i++) {
+		neighbor_index = Neighbor_info[site_index1].second_indices[i];
+		if (neighbor_index >= 0) {
+			if (lattice.getSiteType(neighbor_index) == site_type1) {
+				Neighbor_counts[neighbor_index].sum2++;
+			}
+			else {
+				Neighbor_counts[neighbor_index].sum2--;
+			}
+		}
+	}
+	for (int i = 0; i < 12; i++) {
+		neighbor_index = Neighbor_info[site_index2].second_indices[i];
+		if (neighbor_index >= 0) {
+			if (lattice.getSiteType(neighbor_index) == site_type2) {
+				Neighbor_counts[neighbor_index].sum2++;
+			}
+			else {
+				Neighbor_counts[neighbor_index].sum2--;
+			}
+		}
+	}
+	if (Enable_third_neighbor_interaction) {
+		for (int i = 0; i < 8; i++) {
+			neighbor_index = Neighbor_info[site_index1].third_indices[i];
+			if (neighbor_index >= 0 && neighbor_index != site_index2) {
+				if (lattice.getSiteType(neighbor_index) == site_type1) {
+					Neighbor_counts[neighbor_index].sum3++;
+				}
+				else {
+					Neighbor_counts[neighbor_index].sum3--;
+				}
+			}
+		}
+		for (int i = 0; i < 8; i++) {
+			neighbor_index = Neighbor_info[site_index2].third_indices[i];
+			if (neighbor_index >= 0 && neighbor_index != site_index1) {
+				if (lattice.getSiteType(neighbor_index) == site_type2) {
+					Neighbor_counts[neighbor_index].sum3++;
+				}
+				else {
+					Neighbor_counts[neighbor_index].sum3--;
+				}
+			}
+		}
+	}
 }

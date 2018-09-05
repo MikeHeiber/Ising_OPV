@@ -24,13 +24,13 @@ void Lattice::init(const Parameters_Lattice& params, mt19937_64* generator_ptr) 
 	gen_ptr = generator_ptr;
 }
 
-void Lattice::calculateDestinationCoords(const Coords& coords_initial, const int i, const int j, const int k, Coords& coords_dest) const{
+void Lattice::calculateDestinationCoords(const Coords& coords_initial, const int i, const int j, const int k, Coords& coords_dest) const {
 	coords_dest.x = coords_initial.x + i + calculateDX(coords_initial.x, i);
 	coords_dest.y = coords_initial.y + j + calculateDY(coords_initial.y, j);
 	coords_dest.z = coords_initial.z + k + calculateDZ(coords_initial.z, k);
 }
 
-int Lattice::calculateDX(const int x, const int i) const{
+int Lattice::calculateDX(const int x, const int i) const {
 	if (Enable_periodic_x && x + i < 0) {
 		return Length;
 	}
@@ -42,11 +42,11 @@ int Lattice::calculateDX(const int x, const int i) const{
 	}
 }
 
-int Lattice::calculateDX(const Coords& coords_initial, const Coords& coords_dest) const{
-	if (Enable_periodic_x && 2 * (coords_dest.x - coords_initial.x)>Length) {
+int Lattice::calculateDX(const Coords& coords_initial, const Coords& coords_dest) const {
+	if (Enable_periodic_x && 2 * (coords_dest.x - coords_initial.x) > Length) {
 		return Length;
 	}
-	else if (Enable_periodic_x && 2 * (coords_dest.x - coords_initial.x)<-Length) {
+	else if (Enable_periodic_x && 2 * (coords_dest.x - coords_initial.x) < -Length) {
 		return -Length;
 	}
 	else {
@@ -54,8 +54,8 @@ int Lattice::calculateDX(const Coords& coords_initial, const Coords& coords_dest
 	}
 }
 
-int Lattice::calculateDY(const int y, const int j) const{
-	if (Enable_periodic_y && y + j<0) {
+int Lattice::calculateDY(const int y, const int j) const {
+	if (Enable_periodic_y && y + j < 0) {
 		return Width;
 	}
 	else if (Enable_periodic_y && y + j >= Width) {
@@ -66,11 +66,11 @@ int Lattice::calculateDY(const int y, const int j) const{
 	}
 }
 
-int Lattice::calculateDY(const Coords& coords_initial, const Coords& coords_dest) const{
-	if (Enable_periodic_y && 2 * (coords_dest.y - coords_initial.y)>Width) {
+int Lattice::calculateDY(const Coords& coords_initial, const Coords& coords_dest) const {
+	if (Enable_periodic_y && 2 * (coords_dest.y - coords_initial.y) > Width) {
 		return Width;
 	}
-	else if (Enable_periodic_y && 2 * (coords_dest.y - coords_initial.y)<-Width) {
+	else if (Enable_periodic_y && 2 * (coords_dest.y - coords_initial.y) < -Width) {
 		return -Width;
 	}
 	else {
@@ -78,8 +78,8 @@ int Lattice::calculateDY(const Coords& coords_initial, const Coords& coords_dest
 	}
 }
 
-int Lattice::calculateDZ(const int z, const int k) const{
-	if (Enable_periodic_z && z + k<0) {
+int Lattice::calculateDZ(const int z, const int k) const {
+	if (Enable_periodic_z && z + k < 0) {
 		return Height;
 	}
 	else if (Enable_periodic_z && z + k >= Height) {
@@ -90,7 +90,7 @@ int Lattice::calculateDZ(const int z, const int k) const{
 	}
 }
 
-int Lattice::calculateDZ(const Coords& coords_initial, const Coords& coords_dest) const{
+int Lattice::calculateDZ(const Coords& coords_initial, const Coords& coords_dest) const {
 	if (Enable_periodic_z && 2 * (coords_dest.z - coords_initial.z) > Height) {
 		return Height;
 	}
@@ -102,24 +102,24 @@ int Lattice::calculateDZ(const Coords& coords_initial, const Coords& coords_dest
 	}
 }
 
-int Lattice::calculateLatticeDistanceSquared(const Coords& coords_start, const Coords& coords_dest) const{
+int Lattice::calculateLatticeDistanceSquared(const Coords& coords_start, const Coords& coords_dest) const {
 	int absx = abs(coords_dest.x - coords_start.x);
 	int absy = abs(coords_dest.y - coords_start.y);
 	int absz = abs(coords_dest.z - coords_start.z);
 	int dx, dy, dz;
-	if (Enable_periodic_x && 2*absx > Length) {
+	if (Enable_periodic_x && 2 * absx > Length) {
 		dx = -Length;
 	}
 	else {
 		dx = 0;
 	}
-	if (Enable_periodic_y && 2*absy > Width) {
+	if (Enable_periodic_y && 2 * absy > Width) {
 		dy = -Width;
 	}
 	else {
 		dy = 0;
 	}
-	if (Enable_periodic_z && 2*absz > Height) {
+	if (Enable_periodic_z && 2 * absz > Height) {
 		dz = -Height;
 	}
 	else {
@@ -132,13 +132,13 @@ bool Lattice::checkMoveValidity(const Coords& coords_initial, const int i, const
 	if (i == 0 && j == 0 && k == 0) {
 		return false;
 	}
-	if (!Enable_periodic_x && (coords_initial.x + i >= Length || coords_initial.x + i<0)) {
+	if (!Enable_periodic_x && (coords_initial.x + i >= Length || coords_initial.x + i < 0)) {
 		return false;
 	}
-	if (!Enable_periodic_y && (coords_initial.y + j >= Width || coords_initial.y + j<0)) {
+	if (!Enable_periodic_y && (coords_initial.y + j >= Width || coords_initial.y + j < 0)) {
 		return false;
 	}
-	if (!Enable_periodic_z && (coords_initial.z + k >= Height || coords_initial.z + k<0)) {
+	if (!Enable_periodic_z && (coords_initial.z + k >= Height || coords_initial.z + k < 0)) {
 		return false;
 	}
 	return true;
@@ -194,19 +194,19 @@ int Lattice::generateRandomZ() {
 	return randz();
 }
 
-int Lattice::getHeight() const{
+int Lattice::getHeight() const {
 	return Height;
 }
 
-int Lattice::getLength() const{
+int Lattice::getLength() const {
 	return Length;
 }
 
-long int Lattice::getNumSites() const{
+long int Lattice::getNumSites() const {
 	return (long int)sites.size();
 }
 
-Coords Lattice::getSiteCoords(long int site_index) const{
+Coords Lattice::getSiteCoords(long int site_index) const {
 	Coords coords;
 	coords.x = site_index / (Width*Height);
 	int remainder = site_index % (Width*Height);
@@ -215,7 +215,7 @@ Coords Lattice::getSiteCoords(long int site_index) const{
 	return coords;
 }
 
-long int Lattice::getSiteIndex(const Coords& coords) const{
+long int Lattice::getSiteIndex(const Coords& coords) const {
 	return (long int)coords.x*(long int)Width*(long int)Height + (long int)coords.y*(long int)Height + (long int)coords.z;
 }
 
@@ -223,7 +223,7 @@ long int Lattice::getSiteIndex(const int x, const int y, const int z) const {
 	return (long int)x*(long int)Width*(long int)Height + (long int)y*(long int)Height + (long int)z;
 }
 
-vector<Site>::iterator Lattice::getSiteIt(const Coords& coords){
+vector<Site>::iterator Lattice::getSiteIt(const Coords& coords) {
 	auto site_it = sites.begin();
 	advance(site_it, getSiteIndex(coords));
 	return site_it;
@@ -238,10 +238,10 @@ char Lattice::getSiteType(const Coords& coords) const {
 }
 
 char Lattice::getSiteType(const int x, const int y, const int z) const {
-	return sites[getSiteIndex(x,y,z)].type;
+	return sites[getSiteIndex(x, y, z)].type;
 }
 
-double Lattice::getUnitSize() const{
+double Lattice::getUnitSize() const {
 	return Unit_size;
 }
 
@@ -249,19 +249,19 @@ double Lattice::getVolume() const {
 	return ((Length*Width*Height*1e-7*Unit_size)*1e-7*Unit_size)*1e-7*Unit_size;
 }
 
-int Lattice::getWidth() const{
+int Lattice::getWidth() const {
 	return Width;
 }
 
-bool Lattice::isXPeriodic() const{
+bool Lattice::isXPeriodic() const {
 	return Enable_periodic_x;
 }
 
-bool Lattice::isYPeriodic() const{
+bool Lattice::isYPeriodic() const {
 	return Enable_periodic_y;
 }
 
-bool Lattice::isZPeriodic() const{
+bool Lattice::isZPeriodic() const {
 	return Enable_periodic_z;
 }
 

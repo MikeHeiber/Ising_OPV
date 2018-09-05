@@ -22,27 +22,27 @@
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 //! \author Michael C. Heiber
 //! \date 2014-2018
-struct Coords{
+struct Coords {
 	//! The x Cartesian coordinate.
-    int x;
+	int x;
 	//! The y Cartesian coordinate.
-    int y;
+	int y;
 	//! The z Cartesian coordinate.
-    int z;
+	int z;
 
 	//! \brief Sets the x,y,z coordinates using the input values xval, yval, and zval.
 	//! \param xval is the input x value.
 	//! \param yval is the input y value.
 	//! \param zval is the input z value.
-    void setXYZ(const int xval,const int yval,const int zval){
-        x = xval;
-        y = yval;
-        z = zval;
-    }
+	void setXYZ(const int xval, const int yval, const int zval) {
+		x = xval;
+		y = yval;
+		z = zval;
+	}
 
 	//! \brief Defines the conditions when two Coords structs are deemed to be equal.
 	//! \param rhs is the right hand side Coords struct of the comparison operator.
-	bool operator==(const Coords& rhs) const{
+	bool operator==(const Coords& rhs) const {
 		return (x == rhs.x && y == rhs.y && z == rhs.z);
 	}
 
@@ -180,7 +180,7 @@ namespace Utils {
 	template<typename T>
 	T array_median(const T data[], const int array_size) {
 		std::vector<T> data_vect(array_size);
-		for (int i = 0; i<array_size; i++) {
+		for (int i = 0; i < array_size; i++) {
 			data_vect[i] = data[i];
 		}
 		sort(data_vect.begin(), data_vect.end());
@@ -241,7 +241,7 @@ namespace Utils {
 	//! \param vec is the input data pair vector.
 	//! \param filename is the input file name.
 	template<typename T>
-	void outputVectorToFile(std::vector<std::pair<T,T>>& vec, std::string filename) {
+	void outputVectorToFile(std::vector<std::pair<T, T>>& vec, std::string filename) {
 		std::ofstream outfile;
 		outfile.open(filename);
 		for (int i = 0; i < (int)vec.size(); i++) {
