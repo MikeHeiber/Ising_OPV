@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+	
+	<xs:element name="chemical_component">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="chemical_name" type="xs:string"/>
+				<xs:element name="chemical_abbrev" type="xs:string"/>
+				<xs:element name="vol_frac">
+					<xs:simpleType>
+						<xs:restriction base="xs:decimal">
+							<xs:minExclusive value="0"/>
+							<xs:maxInclusive value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="comment" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="composition_info">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="chemical_component" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="fabrication_info">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="person" type="xs:string"/>
+				<xs:element name="date" type="xs:string"/>
+				<xs:element name="substrate" type="xs:string"/>
+				<xs:element name="ink_formulation">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="solids_concentration">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="value" type="xs:decimal"/>
+										<xs:element name="units" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element ref="chemical_component" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="coating_method">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="spin_coat">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="spin_speed">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="value" type="xs:decimal"/>
+													<xs:element name="units" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="spin_time">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="value" type="xs:decimal"/>
+													<xs:element name="units" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="blade_coat">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="blade_height">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="value" type="xs:decimal"/>
+													<xs:element name="units" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="blade_speed">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="value" type="xs:decimal"/>
+													<xs:element name="units" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="thermal_anneal" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="temperature">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="value" type="xs:decimal"/>
+										<xs:element name="units" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="time">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="value" type="xs:decimal"/>
+										<xs:element name="units" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="comment" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="comment" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name ="tomogram_metadata">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sample_info">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="composition_info"/>
+							<xs:element ref="fabrication_info"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="measurement_info">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="person" type="xs:string"/>
+							<xs:element name="date" type="xs:string"/>
+							<xs:element name="instrument" type="xs:string"/>
+							<xs:element name="reconstruction_algorithm" type="xs:string"/>
+							<xs:element name="comment" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="data_info">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="data_format" type="xs:string"/>
+							<xs:element name="length" type="xs:positiveInteger"/>
+							<xs:element name="width" type="xs:positiveInteger"/>
+							<xs:element name="height" type="xs:positiveInteger"/>
+							<xs:element name="pixel_size">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="value" type="xs:decimal"/>
+										<xs:element name="units" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="comment" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>
