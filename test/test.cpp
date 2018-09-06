@@ -218,8 +218,7 @@ namespace LatticeTests {
 	class LatticeTest : public ::testing::Test {
 	protected:
 		mt19937_64 gen;
-		Parameters_Lattice params_lattice;
-		vector<Site> sites;
+		Lattice_Params params_lattice;
 		Lattice lattice;
 
 		void SetUp() {
