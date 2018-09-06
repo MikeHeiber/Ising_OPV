@@ -369,8 +369,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 	return true;
 }
 
-double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params) {
-	int type_index = getSiteTypeIndex(site_type);
+double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params) {
 	vector<int> site_count, total_count;
 	double distance;
 	int bin;
@@ -522,7 +521,7 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 			}
 			if (Site_type_counts[n] > 100) {
 				cout << ID << ": Performing sampling domain size calculation with " << (int)correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff radius of " << cutoff_distance << "..." << endl;
-				domain_size = calculateCorrelationDistance(correlation_sites_data[n], Correlation_data[n], Site_types[n], Mix_fractions[n], cutoff_distance, params);
+				domain_size = calculateCorrelationDistance(correlation_sites_data[n], Correlation_data[n], Mix_fractions[n], cutoff_distance, params);
 			}
 			if (domain_size > 0) {
 				domain_size_updated[n] = true;
@@ -623,7 +622,7 @@ void Morphology::calculateDepthDependentData(const CorrelationCalc_Params& corre
 				mix_fraction_local = (double)site_count / (double)counts_total;
 				if (Site_type_counts[n] > 10) {
 					//cout << ID << ": Performing sampling domain size calculation with " << (int)correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff radius of " << cutoff_distance << "..." << endl;
-					domain_size = calculateCorrelationDistance(correlation_sites_data[n], correlation_data, Site_types[n], mix_fraction_local, cutoff_distance, correlation_params);
+					domain_size = calculateCorrelationDistance(correlation_sites_data[n], correlation_data, mix_fraction_local, cutoff_distance, correlation_params);
 				}
 				if (domain_size > 0) {
 					Depth_domain_size_data[n][z] = domain_size;
@@ -1863,11 +1862,11 @@ int Morphology::getWidth() const {
 vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename, const TomogramImport_Params& import_params) {
 	vector<Morphology> morphologies;
 	// Input file checking
-	if (info_filename.length() > 4 && info_filename.substr(info_filename.length() - 4, 4).compare(".xml") != 0) {
+	if ((int)info_filename.length() > 4 && info_filename.substr(info_filename.length() - 4, 4).compare(".xml") != 0) {
 		cout << ID << ": Error! Input tomogram info file " << info_filename << " is not an xml file." << endl;
 		return morphologies;
 	}
-	if (data_filename.length() > 4 && data_filename.substr(data_filename.length() - 4, 4).compare(".raw") != 0) {
+	if ((int)data_filename.length() > 4 && data_filename.substr(data_filename.length() - 4, 4).compare(".raw") != 0) {
 		cout << ID << ": Error! Input tomogram data file " << data_filename << "  is not a .raw file." << endl;
 		return morphologies;
 	}

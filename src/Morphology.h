@@ -304,7 +304,7 @@ private:
 	//  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
 	//  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
 	//  If the function returns false and the function is re-called with a larger cutoff_distance, the correlation function is not recalculated for close distances and only fills in the missing data for larger distances.
-	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params);
+	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params);
 
 	//  This function calculates the fraction of nearby sites the site at (x,y,z) that are not the same type.
 	//  The radius that determines which sites are included as nearby sites is determined by the rescale factor parameter.

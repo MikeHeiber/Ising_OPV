@@ -215,6 +215,7 @@ namespace Utils {
 	//! \param data is the input array of numerical data.
 	//! \param array_size is the size of the input data array.
 	//! \return the integer array index that indicates the median value.
+	//! \return -1 if the median cannot be determined.
 	template<typename T>
 	int array_which_median(const T data[], const int array_size) {
 		T median = array_median(data, array_size);
@@ -223,7 +224,6 @@ namespace Utils {
 				return i;
 			}
 		}
-		cout << "Error! Median not found." << endl;
 		return -1;
 	}
 
