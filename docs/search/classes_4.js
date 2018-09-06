@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['neighborcounts',['NeighborCounts',['../struct_neighbor_counts.html',1,'']]],
-  ['neighborinfo',['NeighborInfo',['../struct_neighbor_info.html',1,'']]]
+  ['tomogramimport_5fparams',['TomogramImport_Params',['../struct_tomogram_import___params.html',1,'']]]
 ];

@@ -1,8 +1,12 @@
 var searchData=
 [
-  ['n_5fextracted_5fsegments',['N_extracted_segments',['../struct_input___parameters.html#a20f0278add57461de8557fa9e38adddb',1,'Input_Parameters::N_extracted_segments()'],['../struct_tomogram_import_params.html#a1feb8f3264df39caf2b2af437f70cf86',1,'TomogramImportParams::N_extracted_segments()']]],
-  ['n_5fsampling_5fmax',['N_sampling_max',['../struct_input___parameters.html#a3a56446a00df1a52eb10c81ed62c7dad',1,'Input_Parameters::N_sampling_max()'],['../struct_correlation_calc_params.html#ab0f5deedae29f32e1ee126bdf764caa8',1,'CorrelationCalcParams::N_sampling_max()']]],
-  ['n_5fvariants',['N_variants',['../struct_input___parameters.html#a59a2289aceec5d68c28ffc2d0d1729c1',1,'Input_Parameters']]],
-  ['neighborcounts',['NeighborCounts',['../struct_neighbor_counts.html',1,'']]],
-  ['neighborinfo',['NeighborInfo',['../struct_neighbor_info.html',1,'']]]
+  ['operator_21_3d',['operator!=',['../struct_coords.html#aaea2c566feec4e4bf56b27a34568be76',1,'Coords']]],
+  ['operator_3d_3d',['operator==',['../struct_coords.html#ad3347f6568814df1a2b98b3cd0b78632',1,'Coords']]],
+  ['outputcompositionmaps',['outputCompositionMaps',['../class_morphology.html#a3cf927126d6dabaf37fb2fa97430a2ef',1,'Morphology']]],
+  ['outputcorrelationdata',['outputCorrelationData',['../class_morphology.html#a66235f3d8ed42f7febd004e30d10dd40',1,'Morphology']]],
+  ['outputdepthdependentdata',['outputDepthDependentData',['../class_morphology.html#aaa173c867743007955a1fddf8c347125',1,'Morphology']]],
+  ['outputmorphologycrosssection',['outputMorphologyCrossSection',['../class_morphology.html#a8c4d5954ad727de0e36b2675f3aef623',1,'Morphology']]],
+  ['outputmorphologyfile',['outputMorphologyFile',['../class_morphology.html#adcecb57b108bd8403e69d3b68d92be7b',1,'Morphology']]],
+  ['outputtortuositymaps',['outputTortuosityMaps',['../class_morphology.html#a19499e8d86a3e7a9e4791954bb9170b5',1,'Morphology']]],
+  ['outputvectortofile',['outputVectorToFile',['../namespace_utils.html#ab76081fb0fa0e9e1633b1b2255db4164',1,'Utils::outputVectorToFile(std::vector&lt; T &gt; &amp;vec, std::string filename)'],['../namespace_utils.html#a652ab00e72bce852c2b9798ff3e1a60b',1,'Utils::outputVectorToFile(std::vector&lt; std::pair&lt; T, T &gt;&gt; &amp;vec, std::string filename)']]]
 ];

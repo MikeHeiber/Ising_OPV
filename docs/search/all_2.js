@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['desired_5funit_5fsize',['Desired_unit_size',['../struct_input___parameters.html#a3a7c6a52ccaccfba7600a4116c309d6a',1,'Input_Parameters::Desired_unit_size()'],['../struct_tomogram_import_params.html#aaab017c64b667853f8245150e7f9e68a',1,'TomogramImportParams::Desired_unit_size()']]]
+  ['desired_5funit_5fsize',['Desired_unit_size',['../struct_input___params.html#ac054de063bcf42ffaba833fbc9be27a4',1,'Input_Params::Desired_unit_size()'],['../struct_tomogram_import___params.html#af98c0799e56f7b60b098f656a34abca2',1,'TomogramImport_Params::Desired_unit_size()']]]
 ];

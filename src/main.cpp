@@ -13,7 +13,7 @@
 using namespace std;
 using namespace Utils;
 
-struct Input_Parameters {
+struct Input_Params {
 	// General
 	int Length; // x-direction size of the lattice
 	int Width; // y-direction size of the lattice
@@ -66,15 +66,14 @@ struct Input_Parameters {
 	int N_variants;
 };
 
-int array_which_median(const double data[], const int size);
-bool importParameters(ifstream& parameterfile, Input_Parameters& params, CorrelationCalcParams& correlation_params);
+bool importParameters(ifstream& parameterfile, Input_Params& params, CorrelationCalc_Params& correlation_params);
 
 int main(int argc, char * argv[]) {
 	// Input parameters
-	Input_Parameters parameters;
-	CorrelationCalcParams correlation_params;
+	Input_Params parameters;
+	CorrelationCalc_Params correlation_params;
 	// Internal parameters
-	string version = "v4.0-beta.1";
+	string version = "v4.0-beta.2";
 	bool Enable_import_morphology = false;
 	bool Enable_import_tomogram = false;
 	double mix_ratio = 0;
@@ -91,19 +90,22 @@ int main(int argc, char * argv[]) {
 	time_t start_time, end_time;
 	int procid = 0;
 	int nproc = 1;
-	stringstream ss;
+	string filename;
 	ifstream parameter_file;
 	ifstream morphology_input_file;
 	ofstream analysis_file;
+	ofstream areal_composition_file;
+	ofstream areal_tortuosity_file;
+	ofstream correlation_avg_file;
+	ofstream correlation_file;
+	ofstream depthdata_avg_file;
+	ofstream depthdata_file;
+	ofstream interfacial_dist_hist_file;
 	ofstream morphology_output_file;
 	ofstream morphology_cross_section_file;
-	ofstream correlation_avg_file;
-	ofstream correlationfile;
-	ofstream interfacial_dist_hist_file;
 	ofstream tortuosity_hist_file;
 	ofstream path_data1_file;
 	ofstream path_data2_file;
-	ofstream depth_dependent_avg_file;
 	bool success;
 	double *mix_ratios = NULL;
 	double *domain_sizes1 = NULL;
@@ -139,7 +141,6 @@ int main(int argc, char * argv[]) {
 	vector<double> depth_iv2_vect;
 	vector<double> depth_size1_vect;
 	vector<double> depth_size2_vect;
-	string path = "";
 	string input_morphology, input_file_path, filename_prefix;
 	string tomo_info_filename, tomo_data_filename;
 	// Begin
@@ -206,7 +207,7 @@ int main(int argc, char * argv[]) {
 			// Create initial lattice based on filename to load the tomogram data into
 			Morphology morph_tomo(procid);
 			// Collect tomogram import options
-			TomogramImportParams import_params;
+			TomogramImport_Params import_params;
 			import_params.Desired_unit_size = parameters.Desired_unit_size;
 			import_params.Enable_cutoff_analysis = parameters.Enable_cutoff_analysis;
 			import_params.Mixed_greyscale_width = parameters.Mixed_greyscale_width;
@@ -230,11 +231,9 @@ int main(int argc, char * argv[]) {
 			// Output morphology set to separate files
 			for (int i = 0; i < (int)morphology_set.size(); i++) {
 				cout << procid << ": Writing morphology " << i << " to an output file." << endl;
-				ss << "morphology_" << i << ".txt";
-				morphology_output_file.open(ss.str().c_str());
-				ss.str("");
-				morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
-				morphology_set[i].outputMorphologyFile(morphology_output_file, parameters.Enable_export_compressed_files);
+				filename = "morphology_" + to_string(i) + ".txt";
+				morphology_output_file.open(filename);
+				morphology_set[i].outputMorphologyFile(version, morphology_output_file, parameters.Enable_export_compressed_files);
 				morphology_output_file.close();
 			}
 		}
@@ -272,10 +271,9 @@ int main(int argc, char * argv[]) {
 		// Separate filename prefix from ID number.
 		pos_id = input_morphology.find_last_of("_");
 		filename_prefix = input_morphology.substr(pos_path, pos_id);
-		ss << filename_prefix << "_" << procid << ".txt";
-		cout << procid << ": Opening morphology file " << input_file_path << ss.str() << endl;
-		morphology_input_file.open(ss.str().c_str());
-		ss.str("");
+		filename = filename_prefix + "_" + to_string(procid) + ".txt";
+		cout << procid << ": Opening morphology file " << input_file_path << filename << endl;
+		morphology_input_file.open(filename);
 		if (morphology_input_file.is_open()) {
 			cout << procid << ": Morphology file successfully opened!" << endl;
 		}
@@ -358,6 +356,10 @@ int main(int argc, char * argv[]) {
 	// Calculate domain size if enabled.
 	if (parameters.Enable_correlation_calc) {
 		morph.calculateCorrelationDistances(correlation_params);
+		filename = "correlation_data_" + to_string(procid) + ".txt";
+		correlation_file.open(filename);
+		morph.outputCorrelationData(correlation_file);
+		correlation_file.close();
 		domain_size1 = morph.getDomainSize((char)1);
 		domain_size2 = morph.getDomainSize((char)2);
 		morph.calculateAnisotropies(parameters.N_sampling_max);
@@ -391,12 +393,10 @@ int main(int argc, char * argv[]) {
 		}
 		if (parameters.Enable_areal_maps_calc) {
 			cout << procid << " Creating areal tortuosity map." << endl;
-			ofstream areal_tort_file;
-			ss << "areal_tortuosity_map_" << procid << ".txt";
-			areal_tort_file.open(ss.str().c_str());
-			ss.str("");
-			morph.outputTortuosityMaps(areal_tort_file);
-			areal_tort_file.close();
+			filename = "areal_tortuosity_map_" + to_string(procid) + ".txt";
+			areal_tortuosity_file.open(filename);
+			morph.outputTortuosityMaps(areal_tortuosity_file);
+			areal_tortuosity_file.close();
 		}
 		// Calculate island volume ratio.
 		island_fraction1 = (double)morph.getIslandVolumeFraction((char)1);
@@ -405,50 +405,35 @@ int main(int argc, char * argv[]) {
 	if (parameters.Enable_depth_dependent_calc) {
 		cout << procid << ": Calculating the depth dependent composition and domain size..." << endl;
 		morph.calculateDepthDependentData(correlation_params);
+		filename = "depth_dependent_data_" + to_string(procid) + ".txt";
+		depthdata_file.open(filename);
+		morph.outputDepthDependentData(depthdata_file);
+		depthdata_file.close();
 	}
 	if (parameters.Enable_areal_maps_calc) {
 		cout << procid << " Creating areal composition map." << endl;
-		ofstream areal_comp_file;
-		ss << "areal_composition_map_" << procid << ".txt";
-		areal_comp_file.open(ss.str().c_str());
-		ss.str("");
-		morph.outputCompositionMaps(areal_comp_file);
-		areal_comp_file.close();
+		filename = "areal_composition_map_" + to_string(procid) + ".txt";
+		areal_composition_file.open(filename);
+		morph.outputCompositionMaps(areal_composition_file);
+		areal_composition_file.close();
 	}
 	// Save final morphology to a text file.
 	if (!parameters.Enable_analysis_only || Enable_import_tomogram) {
 		cout << procid << ": Writing morphology to file..." << endl;
 		if (!Enable_import_morphology || Enable_import_tomogram) {
-			ss << path << "morphology_" << procid << ".txt";
-			if (!parameters.Enable_export_compressed_files) {
-				morphology_output_file.open(ss.str().c_str());
-				morphology_output_file << "Ising_OPV " << version << " - uncompressed format" << endl;
-			}
-			else {
-				morphology_output_file.open(ss.str().c_str());
-				morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
-			}
+			filename = "morphology_" + to_string(procid) + ".txt";
 		}
 		else {
-			ss << path << filename_prefix << "mod_" << procid << ".txt";
-			if (!parameters.Enable_export_compressed_files) {
-				morphology_output_file.open(ss.str().c_str());
-				morphology_output_file << "Ising_OPV " << version << " - uncompressed format" << endl;
-			}
-			else {
-				morphology_output_file.open(ss.str().c_str());
-				morphology_output_file << "Ising_OPV " << version << " - compressed format" << endl;
-			}
+			filename = filename_prefix + "mod_" + to_string(procid) + ".txt";
 		}
-		ss.str("");
-		morph.outputMorphologyFile(morphology_output_file, parameters.Enable_export_compressed_files);
+		morphology_output_file.open(filename);
+		morph.outputMorphologyFile(version, morphology_output_file, parameters.Enable_export_compressed_files);
 		morphology_output_file.close();
 	}
 	// Save the cross-section of the x=0 plane to a file if enabled.
 	if (parameters.Enable_export_cross_section) {
-		ss << path << "morphology_" << procid << "_cross_section.txt";
-		morphology_cross_section_file.open(ss.str().c_str());
-		ss.str("");
+		filename = "morphology_" + to_string(procid) + "_cross_section.txt";
+		morphology_cross_section_file.open(filename);
 		morph.outputMorphologyCrossSection(morphology_cross_section_file);
 		morphology_cross_section_file.close();
 	}
@@ -571,68 +556,46 @@ int main(int argc, char * argv[]) {
 		// Output the average pair-pair correlation function.
 		if (parameters.Enable_correlation_calc) {
 			if (!Enable_import_morphology || Enable_import_tomogram) {
-				ss << path << "correlation_data_avg.txt";
-				correlation_avg_file.open(ss.str().c_str());
+				correlation_avg_file.open("correlation_data_avg.txt");
 			}
 			else {
 				if (parameters.Enable_analysis_only) {
-					ss << path << "correlation_data_avg_new.txt";
-					correlation_avg_file.open(ss.str().c_str());
+					correlation_avg_file.open("correlation_data_avg_new.txt");
 				}
 				else {
-					ss << path << "correlation_data_avg_mod.txt";
-					correlation_avg_file.open(ss.str().c_str());
+					correlation_avg_file.open("correlation_data_avg_mod.txt");
 				}
 			}
-			ss.str("");
-			correlation_avg_file << "Distance (a),Correlation1,Correlation2" << endl;
+			correlation_avg_file << "Distance (nm),Correlation1,Correlation2" << endl;
 			for (int i = 0; i < (int)correlation1_vect.size(); i++) {
-				correlation_avg_file << (double)i / 2 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
+				correlation_avg_file << morph.getUnitSize()*(double)i*0.5 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
 			}
 			correlation_avg_file.close();
 		}
 		// Output the average tortuosity histograms and the end-to-end path data.
 		if (parameters.Enable_tortuosity_calc) {
 			if (!Enable_import_morphology || Enable_import_tomogram) {
-				ss << path << "tortuosity_histograms.txt";
-				tortuosity_hist_file.open(ss.str().c_str());
-				ss.str("");
-				ss << path << "end-to-end_path_data1.txt";
-				path_data1_file.open(ss.str().c_str());
-				ss.str("");
-				ss << path << "end-to-end_path_data2.txt";
-				path_data2_file.open(ss.str().c_str());
-				ss.str("");
+				tortuosity_hist_file.open("tortuosity_histograms.txt");
+				path_data1_file.open("end-to-end_path_data1.txt");
+				path_data2_file.open("end-to-end_path_data2.txt");
 			}
 			else {
 				if (parameters.Enable_analysis_only) {
-					ss << path << "tortuosity_histograms_new.txt";
-					tortuosity_hist_file.open(ss.str().c_str());
-					ss.str("");
-					ss << path << "end-to-end_path_data1_new.txt";
-					path_data1_file.open(ss.str().c_str());
-					ss.str("");
-					ss << path << "end-to-end_path_data2_new.txt";
-					path_data2_file.open(ss.str().c_str());
-					ss.str("");
+					tortuosity_hist_file.open("tortuosity_histograms_new.txt");
+					path_data1_file.open("end-to-end_path_data1_new.txt");
+					path_data2_file.open("end-to-end_path_data2_new.txt");
 				}
 				else {
-					ss << path << "tortuosity_histograms_mod.txt";
-					tortuosity_hist_file.open(ss.str().c_str());
-					ss.str("");
-					ss << path << "end-to-end_path_data1_mod.txt";
-					path_data1_file.open(ss.str().c_str());
-					ss.str("");
-					ss << path << "end-to-end_path_data2_mod.txt";
-					path_data2_file.open(ss.str().c_str());
-					ss.str("");
+					tortuosity_hist_file.open("tortuosity_histograms_mod.txt");
+					path_data1_file.open("end-to-end_path_data1_mod.txt");
+					path_data2_file.open("end-to-end_path_data2_mod.txt");
 				}
 			}
-			tortuosity_hist_file << "Distance (a),Tortuosity1,Tortuosity2" << endl;
+			tortuosity_hist_file << "Distance (nm),Tortuosity1,Tortuosity2" << endl;
 			tortuosity_hist_file << 0 << "," << tortuosity_hist1_vect[0] << "," << tortuosity_hist2_vect[0] << endl;
 			int hist_size = (tortuosity_hist1_vect.size() > tortuosity_hist2_vect.size()) ? (int)tortuosity_hist1_vect.size() : (int)tortuosity_hist2_vect.size();
 			for (int i = 1; i < hist_size; i++) {
-				tortuosity_hist_file << (i + 49.0) / 50.0 << ",";
+				tortuosity_hist_file << morph.getUnitSize()*(i + 49.0) / 50.0 << ",";
 				if (i < tortuosity_hist1_vect.size()) {
 					tortuosity_hist_file << tortuosity_hist1_vect[i] << ",";
 				}
@@ -659,20 +622,14 @@ int main(int argc, char * argv[]) {
 		// Output the interfacial distance histograms.
 		if (parameters.Enable_interfacial_distance_calc) {
 			if (!Enable_import_morphology || Enable_import_tomogram) {
-				ss << path << "interfacial_distance_histograms.txt";
-				interfacial_dist_hist_file.open(ss.str().c_str());
-				ss.str("");
+				interfacial_dist_hist_file.open("interfacial_distance_histograms.txt");
 			}
 			else {
 				if (parameters.Enable_analysis_only) {
-					ss << path << "interfacial_distance_histograms_new.txt";
-					interfacial_dist_hist_file.open(ss.str().c_str());
-					ss.str("");
+					interfacial_dist_hist_file.open("interfacial_distance_histograms_new.txt");
 				}
 				else {
-					ss << path << "interfacial_distance_histograms_mod.txt";
-					interfacial_dist_hist_file.open(ss.str().c_str());
-					ss.str("");
+					interfacial_dist_hist_file.open("interfacial_distance_histograms_mod.txt");
 				}
 			}
 			interfacial_dist_hist_file << "Distance (a),Probability1,Probability2" << endl;
@@ -684,44 +641,32 @@ int main(int argc, char * argv[]) {
 		// Output the average depth dependent data.
 		if (parameters.Enable_depth_dependent_calc) {
 			if (!Enable_import_morphology || Enable_import_tomogram) {
-				ss << path << "depth_dependent_data_avg.txt";
-				depth_dependent_avg_file.open(ss.str().c_str());
-				ss.str("");
+				depthdata_avg_file.open("depth_dependent_data_avg.txt");
 			}
 			else {
 				if (parameters.Enable_analysis_only) {
-					ss << path << "depth_dependent_data_avg_new.txt";
-					depth_dependent_avg_file.open(ss.str().c_str());
-					ss.str("");
+					depthdata_avg_file.open("depth_dependent_data_avg_new.txt");
 				}
 				else {
-					ss << path << "depth_dependent_data_avg_mod.txt";
-					depth_dependent_avg_file.open(ss.str().c_str());
-					ss.str("");
+					depthdata_avg_file.open("depth_dependent_data_avg_mod.txt");
 				}
 			}
-			depth_dependent_avg_file << "Z-Position,Type1_composition,Type2_composition,Type1_IV_fraction,Type2_IV_fraction,Type1_domain_size,Type2_domain_size" << endl;
+			depthdata_avg_file << "Z-Position,Type1_composition,Type2_composition,Type1_IV_fraction,Type2_IV_fraction,Type1_domain_size,Type2_domain_size" << endl;
 			for (int i = 0; i < (int)depth_size1_vect.size(); i++) {
-				depth_dependent_avg_file << i << "," << depth_comp1_vect[i] << "," << depth_comp2_vect[i] << "," << depth_iv1_vect[i] << "," << depth_iv2_vect[i] << "," << depth_size1_vect[i] << "," << depth_size2_vect[i] << endl;
+				depthdata_avg_file << i << "," << depth_comp1_vect[i] << "," << depth_comp2_vect[i] << "," << depth_iv1_vect[i] << "," << depth_iv2_vect[i] << "," << depth_size1_vect[i] << "," << depth_size2_vect[i] << endl;
 			}
-			depth_dependent_avg_file.close();
+			depthdata_avg_file.close();
 		}
 		// Output the final morphology set analysis summary to a text file.
 		if (!Enable_import_morphology || Enable_import_tomogram) {
-			ss << path << "analysis_summary.txt";
-			analysis_file.open(ss.str().c_str());
-			ss.str("");
+			analysis_file.open("analysis_summary.txt");
 		}
 		else {
 			if (parameters.Enable_analysis_only) {
-				ss << path << "analysis_summary_new.txt";
-				analysis_file.open(ss.str().c_str());
-				ss.str("");
+				analysis_file.open("analysis_summary_new.txt");
 			}
 			else {
-				ss << path << "analysis_summary_mod.txt";
-				analysis_file.open(ss.str().c_str());
-				ss.str("");
+				analysis_file.open("analysis_summary_mod.txt");
 			}
 		}
 		analysis_file << "Summary of results for this morphology set containing " << nproc << " morphologies created using Ising_OPV " << version << ":" << endl;
@@ -815,7 +760,7 @@ int main(int argc, char * argv[]) {
 }
 
 //  This function imports the parameters from an input parameter text file into the Input_Parameters data structure.
-bool importParameters(ifstream& parameterfile, Input_Parameters& params, CorrelationCalcParams& correlation_params) {
+bool importParameters(ifstream& parameterfile, Input_Params& params, CorrelationCalc_Params& correlation_params) {
 	string line;
 	string var;
 	size_t pos;
@@ -1029,21 +974,4 @@ bool importParameters(ifstream& parameterfile, Input_Parameters& params, Correla
 	correlation_params.Enable_extended_correlation_calc = params.Enable_extended_correlation_calc;
 	correlation_params.Correlation_cutoff_distance = params.Correlation_cutoff_distance;
 	return true;
-}
-
-int array_which_median(const double data[], const int array_size) {
-	vector<double> data_vect;
-	data_vect.assign(array_size, 0);
-	for (int i = 0; i < array_size; i++) {
-		data_vect[i] = data[i];
-	}
-	sort(data_vect.begin(), data_vect.end());
-	double median = data_vect[array_size / 2];
-	for (int i = 0; i < array_size; i++) {
-		if (data[i] == median) {
-			return i;
-		}
-	}
-	cout << "Error! Median not found." << endl;
-	return -1;
 }

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rescale_5ffactor',['Rescale_factor',['../struct_input___parameters.html#a772dcf2d432685f190308f94f9178db3',1,'Input_Parameters']]]
+  ['smoothing_5fthreshold',['Smoothing_threshold',['../struct_input___params.html#ac1f8037bd5aacf7bdb39d1fd979990d5',1,'Input_Params']]]
 ];

@@ -16,29 +16,7 @@
 #include <numeric>
 #include <sstream>
 
-// Data structure that stores counts of the number of neighbors that have the same site type as the main site
-// sum1 keeps track of the first-nearest neighbors
-// sum2 keeps track of the second-nearest neighbors
-// sum3 keeps track of the third-nearest neighbors
-struct NeighborCounts {
-	char sum1;
-	char sum2;
-	char sum3;
-	bool operator==(const NeighborCounts& a) const {
-		return (sum1 == a.sum1 && sum2 == a.sum2);
-	}
-};
-
-struct NeighborInfo {
-	long int first_indices[6];
-	long int second_indices[12];
-	long int third_indices[8];
-	char total1;
-	char total2;
-	char total3;
-};
-
-struct CorrelationCalcParams {
+struct CorrelationCalc_Params {
 	int N_sampling_max;
 	bool Enable_mix_frac_method;
 	bool Enable_e_method;
@@ -46,7 +24,7 @@ struct CorrelationCalcParams {
 	int Correlation_cutoff_distance;
 };
 
-struct TomogramImportParams {
+struct TomogramImport_Params {
 	double Desired_unit_size;
 	bool Enable_cutoff_analysis;
 	int Mixed_greyscale_width;
@@ -56,37 +34,101 @@ struct TomogramImportParams {
 	int N_extracted_segments;
 };
 
+//! \brief This class contains a lattice representation of a materials blend with the ability to simulate phase separation and perform a variety of structural analyses.
+//! \details The class makes use of the Lattice class to store the morphology data, and phase separation simulations are implemented using an Ising-based method.
+//! Morphological descriptors such as thh domain size, interfacial area, tortuosity, and more can be calculated for a given morphology.
+//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
+//! \author Michael C. Heiber
+//! \date 2014-2018
 class Morphology {
+
+	// Custom Data Structures
+	struct Node {
+		long int neighbor_indices[26];
+		char neighbor_distances_sq[26];
+		float distance_est;
+		long int site_index;
+	};
+
+	struct NodeIteratorCompare {
+		bool operator()(const std::vector<Node>::const_iterator& a, const std::vector<Node>::const_iterator& b) const {
+			if (a == b) {
+				return false;
+			}
+			else if (a->distance_est == b->distance_est) {
+				return a < b;
+			}
+			else {
+				return a->distance_est < b->distance_est;
+			}
+		}
+	};
+
+	// Data structure that stores counts of the number of neighbors that have the same site type as the main site
+	// sum1 keeps track of the first-nearest neighbors
+	// sum2 keeps track of the second-nearest neighbors
+	// sum3 keeps track of the third-nearest neighbors
+	struct NeighborCounts {
+		char sum1;
+		char sum2;
+		char sum3;
+		bool operator==(const NeighborCounts& a) const {
+			return (sum1 == a.sum1 && sum2 == a.sum2);
+		}
+	};
+
+	struct NeighborInfo {
+		long int first_indices[6];
+		long int second_indices[12];
+		long int third_indices[8];
+		char total1;
+		char total2;
+		char total3;
+	};
+
 public:
-	// functions
+	// Functions
+
+	//! /brief This is the simplest constructor that creates a Morphology object with the default member variables and an empty lattice.
+	//! /param id is the input integer ID number that will be assigned to the Morphology object.
 	Morphology(const int id);
 
-	//  This constructor creates a Morphology object including a 3D lattice with a size defined by the input dimensions (length, width, height).
-	//  Two-dimensional periodic boundaries in the x- and y- directions are implemented by default, but periodic boundaries in the z-direction can also be enabled upon construction.
-	//  Morphology objects are also tagged with an integer identification number.
-	//  Each morphology object has a random number generator that is seeded by the seed input parameter upon creation.
-	Morphology(const int length, const int width, const int height, const bool enable_z_periodic_boundary, const int id);
+	//! \brief This constructor creates a Morphology object with a 3D lattice with a size defined by the input dimensions (length, width, height).
+	//! \details Two-dimensional periodic boundaries in the x- and y- directions are implemented by default, but periodic boundaries in the z-direction can also be enabled upon construction.
+	//! Morphology objects are also tagged with an integer identification number.
+	//! \param length is the x-dimension size of the lattice.
+	//! \param width is the y-dimension size of the lattice.
+	//! \param height is the z-dimension size of the lattice.
+	//! \param enable_periodic_z is a boolean parameter that specifies whether or not periodic boundaries are enabled in the z-direction.
+	//! \param id is the input integer ID number that will be assigned to the Morphology object.
+	Morphology(const int length, const int width, const int height, const bool enable_periodic_z, const int id);
 
+	//! \brief This constructor creates a Morphology object with a 3D lattice defined by the input Lattice object.
+	//! \param input_lattice is the input Lattice object that will be used to create the Morphology.
+	//! \param id is the input integer ID number that will be assigned to the Morphology object.
 	Morphology(const Lattice& input_lattice, const int id);
 
+	//! \brief This is the default virtual destructor.
 	virtual ~Morphology();
 
-	//  This function calculates the anisotropy of each phase by calling the calculateAnisotropy function and keeps tracks of whether or not the anisotropy calculation
-	//  has been successful yet or not.  The function returns false if the anisotropy cannot be calculated with the given cutoff radius.  N_sampling_max defines the maximum
-	//  number of sites that will be sampled from the lattice when the lattice has more sites than the designated value of N_sampling_max.  See the calculateAnisotropy function
-	//  for more information about how the cutoff_radius and N_sampling_max input parameters are used.
-	bool calculateAnisotropies(const int N_sampling_max);
+	//! \brief Calculates the domain size anisotropy of each phase 
+	//! \param N_sampling_max defines the maximum number of sites that will be sampled from the lattice when the lattice has more sites than N_sampling_max.
+	void calculateAnisotropies(const int N_sampling_max);
 
-	void calculateCorrelationDistances(const CorrelationCalcParams& parameters);
+	//! \brief Calculates the correlation length data and the domain size using the input parameter options.
+	//! \param parameters is the input data structure that contains all of the parameters needed by the correlation function calculation algorithm.
+	void calculateCorrelationDistances(const CorrelationCalc_Params& parameters);
 
-	void calculateDepthDependentData(const CorrelationCalcParams& correlation_params_input);
+	//! \brief Calculates the lattice depth dependent (z-direction) characteristics of the morphology.
+	//! \details Calculates the depth dependent composition, interfacial volume fraction, and domain size.
+	//! \param correlation_params is the input data structure that contains all of the parameters needed by the correlation function calculation algorithm.
+	void calculateDepthDependentData(const CorrelationCalc_Params& correlation_params);
 
-	//  This function calculates the number of site faces that are between dissimilar sites, resulting in the interfacial area in units of lattice units squared.
+	//! \brief Calculates the interfacial area in units of lattice units squared.
 	double calculateInterfacialAreaVolumeRatio() const;
 
-	//  This function calculates the interfacial distance histograms that characterize the morphology, which gives the fraction of sites at a certain distance from the interface.
-	//  This histogram is compiled by calculating the shortest distance from each each site to an interface.
-	bool calculateInterfacialDistance();
+	//! \brief This function calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.
+	void calculateInterfacialDistance();
 
 	//  This function calculates the number of sites that are adjacent to a site of the opposite type, which represents the interfacial volume in lattice units cubed.
 	double calculateInterfacialVolumeFraction() const;
@@ -167,6 +209,8 @@ public:
 	//  This function returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.
 	std::vector<double> getTortuosityHistogram(const char site_type) const;
 
+	double getUnitSize() const;
+
 	//  This function returns the width or y-direction size of the lattice.
 	int getWidth() const;
 
@@ -175,7 +219,7 @@ public:
 	//! \param data_filename is the name of the raw morphology data file
 	//! \param params is the TomogramImportParams data structure that contains the additional information needed to handle the tomogram data
 	//! \returns a vector of Morphology objects that consists of a series of subsections of the original tomogram data
-	std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename, const TomogramImportParams& params);
+	std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename, const TomogramImport_Params& params);
 
 	//  This function imports the morphology text file given by the input file stream.
 	//  It must be specified whether or not the input file is in the compressed format.
@@ -183,9 +227,13 @@ public:
 
 	void outputCompositionMaps(std::ofstream& outfile) const;
 
+	void outputCorrelationData(std::ofstream& outfile) const;
+
+	void outputDepthDependentData(std::ofstream& outfilt) const;
+
 	//  This function outputs the morphology data to a text file specified by the output file stream.
 	//  The user can specify whether to use the compress text format or not.
-	void outputMorphologyFile(std::ofstream& outfile, const bool enable_export_compressed_files) const;
+	void outputMorphologyFile(std::string version, std::ofstream& outfile, const bool enable_export_compressed_files) const;
 
 	//  This function outputs to a text file a cross-section of the morphology at x=0 plane.
 	void outputMorphologyCrossSection(std::ofstream& outfile) const;
@@ -203,30 +251,10 @@ public:
 
 protected:
 private:
-	// custom data structures
-	struct Node {
-		long int neighbor_indices[26];
-		char neighbor_distances_sq[26];
-		float distance_est;
-		long int site_index;
-	};
-	struct NodeIteratorCompare {
-		bool operator()(const std::vector<Node>::const_iterator& a, const std::vector<Node>::const_iterator& b) const {
-			if (a == b) {
-				return false;
-			}
-			else if (a->distance_est == b->distance_est) {
-				return a < b;
-			}
-			else {
-				return a->distance_est < b->distance_est;
-			}
-		}
-	};
-	// properties
-	int ID;
+	// Member variables
+	int ID = 0;
 	std::vector<double> Mix_fractions; // Volume fraction of each component to total
-	bool Enable_third_neighbor_interaction;
+	bool Enable_third_neighbor_interaction = false;
 	Lattice lattice;
 	std::vector<char> Site_types;
 	std::vector<int> Site_type_counts;
@@ -247,7 +275,8 @@ private:
 	NeighborCounts Temp_counts1;
 	NeighborCounts Temp_counts2;
 	std::mt19937_64 gen;
-	// functions
+
+	// Functions
 	void addSiteType(const char site_type);
 
 	//  This function calculates the additional change in energy of the system that would occur if the adjacent sites at (x1,y1,z1) and (x2,y2,z2) were to be swapped with
@@ -275,7 +304,7 @@ private:
 	//  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
 	//  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
 	//  If the function returns false and the function is re-called with a larger cutoff_distance, the correlation function is not recalculated for close distances and only fills in the missing data for larger distances.
-	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalcParams& params);
+	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params);
 
 	//  This function calculates the fraction of nearby sites the site at (x,y,z) that are not the same type.
 	//  The radius that determines which sites are included as nearby sites is determined by the rescale factor parameter.
@@ -292,7 +321,7 @@ private:
 	//  When non-periodic/hard z-boundaries are used, it is assumed that neither site type has a preferential interaction with the z-boundary
 	double calculateEnergyChange(const Coords& coords1, const Coords& coords2, const double interaction_energy1, const double interaction_energy2) const;
 
-	NeighborCounts calculateNeighborCounts(const Coords& coords) const;
+	Morphology::NeighborCounts calculateNeighborCounts(const Coords& coords) const;
 
 	//  This function calculates the shortest pathways through the domains in the morphology using Dijkstra's algorithm.
 	//  For all type 1 sites, the shortest distance from each site along a path through other type 1 sites to the boundary at z=0 is calculated.

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['input_5fparameters',['Input_Parameters',['../struct_input___parameters.html',1,'']]]
+  ['input_5fparams',['Input_Params',['../struct_input___params.html',1,'']]]
 ];

@@ -68,6 +68,9 @@ namespace Utils {
 	static constexpr double Pi = 3.14159265359;
 	static constexpr double Coulomb_constant = 8.987551787e9; // N m^2 C^-2
 
+	//! \brief Calculates the cumulative hisogram from the input probability histogram data.
+	//! \param data is the input probability histogram which is a vector of x-y pairs consisting of bin-centered x values and probability y values.
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and cumnulative probability y values.
 	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& data);
 
 	//! \brief Calculates the probability histogram for the input data vector using the input number of bins.
@@ -160,6 +163,9 @@ namespace Utils {
 	//! \returns a new string that will have the whitespace removed.
 	std::string removeWhitespace(const std::string& str);
 
+	//! \brief Rounds the input double value to the nearest integer value.
+	//! \param num is the input double value.
+	//! \returns an integer value that is the rounded value.
 	int round_int(const double num);
 
 	// Template functions
@@ -177,6 +183,10 @@ namespace Utils {
 		return sum / array_size;
 	}
 
+	//! \brief This template function calculates and returns the median value when given an array of numerical datatypes.
+	//! \param data is the array of numerical data.
+	//! \param array_size is the size of the input data array.
+	//! \return The median value of the data set.
 	template<typename T>
 	T array_median(const T data[], const int array_size) {
 		std::vector<T> data_vect(array_size);
@@ -188,7 +198,7 @@ namespace Utils {
 	}
 
 	//! \brief This template function calculates and returns the standard deviation in double format when given an array of numerical datatypes.
-	//! \param data is the array of numerical data.
+	//! \param data is the input array of numerical data.
 	//! \param array_size is the size of the input data array.
 	//! \return The standard deviation of the data set in double format.
 	template<typename T>
@@ -199,6 +209,22 @@ namespace Utils {
 			sum += (data[i] - avg)*(data[i] - avg);
 		}
 		return sqrt(sum / (array_size - 1));
+	}
+
+	//! \brief This template function determine the which element in the data array has the median value of the dataset.
+	//! \param data is the input array of numerical data.
+	//! \param array_size is the size of the input data array.
+	//! \return the integer array index that indicates the median value.
+	template<typename T>
+	int array_which_median(const T data[], const int array_size) {
+		T median = array_median(data, array_size);
+		for (int i = 0; i < array_size; i++) {
+			if (data[i] == median) {
+				return i;
+			}
+		}
+		cout << "Error! Median not found." << endl;
+		return -1;
 	}
 
 	//! \brief This template function calculates and returns the results of an integer power operation on a base numerical datatype.

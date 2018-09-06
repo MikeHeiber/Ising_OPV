@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['probability_5fscaling_5fexponent',['Probability_scaling_exponent',['../struct_input___parameters.html#a99dcd8a5297039a15097ec298218f8dc',1,'Input_Parameters::Probability_scaling_exponent()'],['../struct_tomogram_import_params.html#a6809734d8f4b5036012d366392d49ea1',1,'TomogramImportParams::Probability_scaling_exponent()']]]
+  ['rescale_5ffactor',['Rescale_factor',['../struct_input___params.html#a8affb9e31de49a5372aace89bfd53e45',1,'Input_Params']]]
 ];

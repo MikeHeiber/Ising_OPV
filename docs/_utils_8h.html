@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Ising_OPV
-   &#160;<span id="projectnumber">v4.0-beta.1</span>
+   &#160;<span id="projectnumber">v4.0-beta.2</span>
    </div>
    <div id="projectbrief">Generates and analyzes model bulk heterojunction morphologies in a parallel computing environment</div>
   </td>
@@ -124,6 +124,7 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:addef6105cdbf91cd7a29611bcbb21a13"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#addef6105cdbf91cd7a29611bcbb21a13">Utils::calculateCumulativeHist</a> (const std::vector&lt; std::pair&lt; double, double &gt;&gt; &amp;data)</td></tr>
+<tr class="memdesc:addef6105cdbf91cd7a29611bcbb21a13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the cumulative hisogram from the input probability histogram data.  <a href="namespace_utils.html#addef6105cdbf91cd7a29611bcbb21a13">More...</a><br /></td></tr>
 <tr class="separator:addef6105cdbf91cd7a29611bcbb21a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcb2e98774b12bc12264034913547a2c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#adcb2e98774b12bc12264034913547a2c">Utils::calculateProbabilityHist</a> (const std::vector&lt; double &gt; &amp;data, int num_bins)</td></tr>
 <tr class="memdesc:adcb2e98774b12bc12264034913547a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input data vector using the input number of bins.  <a href="namespace_utils.html#adcb2e98774b12bc12264034913547a2c">More...</a><br /></td></tr>
@@ -162,6 +163,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:af9ceee3373ffe317f07d177cf0dfe056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all spaces and ta characters in a string.  <a href="namespace_utils.html#af9ceee3373ffe317f07d177cf0dfe056">More...</a><br /></td></tr>
 <tr class="separator:af9ceee3373ffe317f07d177cf0dfe056"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c01171765e90ffe32cdcf6f5cd663fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a7c01171765e90ffe32cdcf6f5cd663fb">Utils::round_int</a> (const double num)</td></tr>
+<tr class="memdesc:a7c01171765e90ffe32cdcf6f5cd663fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rounds the input double value to the nearest integer value.  <a href="namespace_utils.html#a7c01171765e90ffe32cdcf6f5cd663fb">More...</a><br /></td></tr>
 <tr class="separator:a7c01171765e90ffe32cdcf6f5cd663fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa76a204af4dd4c3eb151691825de2eb2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aa76a204af4dd4c3eb151691825de2eb2"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#aa76a204af4dd4c3eb151691825de2eb2">Utils::array_avg</a> (const T data[], const int array_size)</td></tr>
@@ -169,11 +171,16 @@ Functions</h2></td></tr>
 <tr class="separator:aa76a204af4dd4c3eb151691825de2eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8900f1e40190a70c1fc561e5d02d4c8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ab8900f1e40190a70c1fc561e5d02d4c8"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#ab8900f1e40190a70c1fc561e5d02d4c8">Utils::array_median</a> (const T data[], const int array_size)</td></tr>
+<tr class="memdesc:ab8900f1e40190a70c1fc561e5d02d4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function calculates and returns the median value when given an array of numerical datatypes.  <a href="namespace_utils.html#ab8900f1e40190a70c1fc561e5d02d4c8">More...</a><br /></td></tr>
 <tr class="separator:ab8900f1e40190a70c1fc561e5d02d4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25d09c704b5ae03f01cf76b6de10aa19"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a25d09c704b5ae03f01cf76b6de10aa19"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a25d09c704b5ae03f01cf76b6de10aa19">Utils::array_stdev</a> (const T data[], const int array_size)</td></tr>
 <tr class="memdesc:a25d09c704b5ae03f01cf76b6de10aa19"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function calculates and returns the standard deviation in double format when given an array of numerical datatypes.  <a href="namespace_utils.html#a25d09c704b5ae03f01cf76b6de10aa19">More...</a><br /></td></tr>
 <tr class="separator:a25d09c704b5ae03f01cf76b6de10aa19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74375f62d5a40cc05f02a84ffcd22627"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a74375f62d5a40cc05f02a84ffcd22627"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a74375f62d5a40cc05f02a84ffcd22627">Utils::array_which_median</a> (const T data[], const int array_size)</td></tr>
+<tr class="memdesc:a74375f62d5a40cc05f02a84ffcd22627"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function determine the which element in the data array has the median value of the dataset.  <a href="namespace_utils.html#a74375f62d5a40cc05f02a84ffcd22627">More...</a><br /></td></tr>
+<tr class="separator:a74375f62d5a40cc05f02a84ffcd22627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affd19edaa58a3f8425e1f7b4c9233f8a"><td class="memTemplParams" colspan="2">template&lt;typename base_type &gt; </td></tr>
 <tr class="memitem:affd19edaa58a3f8425e1f7b4c9233f8a"><td class="memTemplItemLeft" align="right" valign="top">base_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#affd19edaa58a3f8425e1f7b4c9233f8a">Utils::intpow</a> (const base_type base, const int exponent)</td></tr>
 <tr class="memdesc:affd19edaa58a3f8425e1f7b4c9233f8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function calculates and returns the results of an integer power operation on a base numerical datatype.  <a href="namespace_utils.html#affd19edaa58a3f8425e1f7b4c9233f8a">More...</a><br /></td></tr>

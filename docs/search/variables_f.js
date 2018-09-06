@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unit_5fsize',['Unit_size',['../struct_parameters___lattice.html#a5f9628b968ba4206a7650c774827b1f0',1,'Parameters_Lattice']]]
+  ['x',['x',['../struct_coords.html#a59992d986e76375f31828d32c05cd15d',1,'Coords']]]
 ];

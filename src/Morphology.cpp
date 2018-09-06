@@ -14,12 +14,12 @@ Morphology::Morphology(const int id) {
 	gen.seed((int)time(0)*(id + 1));
 }
 
-Morphology::Morphology(const int length, const int width, const int height, const bool enable_z_periodic_boundary, const int id) {
+Morphology::Morphology(const int length, const int width, const int height, const bool enable_periodic_z, const int id) {
 	ID = id;
-	Parameters_Lattice params;
+	Lattice_Params params;
 	params.Enable_periodic_x = true;
 	params.Enable_periodic_y = true;
-	params.Enable_periodic_z = enable_z_periodic_boundary;
+	params.Enable_periodic_z = enable_periodic_z;
 	params.Length = length;
 	params.Width = width;
 	params.Height = height;
@@ -168,7 +168,7 @@ double Morphology::calculateAdditionalEnergyChange(const long int site_index_mai
 	return -additional_interaction * ((count1_f - count1_i) + (count2_f - count2_i));
 }
 
-bool Morphology::calculateAnisotropies(const int N_sampling_max) {
+void Morphology::calculateAnisotropies(const int N_sampling_max) {
 	cout << ID << ": Calculating the domain anisotropy..." << endl;
 	// Select sites for correlation function calculation.
 	// Site indices for each selected site are stored in the Correlation_sites vector.
@@ -188,26 +188,29 @@ bool Morphology::calculateAnisotropies(const int N_sampling_max) {
 			break;
 		}
 		for (int i = 0; i < (int)Site_types.size(); i++) {
+			// Only perform anisotropy calculations for site types that have not yet been updated and that have at least 100 site counts.
 			if (!Domain_anisotropy_updated[i] && Site_type_counts[i] > 100) {
 				cout << ID << ": Performing sampling anisotropy calculation with " << (int)correlation_sites_data[i].size() << " sites for site type " << (int)Site_types[i] << " with a cutoff of " << cutoff_distance << "..." << endl;
 				Domain_anisotropy_updated[i] = calculateAnisotropy(correlation_sites_data[i], Site_types[i], cutoff_distance);
 			}
 		}
+		// Check if the anisotropy has been successfully calculated for all sites types
 		for (int i = 0; i < (int)Site_types.size(); i++) {
+			// If the anisotropy was not updated for any of the site types, increment the cutoff_distance, break the for loop, and repeat the anisotropy calculations
 			if (!Domain_anisotropy_updated[i] && Site_type_counts[i] > 100) {
 				success = false;
+				cutoff_distance++;
 				break;
 			}
+			// If the i index reaches its max value here, then the anisotropy calculation was successful for all site types.
 			if (i == (int)Site_types.size() - 1) {
 				success = true;
 			}
 		}
-		cutoff_distance++;
 	}
 	if (!success) {
 		cout << ID << ": Warning! Could not calculate the domain anisotropy." << endl;
 	}
-	return true;
 }
 
 bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, const char site_type, const int cutoff_distance) {
@@ -366,7 +369,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 	return true;
 }
 
-double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalcParams& params) {
+double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const char site_type, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params) {
 	int type_index = getSiteTypeIndex(site_type);
 	vector<int> site_count, total_count;
 	double distance;
@@ -482,7 +485,7 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 	return -1;
 }
 
-void Morphology::calculateCorrelationDistances(const CorrelationCalcParams& params) {
+void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& params) {
 	if (params.Enable_extended_correlation_calc) {
 		cout << ID << ": Calculating the domain size using the extended pair-pair correlation function using a cutoff radius of " << params.Correlation_cutoff_distance << "..." << endl;
 	}
@@ -531,45 +534,10 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalcParams& para
 			}
 		}
 	}
-	// Output Calculation Results
-	stringstream ss;
-	ss << "correlation_data_" << ID << ".txt";
-	ofstream correlationfile;
-	correlationfile.open(ss.str().c_str());
-	ss.str("");
-	int max_correlation_size = (int)Correlation_data[0].size();
-	for (int n = 1; n < (int)Site_types.size(); n++) {
-		if ((int)Correlation_data[n].size() > max_correlation_size) {
-			max_correlation_size = (int)Correlation_data[n].size();
-		}
-	}
-	correlationfile << "Distance (a)";
-	for (int n = 0; n < (int)Site_types.size(); n++) {
-		correlationfile << ",Correlation" << (int)Site_types[n];
-	}
-	correlationfile << endl;
-	for (int i = 0; i < max_correlation_size; i++) {
-		if (i < (int)Correlation_data[0].size()) {
-			correlationfile << 0.5*(double)i << "," << Correlation_data[0][i];
-		}
-		else {
-			correlationfile << 0.5*(double)i << "," << NAN;
-		}
-		for (int n = 1; n < (int)Site_types.size(); n++) {
-			if (i < (int)Correlation_data[n].size()) {
-				correlationfile << "," << Correlation_data[n][i];
-			}
-			else {
-				correlationfile << "," << NAN;
-			}
-		}
-		correlationfile << endl;
-	}
-	correlationfile.close();
 }
 
-void Morphology::calculateDepthDependentData(const CorrelationCalcParams& correlation_params_input) {
-	CorrelationCalcParams correlation_params = correlation_params_input;
+void Morphology::calculateDepthDependentData(const CorrelationCalc_Params& correlation_calc_params) {
+	CorrelationCalc_Params correlation_params = correlation_calc_params;
 	correlation_params.Enable_extended_correlation_calc = false;
 	if (correlation_params.Enable_mix_frac_method) {
 		cout << ID << ": Calculating the depth dependent domain size from the pair-pair correlation function using the mix fraction method..." << endl;
@@ -668,37 +636,6 @@ void Morphology::calculateDepthDependentData(const CorrelationCalcParams& correl
 		}
 		// Calculate depth dependent anisotropy
 	}
-	// Output Data to File
-	stringstream ss;
-	ss << "depth_dependent_data_" << ID << ".txt";
-	ofstream outfile;
-	outfile.open(ss.str().c_str());
-	ss.str("");
-	outfile << "Z-Position";
-	for (int n = 0; n < (int)Site_types.size(); n++) {
-		outfile << ",Type" << (int)Site_types[n] << "_composition";
-	}
-	for (int n = 0; n < (int)Site_types.size(); n++) {
-		outfile << ",Type" << (int)Site_types[n] << "_IV_fraction";
-	}
-	for (int n = 0; n < (int)Site_types.size(); n++) {
-		outfile << ",Type" << (int)Site_types[n] << "_domain_size";
-	}
-	outfile << endl;
-	for (int z = 0; z < lattice.getHeight(); z++) {
-		outfile << z;
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			outfile << "," << Depth_composition_data[n][z];
-		}
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			outfile << "," << Depth_iv_data[n][z];
-		}
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			outfile << "," << Depth_domain_size_data[n][z];
-		}
-		outfile << endl;
-	}
-	outfile.close();
 }
 
 double Morphology::calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const {
@@ -951,7 +888,7 @@ double Morphology::calculateInterfacialAreaVolumeRatio() const {
 	return (double)site_count / (double)lattice.getNumSites();
 }
 
-bool Morphology::calculateInterfacialDistance() {
+void Morphology::calculateInterfacialDistance() {
 	Coords coords, coords_dest;
 	int d_int;
 	float d;
@@ -1040,7 +977,6 @@ bool Morphology::calculateInterfacialDistance() {
 			InterfacialHistogram_data[n][i] /= (double)counts[n];
 		}
 	}
-	return true;
 }
 
 double Morphology::calculateInterfacialVolumeFraction() const {
@@ -1090,7 +1026,7 @@ void Morphology::calculateMixFractions() {
 	}
 }
 
-NeighborCounts Morphology::calculateNeighborCounts(const Coords& coords) const {
+Morphology::NeighborCounts Morphology::calculateNeighborCounts(const Coords& coords) const {
 	Coords coords_dest;
 	NeighborCounts counts;
 	counts.sum1 = 0;
@@ -1916,11 +1852,15 @@ vector<double> Morphology::getTortuosityHistogram(char site_type) const {
 	return TortuosityHistogram_data[getSiteTypeIndex(site_type)];
 }
 
+double Morphology::getUnitSize() const {
+	return lattice.getUnitSize();
+}
+
 int Morphology::getWidth() const {
 	return lattice.getWidth();
 }
 
-vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename, const TomogramImportParams& import_params) {
+vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename, const TomogramImport_Params& import_params) {
 	vector<Morphology> morphologies;
 	// Input file checking
 	if (info_filename.length() > 4 && info_filename.substr(info_filename.length() - 4, 4).compare(".xml") != 0) {
@@ -1967,7 +1907,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 	}
 	// Parse xml info file
 	XMLDocument xml_doc;
-	Parameters_Lattice lattice_params;
+	Lattice_Params lattice_params;
 	string data_format;
 	xml_doc.LoadFile(info_filename.c_str());
 	if (xml_doc.Error()) {
@@ -2239,7 +2179,7 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 	int j;
 	string line;
 	bool isV4 = false;
-	Parameters_Lattice params;
+	Lattice_Params params;
 	params.Unit_size = 1.0;
 	// Check if file is in compressed format or not
 	getline(infile, line);
@@ -2516,6 +2456,65 @@ void Morphology::outputCompositionMaps(ofstream& outfile) const {
 	}
 }
 
+void Morphology::outputCorrelationData(ofstream& outfile) const {
+	// Output Calculation Results
+	int max_correlation_size = (int)Correlation_data[0].size();
+	for (int n = 1; n < (int)Site_types.size(); n++) {
+		if ((int)Correlation_data[n].size() > max_correlation_size) {
+			max_correlation_size = (int)Correlation_data[n].size();
+		}
+	}
+	outfile << "Distance (nm)";
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		outfile << ",Correlation" << (int)Site_types[n];
+	}
+	outfile << endl;
+	for (int i = 0; i < max_correlation_size; i++) {
+		if (i < (int)Correlation_data[0].size()) {
+			outfile << lattice.getUnitSize()*0.5*(double)i << "," << Correlation_data[0][i];
+		}
+		else {
+			outfile << lattice.getUnitSize()*0.5*(double)i << "," << NAN;
+		}
+		for (int n = 1; n < (int)Site_types.size(); n++) {
+			if (i < (int)Correlation_data[n].size()) {
+				outfile << "," << Correlation_data[n][i];
+			}
+			else {
+				outfile << "," << NAN;
+			}
+		}
+		outfile << endl;
+	}
+}
+
+void Morphology::outputDepthDependentData(ofstream& outfile) const {
+	outfile << "Z-Position";
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		outfile << ",Type" << (int)Site_types[n] << "_composition";
+	}
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		outfile << ",Type" << (int)Site_types[n] << "_IV_fraction";
+	}
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		outfile << ",Type" << (int)Site_types[n] << "_domain_size";
+	}
+	outfile << endl;
+	for (int z = 0; z < lattice.getHeight(); z++) {
+		outfile << z;
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			outfile << "," << Depth_composition_data[n][z];
+		}
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			outfile << "," << Depth_iv_data[n][z];
+		}
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			outfile << "," << Depth_domain_size_data[n][z];
+		}
+		outfile << endl;
+	}
+}
+
 void Morphology::outputMorphologyCrossSection(ofstream& outfile) const {
 	int x = lattice.getLength() / 2;
 	//for (int x = 0; x < lattice.getLength(); x++) {
@@ -2528,7 +2527,13 @@ void Morphology::outputMorphologyCrossSection(ofstream& outfile) const {
 	//}
 }
 
-void Morphology::outputMorphologyFile(ofstream& outfile, bool enable_export_compressed_files) const {
+void Morphology::outputMorphologyFile(string version, ofstream& outfile, bool enable_export_compressed_files) const {
+	if (enable_export_compressed_files) {
+		outfile << "Ising_OPV " << version << " - compressed format" << endl;
+	}
+	else {
+		outfile << "Ising_OPV " << version << " - uncompressed format" << endl;
+	}
 	outfile << lattice.getLength() << endl;
 	outfile << lattice.getWidth() << endl;
 	outfile << lattice.getHeight() << endl;

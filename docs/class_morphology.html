@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Ising_OPV
-   &#160;<span id="projectnumber">v4.0-beta.1</span>
+   &#160;<span id="projectnumber">v4.0-beta.2</span>
    </div>
    <div id="projectbrief">Generates and analyzes model bulk heterojunction morphologies in a parallel computing environment</div>
   </td>
@@ -96,28 +96,39 @@ $(document).ready(function(){initNavTree('class_morphology.html','');});
 </div><!--header-->
 <div class="contents">
 
+<p>This class contains a lattice representation of a materials blend with the ability to simulate phase separation and perform a variety of structural analyses.  
+ <a href="class_morphology.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_morphology_8h_source.html">Morphology.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a09cfd5be430782c5c7e42b3e47951e52"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a09cfd5be430782c5c7e42b3e47951e52">Morphology</a> (const int id)</td></tr>
 <tr class="separator:a09cfd5be430782c5c7e42b3e47951e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a0185a81efa0b2f3b1200c38286ae8a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a4a0185a81efa0b2f3b1200c38286ae8a">Morphology</a> (const int length, const int width, const int height, const bool enable_z_periodic_boundary, const int id)</td></tr>
-<tr class="separator:a4a0185a81efa0b2f3b1200c38286ae8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81630801be83f8240b6a0bc015abfbd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a81630801be83f8240b6a0bc015abfbd9">Morphology</a> (const int length, const int width, const int height, const bool enable_periodic_z, const int id)</td></tr>
+<tr class="memdesc:a81630801be83f8240b6a0bc015abfbd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This constructor creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with a 3D lattice with a size defined by the input dimensions (length, width, height).  <a href="#a81630801be83f8240b6a0bc015abfbd9">More...</a><br /></td></tr>
+<tr class="separator:a81630801be83f8240b6a0bc015abfbd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73116866f4f29b64c975d2d45ead4325"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a73116866f4f29b64c975d2d45ead4325">Morphology</a> (const <a class="el" href="class_lattice.html">Lattice</a> &amp;input_lattice, const int id)</td></tr>
+<tr class="memdesc:a73116866f4f29b64c975d2d45ead4325"><td class="mdescLeft">&#160;</td><td class="mdescRight">This constructor creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with a 3D lattice defined by the input <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object.  <a href="#a73116866f4f29b64c975d2d45ead4325">More...</a><br /></td></tr>
 <tr class="separator:a73116866f4f29b64c975d2d45ead4325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d54b17cf9ee68c0ce8fe979bfe28384"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a2d54b17cf9ee68c0ce8fe979bfe28384">~Morphology</a> ()</td></tr>
+<tr class="memdesc:a2d54b17cf9ee68c0ce8fe979bfe28384"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the default virtual destructor.  <a href="#a2d54b17cf9ee68c0ce8fe979bfe28384">More...</a><br /></td></tr>
 <tr class="separator:a2d54b17cf9ee68c0ce8fe979bfe28384"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8de89b5bf8678af839a6800f508b6919"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a8de89b5bf8678af839a6800f508b6919">calculateAnisotropies</a> (const int N_sampling_max)</td></tr>
-<tr class="separator:a8de89b5bf8678af839a6800f508b6919"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03b65232e7cb815317ff86d8813cabb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a03b65232e7cb815317ff86d8813cabb7">calculateCorrelationDistances</a> (const <a class="el" href="struct_correlation_calc_params.html">CorrelationCalcParams</a> &amp;parameters)</td></tr>
-<tr class="separator:a03b65232e7cb815317ff86d8813cabb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6af48d5de78d85401ea5faffb67beeb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ac6af48d5de78d85401ea5faffb67beeb">calculateDepthDependentData</a> (const <a class="el" href="struct_correlation_calc_params.html">CorrelationCalcParams</a> &amp;correlation_params_input)</td></tr>
-<tr class="separator:ac6af48d5de78d85401ea5faffb67beeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade7823e9d940f64f2a2a8e0e8d42feda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ade7823e9d940f64f2a2a8e0e8d42feda">calculateAnisotropies</a> (const int N_sampling_max)</td></tr>
+<tr class="memdesc:ade7823e9d940f64f2a2a8e0e8d42feda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the domain size anisotropy of each phase.  <a href="#ade7823e9d940f64f2a2a8e0e8d42feda">More...</a><br /></td></tr>
+<tr class="separator:ade7823e9d940f64f2a2a8e0e8d42feda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a068a9bfe83b2fc6d5db049484667bff4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a068a9bfe83b2fc6d5db049484667bff4">calculateCorrelationDistances</a> (const <a class="el" href="struct_correlation_calc___params.html">CorrelationCalc_Params</a> &amp;parameters)</td></tr>
+<tr class="memdesc:a068a9bfe83b2fc6d5db049484667bff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the correlation length data and the domain size using the input parameter options.  <a href="#a068a9bfe83b2fc6d5db049484667bff4">More...</a><br /></td></tr>
+<tr class="separator:a068a9bfe83b2fc6d5db049484667bff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad407cc95b032af3ca1fd3dce825700ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad407cc95b032af3ca1fd3dce825700ce">calculateDepthDependentData</a> (const <a class="el" href="struct_correlation_calc___params.html">CorrelationCalc_Params</a> &amp;correlation_params)</td></tr>
+<tr class="memdesc:ad407cc95b032af3ca1fd3dce825700ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the lattice depth dependent (z-direction) characteristics of the morphology.  <a href="#ad407cc95b032af3ca1fd3dce825700ce">More...</a><br /></td></tr>
+<tr class="separator:ad407cc95b032af3ca1fd3dce825700ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbfa9e82ebc29410ca67e1fe9b4266a3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#abbfa9e82ebc29410ca67e1fe9b4266a3">calculateInterfacialAreaVolumeRatio</a> () const</td></tr>
+<tr class="memdesc:abbfa9e82ebc29410ca67e1fe9b4266a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the interfacial area in units of lattice units squared.  <a href="#abbfa9e82ebc29410ca67e1fe9b4266a3">More...</a><br /></td></tr>
 <tr class="separator:abbfa9e82ebc29410ca67e1fe9b4266a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1a094758a27c5c24bd1f9b8e9a941e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ae1a094758a27c5c24bd1f9b8e9a941e5">calculateInterfacialDistance</a> ()</td></tr>
-<tr class="separator:ae1a094758a27c5c24bd1f9b8e9a941e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55a98257f370deb28faada2b7b433649"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a55a98257f370deb28faada2b7b433649">calculateInterfacialDistance</a> ()</td></tr>
+<tr class="memdesc:a55a98257f370deb28faada2b7b433649"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.  <a href="#a55a98257f370deb28faada2b7b433649">More...</a><br /></td></tr>
+<tr class="separator:a55a98257f370deb28faada2b7b433649"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0ed42e5fda897c0a0ef52ccf630971b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad0ed42e5fda897c0a0ef52ccf630971b">calculateInterfacialVolumeFraction</a> () const</td></tr>
 <tr class="separator:ad0ed42e5fda897c0a0ef52ccf630971b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2f352fb666e1fd5093d7b2c1619f171"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aa2f352fb666e1fd5093d7b2c1619f171">calculateMixFractions</a> ()</td></tr>
@@ -162,17 +173,23 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0c9002f9eece8d69187a9b5b1f19a430"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a00737bb81b0fbe7f2511fe73fcb62c50">getTortuosityHistogram</a> (const char site_type) const</td></tr>
 <tr class="separator:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac27576c0f5331a9e8de755fcce65faa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aac27576c0f5331a9e8de755fcce65faa">getUnitSize</a> () const</td></tr>
+<tr class="separator:aac27576c0f5331a9e8de755fcce65faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5be6b8e1b0316a3d3c2ea406853e66d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ac5be6b8e1b0316a3d3c2ea406853e66d">getWidth</a> () const</td></tr>
 <tr class="separator:ac5be6b8e1b0316a3d3c2ea406853e66d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a802c5b6ffe1336ae6c94085972b45a99"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_morphology.html">Morphology</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a802c5b6ffe1336ae6c94085972b45a99">importTomogramMorphologyFile</a> (const std::string &amp;info_filename, const std::string &amp;data_filename, const <a class="el" href="struct_tomogram_import_params.html">TomogramImportParams</a> &amp;params)</td></tr>
-<tr class="memdesc:a802c5b6ffe1336ae6c94085972b45a99"><td class="mdescLeft">&#160;</td><td class="mdescRight">imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters  <a href="#a802c5b6ffe1336ae6c94085972b45a99">More...</a><br /></td></tr>
-<tr class="separator:a802c5b6ffe1336ae6c94085972b45a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45baf8ef4564b6cab3eeec43e897fb57"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_morphology.html">Morphology</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a45baf8ef4564b6cab3eeec43e897fb57">importTomogramMorphologyFile</a> (const std::string &amp;info_filename, const std::string &amp;data_filename, const <a class="el" href="struct_tomogram_import___params.html">TomogramImport_Params</a> &amp;params)</td></tr>
+<tr class="memdesc:a45baf8ef4564b6cab3eeec43e897fb57"><td class="mdescLeft">&#160;</td><td class="mdescRight">imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters  <a href="#a45baf8ef4564b6cab3eeec43e897fb57">More...</a><br /></td></tr>
+<tr class="separator:a45baf8ef4564b6cab3eeec43e897fb57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9290e3efa6fa08ee8bf0504f8fec9ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad9290e3efa6fa08ee8bf0504f8fec9ac">importMorphologyFile</a> (std::ifstream &amp;infile)</td></tr>
 <tr class="separator:ad9290e3efa6fa08ee8bf0504f8fec9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cf927126d6dabaf37fb2fa97430a2ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a3cf927126d6dabaf37fb2fa97430a2ef">outputCompositionMaps</a> (std::ofstream &amp;outfile) const</td></tr>
 <tr class="separator:a3cf927126d6dabaf37fb2fa97430a2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a732368a414128ce1840b344c0dd1bb94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a732368a414128ce1840b344c0dd1bb94">outputMorphologyFile</a> (std::ofstream &amp;outfile, const bool enable_export_compressed_files) const</td></tr>
-<tr class="separator:a732368a414128ce1840b344c0dd1bb94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66235f3d8ed42f7febd004e30d10dd40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a66235f3d8ed42f7febd004e30d10dd40">outputCorrelationData</a> (std::ofstream &amp;outfile) const</td></tr>
+<tr class="separator:a66235f3d8ed42f7febd004e30d10dd40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa173c867743007955a1fddf8c347125"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aaa173c867743007955a1fddf8c347125">outputDepthDependentData</a> (std::ofstream &amp;outfilt) const</td></tr>
+<tr class="separator:aaa173c867743007955a1fddf8c347125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcecb57b108bd8403e69d3b68d92be7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#adcecb57b108bd8403e69d3b68d92be7b">outputMorphologyFile</a> (std::string version, std::ofstream &amp;outfile, const bool enable_export_compressed_files) const</td></tr>
+<tr class="separator:adcecb57b108bd8403e69d3b68d92be7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c4d5954ad727de0e36b2675f3aef623"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a8c4d5954ad727de0e36b2675f3aef623">outputMorphologyCrossSection</a> (std::ofstream &amp;outfile) const</td></tr>
 <tr class="separator:a8c4d5954ad727de0e36b2675f3aef623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19499e8d86a3e7a9e4791954bb9170b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a19499e8d86a3e7a9e4791954bb9170b5">outputTortuosityMaps</a> (std::ofstream &amp;outfile) const</td></tr>
@@ -182,7 +199,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeab0b8df25e039317611692294bb713f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aeab0b8df25e039317611692294bb713f">stretchLattice</a> (const int rescale_factor)</td></tr>
 <tr class="separator:aeab0b8df25e039317611692294bb713f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This class contains a lattice representation of a materials blend with the ability to simulate phase separation and perform a variety of structural analyses. </p>
+<p>The class makes use of the <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> class to store the morphology data, and phase separation simulations are implemented using an Ising-based method. Morphological descriptors such as thh domain size, interfacial area, tortuosity, and more can be calculated for a given morphology. </p><dl class="section copyright"><dt>Copyright</dt><dd>MIT License. For more information, see the LICENSE file that accompanies this software package. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Michael C. Heiber </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2014-2018 </dd></dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a09cfd5be430782c5c7e42b3e47951e52"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a09cfd5be430782c5c7e42b3e47951e52">&#9670;&nbsp;</a></span>Morphology() <span class="overload">[1/3]</span></h2>
 
@@ -198,11 +220,12 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>/brief This is the simplest constructor that creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with the default member variables and an empty lattice. /param id is the input integer ID number that will be assigned to the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object. </p>
 
 </div>
 </div>
-<a id="a4a0185a81efa0b2f3b1200c38286ae8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a0185a81efa0b2f3b1200c38286ae8a">&#9670;&nbsp;</a></span>Morphology() <span class="overload">[2/3]</span></h2>
+<a id="a81630801be83f8240b6a0bc015abfbd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81630801be83f8240b6a0bc015abfbd9">&#9670;&nbsp;</a></span>Morphology() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +252,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>enable_z_periodic_boundary</em>, </td>
+          <td class="paramname"><em>enable_periodic_z</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -244,6 +267,18 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>This constructor creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with a 3D lattice with a size defined by the input dimensions (length, width, height). </p>
+<p>Two-dimensional periodic boundaries in the x- and y- directions are implemented by default, but periodic boundaries in the z-direction can also be enabled upon construction. <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> objects are also tagged with an integer identification number. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">length</td><td>is the x-dimension size of the lattice. </td></tr>
+    <tr><td class="paramname">width</td><td>is the y-dimension size of the lattice. </td></tr>
+    <tr><td class="paramname">height</td><td>is the z-dimension size of the lattice. </td></tr>
+    <tr><td class="paramname">enable_periodic_z</td><td>is a boolean parameter that specifies whether or not periodic boundaries are enabled in the z-direction. </td></tr>
+    <tr><td class="paramname">id</td><td>is the input integer ID number that will be assigned to the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -273,6 +308,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>This constructor creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with a 3D lattice defined by the input <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input_lattice</td><td>is the input <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object that will be used to create the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a>. </td></tr>
+    <tr><td class="paramname">id</td><td>is the input integer ID number that will be assigned to the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a2d54b17cf9ee68c0ce8fe979bfe28384"></a>
@@ -298,17 +342,19 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>This is the default virtual destructor. </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a8de89b5bf8678af839a6800f508b6919"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8de89b5bf8678af839a6800f508b6919">&#9670;&nbsp;</a></span>calculateAnisotropies()</h2>
+<a id="ade7823e9d940f64f2a2a8e0e8d42feda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade7823e9d940f64f2a2a8e0e8d42feda">&#9670;&nbsp;</a></span>calculateAnisotropies()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Morphology::calculateAnisotropies </td>
+          <td class="memname">void Morphology::calculateAnisotropies </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>N_sampling_max</em></td><td>)</td>
@@ -317,10 +363,18 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Calculates the domain size anisotropy of each phase. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">N_sampling_max</td><td>defines the maximum number of sites that will be sampled from the lattice when the lattice has more sites than N_sampling_max. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a03b65232e7cb815317ff86d8813cabb7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03b65232e7cb815317ff86d8813cabb7">&#9670;&nbsp;</a></span>calculateCorrelationDistances()</h2>
+<a id="a068a9bfe83b2fc6d5db049484667bff4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a068a9bfe83b2fc6d5db049484667bff4">&#9670;&nbsp;</a></span>calculateCorrelationDistances()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -328,17 +382,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void Morphology::calculateCorrelationDistances </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_correlation_calc_params.html">CorrelationCalcParams</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="struct_correlation_calc___params.html">CorrelationCalc_Params</a> &amp;&#160;</td>
           <td class="paramname"><em>parameters</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
+<p>Calculates the correlation length data and the domain size using the input parameter options. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameters</td><td>is the input data structure that contains all of the parameters needed by the correlation function calculation algorithm. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="ac6af48d5de78d85401ea5faffb67beeb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6af48d5de78d85401ea5faffb67beeb">&#9670;&nbsp;</a></span>calculateDepthDependentData()</h2>
+<a id="ad407cc95b032af3ca1fd3dce825700ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad407cc95b032af3ca1fd3dce825700ce">&#9670;&nbsp;</a></span>calculateDepthDependentData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -346,12 +408,20 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void Morphology::calculateDepthDependentData </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_correlation_calc_params.html">CorrelationCalcParams</a> &amp;&#160;</td>
-          <td class="paramname"><em>correlation_params_input</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="struct_correlation_calc___params.html">CorrelationCalc_Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>correlation_params</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Calculates the lattice depth dependent (z-direction) characteristics of the morphology. </p>
+<p>Calculates the depth dependent composition, interfacial volume fraction, and domain size. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">correlation_params</td><td>is the input data structure that contains all of the parameters needed by the correlation function calculation algorithm. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -370,22 +440,26 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Calculates the interfacial area in units of lattice units squared. </p>
+
 </div>
 </div>
-<a id="ae1a094758a27c5c24bd1f9b8e9a941e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1a094758a27c5c24bd1f9b8e9a941e5">&#9670;&nbsp;</a></span>calculateInterfacialDistance()</h2>
+<a id="a55a98257f370deb28faada2b7b433649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55a98257f370deb28faada2b7b433649">&#9670;&nbsp;</a></span>calculateInterfacialDistance()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Morphology::calculateInterfacialDistance </td>
+          <td class="memname">void Morphology::calculateInterfacialDistance </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>This function calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface. </p>
 
 </div>
 </div>
@@ -849,6 +923,23 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="aac27576c0f5331a9e8de755fcce65faa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac27576c0f5331a9e8de755fcce65faa">&#9670;&nbsp;</a></span>getUnitSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Morphology::getUnitSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ac5be6b8e1b0316a3d3c2ea406853e66d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac5be6b8e1b0316a3d3c2ea406853e66d">&#9670;&nbsp;</a></span>getWidth()</h2>
 
@@ -884,8 +975,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a802c5b6ffe1336ae6c94085972b45a99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a802c5b6ffe1336ae6c94085972b45a99">&#9670;&nbsp;</a></span>importTomogramMorphologyFile()</h2>
+<a id="a45baf8ef4564b6cab3eeec43e897fb57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45baf8ef4564b6cab3eeec43e897fb57">&#9670;&nbsp;</a></span>importTomogramMorphologyFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -905,7 +996,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_tomogram_import_params.html">TomogramImportParams</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="struct_tomogram_import___params.html">TomogramImport_Params</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>&#160;</td>
         </tr>
         <tr>
@@ -921,11 +1012,11 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">info_filename</td><td>is the name of the xml metadata file </td></tr>
     <tr><td class="paramname">data_filename</td><td>is the name of the raw morphology data file </td></tr>
-    <tr><td class="paramname">params</td><td>is the <a class="el" href="struct_tomogram_import_params.html">TomogramImportParams</a> data structure that contains the additional information needed to handle the tomogram data </td></tr>
+    <tr><td class="paramname">params</td><td>is the TomogramImportParams data structure that contains the additional information needed to handle the tomogram data </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a vector of <a class="el" href="class_morphology.html">Morphology</a> objects that consists of a series of subsections of the original tomogram data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a vector of <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> objects that consists of a series of subsections of the original tomogram data </dd></dl>
 
 </div>
 </div>
@@ -940,6 +1031,42 @@ Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">std::ofstream &amp;&#160;</td>
           <td class="paramname"><em>outfile</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66235f3d8ed42f7febd004e30d10dd40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66235f3d8ed42f7febd004e30d10dd40">&#9670;&nbsp;</a></span>outputCorrelationData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Morphology::outputCorrelationData </td>
+          <td>(</td>
+          <td class="paramtype">std::ofstream &amp;&#160;</td>
+          <td class="paramname"><em>outfile</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa173c867743007955a1fddf8c347125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa173c867743007955a1fddf8c347125">&#9670;&nbsp;</a></span>outputDepthDependentData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Morphology::outputDepthDependentData </td>
+          <td>(</td>
+          <td class="paramtype">std::ofstream &amp;&#160;</td>
+          <td class="paramname"><em>outfilt</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -965,8 +1092,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a732368a414128ce1840b344c0dd1bb94"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a732368a414128ce1840b344c0dd1bb94">&#9670;&nbsp;</a></span>outputMorphologyFile()</h2>
+<a id="adcecb57b108bd8403e69d3b68d92be7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcecb57b108bd8403e69d3b68d92be7b">&#9670;&nbsp;</a></span>outputMorphologyFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -974,6 +1101,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void Morphology::outputMorphologyFile </td>
           <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">std::ofstream &amp;&#160;</td>
           <td class="paramname"><em>outfile</em>, </td>
         </tr>

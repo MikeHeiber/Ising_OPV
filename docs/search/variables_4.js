@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['first_5findices',['first_indices',['../struct_neighbor_info.html#a24aef60740d39e2fc524d56780deea53',1,'NeighborInfo']]]
+  ['growth_5fdirection',['Growth_direction',['../struct_input___params.html#a3d5dfb17e825564eedd5f1c9624eafbf',1,'Input_Params']]]
 ];

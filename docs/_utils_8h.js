@@ -4,6 +4,7 @@ var _utils_8h =
     [ "array_avg", "_utils_8h.html#aa76a204af4dd4c3eb151691825de2eb2", null ],
     [ "array_median", "_utils_8h.html#ab8900f1e40190a70c1fc561e5d02d4c8", null ],
     [ "array_stdev", "_utils_8h.html#a25d09c704b5ae03f01cf76b6de10aa19", null ],
+    [ "array_which_median", "_utils_8h.html#a74375f62d5a40cc05f02a84ffcd22627", null ],
     [ "calculateCumulativeHist", "_utils_8h.html#addef6105cdbf91cd7a29611bcbb21a13", null ],
     [ "calculateProbabilityHist", "_utils_8h.html#adcb2e98774b12bc12264034913547a2c", null ],
     [ "calculateProbabilityHist", "_utils_8h.html#a0818230f8ad279ef7ca217f3cba81f76", null ],

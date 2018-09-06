@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['site',['Site',['../class_site.html',1,'']]]
+  ['tomogramimportparams',['TomogramImportParams',['../struct_tomogram_import_params.html',1,'']]]
 ];

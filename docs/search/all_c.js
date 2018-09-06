@@ -1,5 +1,9 @@
 var searchData=
 [
-  ['parameters_5flattice',['Parameters_Lattice',['../struct_parameters___lattice.html',1,'']]],
-  ['probability_5fscaling_5fexponent',['Probability_scaling_exponent',['../struct_input___parameters.html#a99dcd8a5297039a15097ec298218f8dc',1,'Input_Parameters::Probability_scaling_exponent()'],['../struct_tomogram_import_params.html#a6809734d8f4b5036012d366392d49ea1',1,'TomogramImportParams::Probability_scaling_exponent()']]]
+  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['removeduplicates',['removeDuplicates',['../namespace_utils.html#a5f64d00eec0b50ac5bd119652c99d01b',1,'Utils']]],
+  ['removewhitespace',['removeWhitespace',['../namespace_utils.html#af9ceee3373ffe317f07d177cf0dfe056',1,'Utils']]],
+  ['rescale_5ffactor',['Rescale_factor',['../struct_input___params.html#a8affb9e31de49a5372aace89bfd53e45',1,'Input_Params']]],
+  ['resize',['resize',['../class_lattice.html#ac4be34653feea6ea791dddf800432765',1,'Lattice']]],
+  ['round_5fint',['round_int',['../namespace_utils.html#a7c01171765e90ffe32cdcf6f5cd663fb',1,'Utils']]]
 ];

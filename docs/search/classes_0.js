@@ -1,5 +1,5 @@
 var searchData=
 [
   ['coords',['Coords',['../struct_coords.html',1,'']]],
-  ['correlationcalcparams',['CorrelationCalcParams',['../struct_correlation_calc_params.html',1,'']]]
+  ['correlationcalc_5fparams',['CorrelationCalc_Params',['../struct_correlation_calc___params.html',1,'']]]
 ];

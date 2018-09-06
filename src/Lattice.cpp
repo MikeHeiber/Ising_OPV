@@ -11,7 +11,7 @@ Lattice::Lattice() {
 
 }
 
-void Lattice::init(const Parameters_Lattice& params, mt19937_64* generator_ptr) {
+void Lattice::init(const Lattice_Params& params, mt19937_64* generator_ptr) {
 	Enable_periodic_x = params.Enable_periodic_x;
 	Enable_periodic_y = params.Enable_periodic_y;
 	Enable_periodic_z = params.Enable_periodic_z;
@@ -146,7 +146,7 @@ bool Lattice::checkMoveValidity(const Coords& coords_initial, const int i, const
 
 Lattice Lattice::extractSublattice(const int x, const int sublength, const int y, const int subwidth, const int z, const int subheight) const {
 	Lattice sublattice;
-	Parameters_Lattice params;
+	Lattice_Params params;
 	params.Enable_periodic_x = false;
 	params.Enable_periodic_y = false;
 	params.Enable_periodic_z = false;
@@ -223,7 +223,7 @@ long int Lattice::getSiteIndex(const int x, const int y, const int z) const {
 	return (long int)x*(long int)Width*(long int)Height + (long int)y*(long int)Height + (long int)z;
 }
 
-vector<Site>::iterator Lattice::getSiteIt(const Coords& coords) {
+vector<Lattice::Site>::iterator Lattice::getSiteIt(const Coords& coords) {
 	auto site_it = sites.begin();
 	advance(site_it, getSiteIndex(coords));
 	return site_it;

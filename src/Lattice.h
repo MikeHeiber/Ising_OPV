@@ -13,7 +13,7 @@
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 //! \author Michael C. Heiber
 //! \date 2014-2018
-struct Parameters_Lattice {
+struct Lattice_Params {
 	//! Determines whether the x-direction periodic boundaries will be enabled. 
 	bool Enable_periodic_x;
 	//! Determines whether the y-direction periodic boundaries will be enabled. 
@@ -30,28 +30,28 @@ struct Parameters_Lattice {
 	double Unit_size; // nm
 };
 
-class Site {
-public:
-	char type = 0;
-};
-
 //! \brief This class contains the properties of a three-dimensional lattice and the functions needed to interact with it.
-//! \details The class makes use of the Parameters_Lattice struct to load the neccessary input parameters, the Coords struct
-//! to record the Cartesian coordinates of each lattice site, and the Site class to assign properties to each site.
+//! \details The class makes use of the Lattice_Params struct to load the neccessary input parameters and the Coords struct
+//! to record the Cartesian coordinates of each lattice site.
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 //! \author Michael C. Heiber
 //! \date 2014-2018
 class Lattice {
+
+	struct Site {
+		char type = 0;
+	};
+
 public:
 	//! \brief Default constructor that creates an empty Lattice object.
 	//! \warning An empty lattice object should not be used until initialized using the init function.
 	Lattice();
 
 	//! \brief Initializes the Lattice object using the provided Parameters_Lattice input parameter struct.
-	//! \param params is a Parameters_Lattice struct that contains all of the required
+	//! \param params is a Lattice_Params struct that contains all of the required
 	//! parameters to initialize the Lattice object. 
 	//! \param generator_ptr is a pointer to a Mersenne twister number generator.
-	void init(const Parameters_Lattice& params, std::mt19937_64* generator_ptr);
+	void init(const Lattice_Params& params, std::mt19937_64* generator_ptr);
 
 	//! \brief Calculates the destination coordinates when given the starting coordinates and the displacement vector (i,j,k).
 	//! \details When the starting coordinates are near one or more of the lattice boundaries and periodic boundary conditions are enabled,
@@ -129,6 +129,14 @@ public:
 	//! \return false if a move event is not possible.
 	bool checkMoveValidity(const Coords& coords_initial, const int i, const int j, const int k) const;
 
+	//! \brief Extracts a sub-lattice from a larger lattice.
+	//! \param x is the starting x-coordinate of sub-lattice.
+	//! \param sublength is the x-dimension of the sub-lattice.
+	//! \param y is the starting y-coordinate of sub-lattice.
+	//! \param subwidth is the y-dimension of the sub-lattice.
+	//! \param z is the starting z-coordinate of sub-lattice.
+	//! \param subheight is the z-dimension of the sub-lattice.
+	//! \return A new Lattice object that contains the data from the specified sub-lattice.
 	Lattice extractSublattice(const int x, const int sublength, const int y, const int subwidth, const int z, const int subheight) const;
 
 	//! \brief Generates the coordinates for a randomly selected site in the lattice.
@@ -182,10 +190,10 @@ public:
 	//! \brief Gets the vector iterator for the site corresponding to the input coordinates.
 	//! \param coords is the Coords struct that represents the input coordinates.
 	//! \return The vector iterator for the sites vector that is associated with the site located at the input coordinates.
-	std::vector<Site>::iterator getSiteIt(const Coords& coords);
+	std::vector<Lattice::Site>::iterator getSiteIt(const Coords& coords);
 
 	//! \brief Gets the type of the site wtih the specified site index
-	//! \param coords is the site index.
+	//! \param site_index is the site index.
 	//! \return A char datatype indicator of the site type.
 	char getSiteType(const long int site_index) const;
 
@@ -227,10 +235,14 @@ public:
 	//! \return false if periodic boundaries are disabled in the z-direction.
 	bool isZPeriodic() const;
 
+	//! \brief Resizes the lattice and clears the sites.
+	//! \param length_new is the new x-dimension of the lattice.
+	//! \param width_new is the new y-dimension of the lattice.
+	//! \param height_new is the new z-dimension of the lattice.
 	void resize(const int length_new, const int width_new, const int height_new);
 
 	//! \brief Sets the type of the site located at the specified input coordinates
-	//! \param coords is the site index.
+	//! \param site_index is the site index.
 	//! \param site_type is the char datatype designation for the site type.
 	void setSiteType(const long int site_index, const char site_type);
 
@@ -244,13 +256,13 @@ public:
 protected:
 
 private:
-	bool Enable_periodic_x;
-	bool Enable_periodic_y;
-	bool Enable_periodic_z;
-	int Length; // nm
-	int Width; // nm
-	int Height; // nm
-	double Unit_size; // nm
+	bool Enable_periodic_x = true;
+	bool Enable_periodic_y = true;
+	bool Enable_periodic_z = true;
+	int Length = 0; // nm
+	int Width = 0; // nm
+	int Height = 0; // nm
+	double Unit_size = 1.0; // nm
 	std::vector<Site> sites;
 	std::mt19937_64* gen_ptr;
 };
