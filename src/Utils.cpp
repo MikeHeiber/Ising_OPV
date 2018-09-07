@@ -9,7 +9,7 @@ namespace Utils {
 
 	using namespace std;
 
-	vector<pair<double, double>> calculateCumulativeHist(const vector<pair<double, double>>& data) {
+	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& data) {
 		auto result = data;
 		result[0].second = 0;
 		for (int i = 1; i < (int)data.size(); i++) {
@@ -67,7 +67,7 @@ namespace Utils {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
 			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
-			std::vector<std::pair<double, double>> null_output = { { 0.0,0.0 } };
+			vector<pair<double, double>> null_output = { { 0.0,0.0 } };
 			return null_output;
 		}
 		// Determine the starting bin position
@@ -98,7 +98,7 @@ namespace Utils {
 		return hist;
 	}
 
-	bool importBooleanParam(const string& input, bool& error_status) {
+	bool importBooleanParam(const std::string& input, bool& error_status) {
 		string str = removeWhitespace(input);
 		if (str.compare("true") == 0) {
 			return true;
@@ -113,7 +113,7 @@ namespace Utils {
 		}
 	}
 
-	double integrateData(const vector<pair<double, double>>& data) {
+	double integrateData(const std::vector<std::pair<double, double>>& data) {
 		double area = 0;
 		for (int i = 1; i < (int)data.size(); i++) {
 			area += ((data[i - 1].second + data[i].second) / 2.0)*(data[i].first - data[i - 1].first);
@@ -121,7 +121,7 @@ namespace Utils {
 		return area;
 	}
 
-	double interpolateData(const vector<pair<double, double>>& data, const double x_val) {
+	double interpolateData(const std::vector<std::pair<double, double>>& data, const double x_val) {
 		for (int i = 1; i < (int)data.size(); i++) {
 			if (data[i - 1].first < x_val && data[i].first > x_val) {
 				return data[i - 1].second + ((data[i].second - data[i - 1].second) / (data[i].first - data[i - 1].first))*(x_val - data[i - 1].first);

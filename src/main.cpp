@@ -320,7 +320,7 @@ int main(int argc, char * argv[]) {
 			cout << procid << ": Initial blend ratio is " << morph.getMixFraction((char)1) << endl;
 			if (parameters.Enable_smoothing) {
 				cout << procid << ": Executing standard smoothing with a smoothing threshold of " << parameters.Smoothing_threshold << "..." << endl;
-				morph.executeSmoothing(parameters.Smoothing_threshold, 2);
+				morph.executeSmoothing(parameters.Smoothing_threshold, 1);
 				cout << procid << ": Blend ratio after smoothing is " << morph.getMixFraction((char)1) << endl;
 			}
 			cout << procid << ": Shrinking lattice by a factor of " << parameters.Rescale_factor << " ..." << endl;
@@ -341,7 +341,7 @@ int main(int argc, char * argv[]) {
 	if (parameters.Enable_smoothing && !parameters.Enable_shrink && !parameters.Enable_analysis_only) {
 		if (!parameters.Enable_rescale) {
 			cout << procid << ": Executing standard smoothing with a smoothing threshold of " << parameters.Smoothing_threshold << "..." << endl;
-			morph.executeSmoothing(parameters.Smoothing_threshold, 2);
+			morph.executeSmoothing(parameters.Smoothing_threshold, 1);
 		}
 		else {
 			cout << procid << ": Executing rescale factor dependent smoothing with a smoothing threshold of " << parameters.Smoothing_threshold << "..." << endl;
@@ -385,8 +385,8 @@ int main(int argc, char * argv[]) {
 		else {
 			cout << procid << ": Calculating tortuosity using the standard method..." << endl;
 		}
-		success = morph.calculateTortuosity((char)1, (bool)0, parameters.Enable_reduced_memory_tortuosity_calc);
-		success = morph.calculateTortuosity((char)2, (bool)1, parameters.Enable_reduced_memory_tortuosity_calc);
+		success = morph.calculateTortuosity((char)1, parameters.Enable_reduced_memory_tortuosity_calc);
+		success = morph.calculateTortuosity((char)2, parameters.Enable_reduced_memory_tortuosity_calc);
 		if (!success) {
 			cout << procid << ": Error calculating tortuosity! Program will exit now." << endl;
 			return 0;

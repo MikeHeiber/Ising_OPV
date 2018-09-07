@@ -104,6 +104,7 @@ $(document).ready(function(){initNavTree('class_morphology.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a09cfd5be430782c5c7e42b3e47951e52"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a09cfd5be430782c5c7e42b3e47951e52">Morphology</a> (const int id)</td></tr>
+<tr class="memdesc:a09cfd5be430782c5c7e42b3e47951e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the simplest constructor that creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with the default member variables and an empty lattice.  <a href="#a09cfd5be430782c5c7e42b3e47951e52">More...</a><br /></td></tr>
 <tr class="separator:a09cfd5be430782c5c7e42b3e47951e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81630801be83f8240b6a0bc015abfbd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a81630801be83f8240b6a0bc015abfbd9">Morphology</a> (const int length, const int width, const int height, const bool enable_periodic_z, const int id)</td></tr>
 <tr class="memdesc:a81630801be83f8240b6a0bc015abfbd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This constructor creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with a 3D lattice with a size defined by the input dimensions (length, width, height).  <a href="#a81630801be83f8240b6a0bc015abfbd9">More...</a><br /></td></tr>
@@ -127,76 +128,109 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:abbfa9e82ebc29410ca67e1fe9b4266a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the interfacial area in units of lattice units squared.  <a href="#abbfa9e82ebc29410ca67e1fe9b4266a3">More...</a><br /></td></tr>
 <tr class="separator:abbfa9e82ebc29410ca67e1fe9b4266a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55a98257f370deb28faada2b7b433649"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a55a98257f370deb28faada2b7b433649">calculateInterfacialDistance</a> ()</td></tr>
-<tr class="memdesc:a55a98257f370deb28faada2b7b433649"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.  <a href="#a55a98257f370deb28faada2b7b433649">More...</a><br /></td></tr>
+<tr class="memdesc:a55a98257f370deb28faada2b7b433649"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.  <a href="#a55a98257f370deb28faada2b7b433649">More...</a><br /></td></tr>
 <tr class="separator:a55a98257f370deb28faada2b7b433649"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0ed42e5fda897c0a0ef52ccf630971b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad0ed42e5fda897c0a0ef52ccf630971b">calculateInterfacialVolumeFraction</a> () const</td></tr>
+<tr class="memdesc:ad0ed42e5fda897c0a0ef52ccf630971b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the fraction of sites adjacent to an interface.  <a href="#ad0ed42e5fda897c0a0ef52ccf630971b">More...</a><br /></td></tr>
 <tr class="separator:ad0ed42e5fda897c0a0ef52ccf630971b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2f352fb666e1fd5093d7b2c1619f171"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aa2f352fb666e1fd5093d7b2c1619f171">calculateMixFractions</a> ()</td></tr>
+<tr class="memdesc:aa2f352fb666e1fd5093d7b2c1619f171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the volume fraction of each type site in the lattice to the total number of sites.  <a href="#aa2f352fb666e1fd5093d7b2c1619f171">More...</a><br /></td></tr>
 <tr class="separator:aa2f352fb666e1fd5093d7b2c1619f171"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfa9df7cabd61b92e0f10022d57806eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#acfa9df7cabd61b92e0f10022d57806eb">calculateTortuosity</a> (const char site_tye, const bool electrode_num, const bool enable_reduced_memory)</td></tr>
-<tr class="separator:acfa9df7cabd61b92e0f10022d57806eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6759d842269ad3c1681a8fd8f6bcef9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a6759d842269ad3c1681a8fd8f6bcef9d">calculateTortuosity</a> (const char site_type, const bool enable_reduced_memory)</td></tr>
+<tr class="memdesc:a6759d842269ad3c1681a8fd8f6bcef9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the tortuosity histogram for the specified site type.  <a href="#a6759d842269ad3c1681a8fd8f6bcef9d">More...</a><br /></td></tr>
+<tr class="separator:a6759d842269ad3c1681a8fd8f6bcef9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4e6534fd06b5b9d93e9908247f3c6f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ae4e6534fd06b5b9d93e9908247f3c6f2">createCheckerboardMorphology</a> ()</td></tr>
+<tr class="memdesc:ae4e6534fd06b5b9d93e9908247f3c6f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a 3D checkerboard morphology.  <a href="#ae4e6534fd06b5b9d93e9908247f3c6f2">More...</a><br /></td></tr>
 <tr class="separator:ae4e6534fd06b5b9d93e9908247f3c6f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeadb44cbafeaeed463f19ffbc3f6077e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aeadb44cbafeaeed463f19ffbc3f6077e">createRandomMorphology</a> (const std::vector&lt; double &gt; &amp;mix_fractions)</td></tr>
+<tr class="memdesc:aeadb44cbafeaeed463f19ffbc3f6077e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a randomly mixed morphology with the specified blend ratios.  <a href="#aeadb44cbafeaeed463f19ffbc3f6077e">More...</a><br /></td></tr>
 <tr class="separator:aeadb44cbafeaeed463f19ffbc3f6077e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3bebe4b4b770014e903417cf294d26b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ae3bebe4b4b770014e903417cf294d26b">enableThirdNeighborInteraction</a> ()</td></tr>
+<tr class="memdesc:ae3bebe4b4b770014e903417cf294d26b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart.  <a href="#ae3bebe4b4b770014e903417cf294d26b">More...</a><br /></td></tr>
 <tr class="separator:ae3bebe4b4b770014e903417cf294d26b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add05d70258dadc5bbe85d5fd95cfed76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#add05d70258dadc5bbe85d5fd95cfed76">executeIsingSwapping</a> (const int num_MCsteps, const double interaction_energy1, const double interaction_energy2, const bool enable_growth_pref, const int growth_direction, const double additional_interaction)</td></tr>
+<tr class="memdesc:add05d70258dadc5bbe85d5fd95cfed76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the Ising site swapping processes with the specified parameters for a given mumber of iterations.  <a href="#add05d70258dadc5bbe85d5fd95cfed76">More...</a><br /></td></tr>
 <tr class="separator:add05d70258dadc5bbe85d5fd95cfed76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7b8136a2968db6e4564a7b685d37382"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad7b8136a2968db6e4564a7b685d37382">executeMixing</a> (const double width, const double interfacial_conc)</td></tr>
-<tr class="separator:ad7b8136a2968db6e4564a7b685d37382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a780dcee5396964381a1567281aea86fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a780dcee5396964381a1567281aea86fb">executeMixing</a> (const double interfacial_width, const double interfacial_conc)</td></tr>
+<tr class="memdesc:a780dcee5396964381a1567281aea86fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes interfacial mixing with a specified interfacial width and interfacial mixing concentration.  <a href="#a780dcee5396964381a1567281aea86fb">More...</a><br /></td></tr>
+<tr class="separator:a780dcee5396964381a1567281aea86fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2cc5cbd0a78b1782a480d71538eba40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad2cc5cbd0a78b1782a480d71538eba40">executeSmoothing</a> (const double smoothing_threshold, const int rescale_factor)</td></tr>
+<tr class="memdesc:ad2cc5cbd0a78b1782a480d71538eba40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes a smoothing algorithm that smooths out rough domain interfaces and removes small islands and island sites.  <a href="#ad2cc5cbd0a78b1782a480d71538eba40">More...</a><br /></td></tr>
 <tr class="separator:ad2cc5cbd0a78b1782a480d71538eba40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dcae113d77101da7a423d41d340c7a5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a4dcae113d77101da7a423d41d340c7a5">getCorrelationData</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a4dcae113d77101da7a423d41d340c7a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the pair-pair autocorrelation function data for the specified site type.  <a href="#a4dcae113d77101da7a423d41d340c7a5">More...</a><br /></td></tr>
 <tr class="separator:a4dcae113d77101da7a423d41d340c7a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fc0337d5996a2b96d30288ed3c4046d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a1fc0337d5996a2b96d30288ed3c4046d">getDepthCompositionData</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a1fc0337d5996a2b96d30288ed3c4046d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the film depth dependent blend composition data in the z-direction.  <a href="#a1fc0337d5996a2b96d30288ed3c4046d">More...</a><br /></td></tr>
 <tr class="separator:a1fc0337d5996a2b96d30288ed3c4046d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71bb5fbaaea0935dceb45fc3cc98a020"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a71bb5fbaaea0935dceb45fc3cc98a020">getDepthDomainSizeData</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a71bb5fbaaea0935dceb45fc3cc98a020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the film depth dependent domain size data in the z-direction.  <a href="#a71bb5fbaaea0935dceb45fc3cc98a020">More...</a><br /></td></tr>
 <tr class="separator:a71bb5fbaaea0935dceb45fc3cc98a020"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae98f88717e0193d66559992f6f34585f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ae98f88717e0193d66559992f6f34585f">getDepthIVData</a> (const char site_type) const</td></tr>
+<tr class="memdesc:ae98f88717e0193d66559992f6f34585f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the film depth dependent interfacial volume fraction data in the z-direction.  <a href="#ae98f88717e0193d66559992f6f34585f">More...</a><br /></td></tr>
 <tr class="separator:ae98f88717e0193d66559992f6f34585f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacb64029b30f0137845a676c2a67e01c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aacb64029b30f0137845a676c2a67e01c">getDomainSize</a> (const char site_type) const</td></tr>
+<tr class="memdesc:aacb64029b30f0137845a676c2a67e01c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the domain size determined for the specified site type.  <a href="#aacb64029b30f0137845a676c2a67e01c">More...</a><br /></td></tr>
 <tr class="separator:aacb64029b30f0137845a676c2a67e01c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cf6db8efabbd1cb71bb73d8932d4954"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a6cf6db8efabbd1cb71bb73d8932d4954">getDomainAnisotropy</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a6cf6db8efabbd1cb71bb73d8932d4954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the domain anisotropy determined for the specified site type.  <a href="#a6cf6db8efabbd1cb71bb73d8932d4954">More...</a><br /></td></tr>
 <tr class="separator:a6cf6db8efabbd1cb71bb73d8932d4954"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a734e6610d0dc6746744ab498c63f3338"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a734e6610d0dc6746744ab498c63f3338">getHeight</a> () const</td></tr>
+<tr class="memdesc:a734e6610d0dc6746744ab498c63f3338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the height or z-direction size of the lattice.  <a href="#a734e6610d0dc6746744ab498c63f3338">More...</a><br /></td></tr>
 <tr class="separator:a734e6610d0dc6746744ab498c63f3338"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4b77de914ccb54f72665e48756b9819"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad4b77de914ccb54f72665e48756b9819">getInterfacialHistogram</a> (const char site_type) const</td></tr>
+<tr class="memdesc:ad4b77de914ccb54f72665e48756b9819"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the interfacial distance histogram data for the specified site type.  <a href="#ad4b77de914ccb54f72665e48756b9819">More...</a><br /></td></tr>
 <tr class="separator:ad4b77de914ccb54f72665e48756b9819"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba4cca69dab7b355b49f34ad51dc71fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aba4cca69dab7b355b49f34ad51dc71fc">getIslandVolumeFraction</a> (const char site_type) const</td></tr>
+<tr class="memdesc:aba4cca69dab7b355b49f34ad51dc71fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the island volume for the specified site type.  <a href="#aba4cca69dab7b355b49f34ad51dc71fc">More...</a><br /></td></tr>
 <tr class="separator:aba4cca69dab7b355b49f34ad51dc71fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3281bc7d4e38d63da8db069cf866d856"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a3281bc7d4e38d63da8db069cf866d856">getLength</a> () const</td></tr>
+<tr class="memdesc:a3281bc7d4e38d63da8db069cf866d856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the length or x-direction size of the lattice.  <a href="#a3281bc7d4e38d63da8db069cf866d856">More...</a><br /></td></tr>
 <tr class="separator:a3281bc7d4e38d63da8db069cf866d856"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9615fbd6e20bc3595bbf09c2a0a727b0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a9615fbd6e20bc3595bbf09c2a0a727b0">getMixFraction</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a9615fbd6e20bc3595bbf09c2a0a727b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mix fraction for the specified site type.  <a href="#a9615fbd6e20bc3595bbf09c2a0a727b0">More...</a><br /></td></tr>
 <tr class="separator:a9615fbd6e20bc3595bbf09c2a0a727b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c9002f9eece8d69187a9b5b1f19a430"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a0c9002f9eece8d69187a9b5b1f19a430">getTortuosityData</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a0c9002f9eece8d69187a9b5b1f19a430"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the end-to-end tortuosity data for the specified site type.  <a href="#a0c9002f9eece8d69187a9b5b1f19a430">More...</a><br /></td></tr>
 <tr class="separator:a0c9002f9eece8d69187a9b5b1f19a430"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a00737bb81b0fbe7f2511fe73fcb62c50">getTortuosityHistogram</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.  <a href="#a00737bb81b0fbe7f2511fe73fcb62c50">More...</a><br /></td></tr>
 <tr class="separator:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac27576c0f5331a9e8de755fcce65faa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aac27576c0f5331a9e8de755fcce65faa">getUnitSize</a> () const</td></tr>
+<tr class="memdesc:aac27576c0f5331a9e8de755fcce65faa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the lattice unit size in units of nm.  <a href="#aac27576c0f5331a9e8de755fcce65faa">More...</a><br /></td></tr>
 <tr class="separator:aac27576c0f5331a9e8de755fcce65faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5be6b8e1b0316a3d3c2ea406853e66d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ac5be6b8e1b0316a3d3c2ea406853e66d">getWidth</a> () const</td></tr>
+<tr class="memdesc:ac5be6b8e1b0316a3d3c2ea406853e66d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the width or y-direction size of the lattice.  <a href="#ac5be6b8e1b0316a3d3c2ea406853e66d">More...</a><br /></td></tr>
 <tr class="separator:ac5be6b8e1b0316a3d3c2ea406853e66d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45baf8ef4564b6cab3eeec43e897fb57"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_morphology.html">Morphology</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a45baf8ef4564b6cab3eeec43e897fb57">importTomogramMorphologyFile</a> (const std::string &amp;info_filename, const std::string &amp;data_filename, const <a class="el" href="struct_tomogram_import___params.html">TomogramImport_Params</a> &amp;params)</td></tr>
 <tr class="memdesc:a45baf8ef4564b6cab3eeec43e897fb57"><td class="mdescLeft">&#160;</td><td class="mdescRight">imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters  <a href="#a45baf8ef4564b6cab3eeec43e897fb57">More...</a><br /></td></tr>
 <tr class="separator:a45baf8ef4564b6cab3eeec43e897fb57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9290e3efa6fa08ee8bf0504f8fec9ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#ad9290e3efa6fa08ee8bf0504f8fec9ac">importMorphologyFile</a> (std::ifstream &amp;infile)</td></tr>
+<tr class="memdesc:ad9290e3efa6fa08ee8bf0504f8fec9ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Imports the Ising_OPV morphology text file given by the specified input filestream.  <a href="#ad9290e3efa6fa08ee8bf0504f8fec9ac">More...</a><br /></td></tr>
 <tr class="separator:ad9290e3efa6fa08ee8bf0504f8fec9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cf927126d6dabaf37fb2fa97430a2ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a3cf927126d6dabaf37fb2fa97430a2ef">outputCompositionMaps</a> (std::ofstream &amp;outfile) const</td></tr>
+<tr class="memdesc:a3cf927126d6dabaf37fb2fa97430a2ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs the areal composition map data to the specified output filestream.  <a href="#a3cf927126d6dabaf37fb2fa97430a2ef">More...</a><br /></td></tr>
 <tr class="separator:a3cf927126d6dabaf37fb2fa97430a2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66235f3d8ed42f7febd004e30d10dd40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a66235f3d8ed42f7febd004e30d10dd40">outputCorrelationData</a> (std::ofstream &amp;outfile) const</td></tr>
+<tr class="memdesc:a66235f3d8ed42f7febd004e30d10dd40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs the domain autocorrelation function data to the specified output filestream.  <a href="#a66235f3d8ed42f7febd004e30d10dd40">More...</a><br /></td></tr>
 <tr class="separator:a66235f3d8ed42f7febd004e30d10dd40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa173c867743007955a1fddf8c347125"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aaa173c867743007955a1fddf8c347125">outputDepthDependentData</a> (std::ofstream &amp;outfilt) const</td></tr>
-<tr class="separator:aaa173c867743007955a1fddf8c347125"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcecb57b108bd8403e69d3b68d92be7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#adcecb57b108bd8403e69d3b68d92be7b">outputMorphologyFile</a> (std::string version, std::ofstream &amp;outfile, const bool enable_export_compressed_files) const</td></tr>
-<tr class="separator:adcecb57b108bd8403e69d3b68d92be7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98c618a65f1a4f6a2eb535e57e1096a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a98c618a65f1a4f6a2eb535e57e1096a7">outputDepthDependentData</a> (std::ofstream &amp;outfile) const</td></tr>
+<tr class="memdesc:a98c618a65f1a4f6a2eb535e57e1096a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs the lattice depth dependent (z-direction) characteristics to the specified output filestream.  <a href="#a98c618a65f1a4f6a2eb535e57e1096a7">More...</a><br /></td></tr>
+<tr class="separator:a98c618a65f1a4f6a2eb535e57e1096a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa96e65225db8f45af932da145cb11506"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aa96e65225db8f45af932da145cb11506">outputMorphologyFile</a> (std::string version, std::ofstream &amp;outfile, const bool enable_export_compressed) const</td></tr>
+<tr class="memdesc:aa96e65225db8f45af932da145cb11506"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs the morphology data to a file specified by the output filestream.  <a href="#aa96e65225db8f45af932da145cb11506">More...</a><br /></td></tr>
+<tr class="separator:aa96e65225db8f45af932da145cb11506"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c4d5954ad727de0e36b2675f3aef623"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a8c4d5954ad727de0e36b2675f3aef623">outputMorphologyCrossSection</a> (std::ofstream &amp;outfile) const</td></tr>
+<tr class="memdesc:a8c4d5954ad727de0e36b2675f3aef623"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs a cross-section of the morphology at the x=0 plane to the specified output filestream.  <a href="#a8c4d5954ad727de0e36b2675f3aef623">More...</a><br /></td></tr>
 <tr class="separator:a8c4d5954ad727de0e36b2675f3aef623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19499e8d86a3e7a9e4791954bb9170b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a19499e8d86a3e7a9e4791954bb9170b5">outputTortuosityMaps</a> (std::ofstream &amp;outfile) const</td></tr>
+<tr class="memdesc:a19499e8d86a3e7a9e4791954bb9170b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs the areal end-to-end tortuosity map data to the specified output filestream.  <a href="#a19499e8d86a3e7a9e4791954bb9170b5">More...</a><br /></td></tr>
 <tr class="separator:a19499e8d86a3e7a9e4791954bb9170b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a023663f7159641bd8f37e251872fec30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a023663f7159641bd8f37e251872fec30">shrinkLattice</a> (const int rescale_factor)</td></tr>
+<tr class="memdesc:a023663f7159641bd8f37e251872fec30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shrinks the existing lattice by a fraction of 1 over the integer rescale_factor value.  <a href="#a023663f7159641bd8f37e251872fec30">More...</a><br /></td></tr>
 <tr class="separator:a023663f7159641bd8f37e251872fec30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeab0b8df25e039317611692294bb713f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aeab0b8df25e039317611692294bb713f">stretchLattice</a> (const int rescale_factor)</td></tr>
+<tr class="memdesc:aeab0b8df25e039317611692294bb713f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stretches the existing lattice by a integer rescale_factor value.  <a href="#aeab0b8df25e039317611692294bb713f">More...</a><br /></td></tr>
 <tr class="separator:aeab0b8df25e039317611692294bb713f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -220,7 +254,14 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>/brief This is the simplest constructor that creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with the default member variables and an empty lattice. /param id is the input integer ID number that will be assigned to the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object. </p>
+
+<p>This is the simplest constructor that creates a <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object with the default member variables and an empty lattice. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>is the input integer ID number that will be assigned to the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -459,7 +500,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface. </p>
+<p>Calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface. </p>
 
 </div>
 </div>
@@ -478,6 +519,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Calculates the fraction of sites adjacent to an interface. </p>
+
 </div>
 </div>
 <a id="aa2f352fb666e1fd5093d7b2c1619f171"></a>
@@ -495,10 +538,12 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Calculates the volume fraction of each type site in the lattice to the total number of sites. </p>
+
 </div>
 </div>
-<a id="acfa9df7cabd61b92e0f10022d57806eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfa9df7cabd61b92e0f10022d57806eb">&#9670;&nbsp;</a></span>calculateTortuosity()</h2>
+<a id="a6759d842269ad3c1681a8fd8f6bcef9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6759d842269ad3c1681a8fd8f6bcef9d">&#9670;&nbsp;</a></span>calculateTortuosity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -507,13 +552,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">bool Morphology::calculateTortuosity </td>
           <td>(</td>
           <td class="paramtype">const char&#160;</td>
-          <td class="paramname"><em>site_tye</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>electrode_num</em>, </td>
+          <td class="paramname"><em>site_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -528,6 +567,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Calculates the tortuosity histogram for the specified site type. </p>
+<p>For all type 1 sites, the shortest paths through other type 1 sites to the boundary at z=0 is calculated. For all type 2 sites, the shortest pathes through other type 2 sites to the boundary at z=Height-1 is calculated. The shortest paths are calculated using Dijkstra's algorithm. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies which site type to perform the tortuosity calculation on. </td></tr>
+    <tr><td class="paramname">enable_reduced_memory</td><td>allows users to choose to use a slower algorithm that uses less RAM. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -545,6 +593,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Creates a 3D checkerboard morphology. </p>
 
 </div>
 </div>
@@ -564,6 +614,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Creates a randomly mixed morphology with the specified blend ratios. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mix_fractions</td><td>is a vector that specifies the blend ratio of each site type. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ae3bebe4b4b770014e903417cf294d26b"></a>
@@ -580,6 +638,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart. </p>
+<p>By default third-neighbor interactions are disabled, so this function must be called to enable this option. </p>
 
 </div>
 </div>
@@ -633,10 +694,23 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Executes the Ising site swapping processes with the specified parameters for a given mumber of iterations. </p>
+<p>This function uses the bond formation algorithm to determine the energy change in the system that results from swapping two neighboring sites. Positive values for the interaction energies result in a driving force for phase separation. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_MCsteps</td><td>is the number of Monte Carlo steps to execute, where the number of steps is defined by the total number of iterations divided by the total lattice volume. </td></tr>
+    <tr><td class="paramname">interaction_energy1</td><td>defines the energetic difference between like-like and unlike-unlike interactions for type 1 sites in units of kT. </td></tr>
+    <tr><td class="paramname">interaction_energy2</td><td>defines the energetic difference between like-like and unlike-unlike interactions for type 2 sites in units of kT. </td></tr>
+    <tr><td class="paramname">enable_growth_pref</td><td>is a boolean option that allows users to enable preferential interations in one of the pricipal lattice directions. </td></tr>
+    <tr><td class="paramname">growth_direction</td><td>is an integer used when directional interactions are enabled and specifies the direction with a modified interaction energy, with 1 = x-direction, 2 = y-direction, and 3 = z-direction. </td></tr>
+    <tr><td class="paramname">additional_interaction</td><td>is used when directional interactions are enabled and specifies the additional interaction energy with sites in the specified direction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="ad7b8136a2968db6e4564a7b685d37382"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7b8136a2968db6e4564a7b685d37382">&#9670;&nbsp;</a></span>executeMixing()</h2>
+<a id="a780dcee5396964381a1567281aea86fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a780dcee5396964381a1567281aea86fb">&#9670;&nbsp;</a></span>executeMixing()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -645,7 +719,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void Morphology::executeMixing </td>
           <td>(</td>
           <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>width</em>, </td>
+          <td class="paramname"><em>interfacial_width</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -660,6 +734,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Executes interfacial mixing with a specified interfacial width and interfacial mixing concentration. </p>
+<p>Random swapping of type 1 and type 2 sites near the interface is done to produce an mixed interfaction region with a controlled width and blend ratio. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interfacial_width</td><td>specifies the desired width of the mixed interfacial region. </td></tr>
+    <tr><td class="paramname">interfacial_conc</td><td>specified the desired blend ratio of mixed interfacial region. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -689,6 +772,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Executes a smoothing algorithm that smooths out rough domain interfaces and removes small islands and island sites. </p>
+<p>Smoothing is done by determining a roughness factor for each site that is given by the fraction of surrounding sites that are a different type. Sites with a roughness factor is greater than the specified smoothing_threshold are switched to the opposite type. A rescale dependent smoothing process is executed when the rescale factor is greater than 2. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">smoothing_threshold</td><td>is the numerical parameter used to adjust how aggressive the smoothing should be. </td></tr>
+    <tr><td class="paramname">rescale_factor</td><td>specifies whether the smoothing algorithm should be adjust to account for prior lattice rescaling by giving the rescaling factor used. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a4dcae113d77101da7a423d41d340c7a5"></a>
@@ -706,6 +798,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a vector containing the pair-pair autocorrelation function data for the specified site type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
 
 </div>
 </div>
@@ -725,6 +826,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a vector containing the film depth dependent blend composition data in the z-direction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
+
 </div>
 </div>
 <a id="a71bb5fbaaea0935dceb45fc3cc98a020"></a>
@@ -742,6 +852,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a vector containing the film depth dependent domain size data in the z-direction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
 
 </div>
 </div>
@@ -761,6 +880,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a vector containing the film depth dependent interfacial volume fraction data in the z-direction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
+
 </div>
 </div>
 <a id="a6cf6db8efabbd1cb71bb73d8932d4954"></a>
@@ -778,6 +906,17 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the domain anisotropy determined for the specified site type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>zero if the calculateAnisotropy function has not been called. </dd>
+<dd>
+the domain anisotropy calculated from the direction dependent correlation function data. </dd></dl>
 
 </div>
 </div>
@@ -797,6 +936,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the domain size determined for the specified site type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>-1 if the calculateCorrelationDistance function has not been called. </dd>
+<dd>
+the domain size calculated from the correlation function data. </dd></dl>
+
 </div>
 </div>
 <a id="a734e6610d0dc6746744ab498c63f3338"></a>
@@ -813,6 +963,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Gets the height or z-direction size of the lattice. </p>
+<dl class="section return"><dt>Returns</dt><dd>an integer representing the height or z-direction size of the lattice. </dd></dl>
 
 </div>
 </div>
@@ -832,6 +985,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a vector containing the interfacial distance histogram data for the specified site type. </p>
+<p>The histogram bins are distances given by the vector index + 1 in lattice units. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
+
 </div>
 </div>
 <a id="aba4cca69dab7b355b49f34ad51dc71fc"></a>
@@ -850,6 +1012,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the island volume for the specified site type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>-1 if the calculateTortuosity function has not been called. </dd>
+<dd>
+the volume fraction of island sites not connected to the top or bottom surface (z-dimension). </dd></dl>
+
 </div>
 </div>
 <a id="a3281bc7d4e38d63da8db069cf866d856"></a>
@@ -866,6 +1039,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the length or x-direction size of the lattice. </p>
+<dl class="section return"><dt>Returns</dt><dd>an integer representing the length or x-direction size of the lattice. </dd></dl>
 
 </div>
 </div>
@@ -885,6 +1061,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the mix fraction for the specified site type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>-1 if the calculateMixFractions function has not been called. </dd>
+<dd>
+the volumetric blend ratio of the specified site type. </dd></dl>
+
 </div>
 </div>
 <a id="a0c9002f9eece8d69187a9b5b1f19a430"></a>
@@ -902,6 +1089,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a vector containing the end-to-end tortuosity data for the specified site type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
 
 </div>
 </div>
@@ -921,6 +1117,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type. </p>
+<p>Tortuosity values are rounded to the nearest 0.02, resulting in bins centered at 1, 1.02, 1.04, etc. So bin values are equal to the vector index i + 0.02 </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
+
 </div>
 </div>
 <a id="aac27576c0f5331a9e8de755fcce65faa"></a>
@@ -937,6 +1142,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the lattice unit size in units of nm. </p>
 
 </div>
 </div>
@@ -955,6 +1162,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the width or y-direction size of the lattice. </p>
+<dl class="section return"><dt>Returns</dt><dd>an integer representing the width or y-direction size of the lattice. </dd></dl>
+
 </div>
 </div>
 <a id="ad9290e3efa6fa08ee8bf0504f8fec9ac"></a>
@@ -972,6 +1182,17 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Imports the Ising_OPV morphology text file given by the specified input filestream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">infile</td><td>is the already open input filestream pointing to an Ising_OPV morphology file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>false if there is an error during file import. </dd>
+<dd>
+true if morphology file import is sucessful. </dd></dl>
 
 </div>
 </div>
@@ -1036,6 +1257,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Outputs the areal composition map data to the specified output filestream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outfile</td><td>is the already open output filestream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a66235f3d8ed42f7febd004e30d10dd40"></a>
@@ -1054,10 +1283,18 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Outputs the domain autocorrelation function data to the specified output filestream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outfile</td><td>is the already open output filestream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="aaa173c867743007955a1fddf8c347125"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa173c867743007955a1fddf8c347125">&#9670;&nbsp;</a></span>outputDepthDependentData()</h2>
+<a id="a98c618a65f1a4f6a2eb535e57e1096a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c618a65f1a4f6a2eb535e57e1096a7">&#9670;&nbsp;</a></span>outputDepthDependentData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1066,11 +1303,19 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void Morphology::outputDepthDependentData </td>
           <td>(</td>
           <td class="paramtype">std::ofstream &amp;&#160;</td>
-          <td class="paramname"><em>outfilt</em></td><td>)</td>
+          <td class="paramname"><em>outfile</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Outputs the lattice depth dependent (z-direction) characteristics to the specified output filestream. </p>
+<p>Outputs the depth dependent composition, interfacial volume fraction, and domain size. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outfile</td><td>is the already open output filestream. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1090,10 +1335,18 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Outputs a cross-section of the morphology at the x=0 plane to the specified output filestream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outfile</td><td>is the already open output filestream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="adcecb57b108bd8403e69d3b68d92be7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcecb57b108bd8403e69d3b68d92be7b">&#9670;&nbsp;</a></span>outputMorphologyFile()</h2>
+<a id="aa96e65225db8f45af932da145cb11506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa96e65225db8f45af932da145cb11506">&#9670;&nbsp;</a></span>outputMorphologyFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1114,7 +1367,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>enable_export_compressed_files</em>&#160;</td>
+          <td class="paramname"><em>enable_export_compressed</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1123,6 +1376,16 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Outputs the morphology data to a file specified by the output filestream. </p>
+<p>The user can specify whether to use the compressed format or not. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">version</td><td>is a string used to tag the saved morphology file with the software version used to create it. </td></tr>
+    <tr><td class="paramname">outfile</td><td>is the already open output filestream. </td></tr>
+    <tr><td class="paramname">enable_export_compressed</td><td>is a boolean option that allows users to choose whether the output morphology file uses the compressed format or not. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1142,6 +1405,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Outputs the areal end-to-end tortuosity map data to the specified output filestream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outfile</td><td>is the already open output filestream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a023663f7159641bd8f37e251872fec30"></a>
@@ -1160,6 +1431,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Shrinks the existing lattice by a fraction of 1 over the integer rescale_factor value. </p>
+<p>Each of the original lattice dimensions must be divisible by the rescale factor. The original lattice is overwritten by the newly created smaller lattice. </p>
+
 </div>
 </div>
 <a id="aeab0b8df25e039317611692294bb713f"></a>
@@ -1177,6 +1451,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Stretches the existing lattice by a integer rescale_factor value. </p>
+<p>The original lattice is overwritten by the newly created larger lattice. </p>
 
 </div>
 </div>

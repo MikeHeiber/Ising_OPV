@@ -89,8 +89,8 @@ class Morphology {
 public:
 	// Functions
 
-	//! /brief This is the simplest constructor that creates a Morphology object with the default member variables and an empty lattice.
-	//! /param id is the input integer ID number that will be assigned to the Morphology object.
+	//! \brief This is the simplest constructor that creates a Morphology object with the default member variables and an empty lattice.
+	//! \param id is the input integer ID number that will be assigned to the Morphology object.
 	Morphology(const int id);
 
 	//! \brief This constructor creates a Morphology object with a 3D lattice with a size defined by the input dimensions (length, width, height).
@@ -127,91 +127,133 @@ public:
 	//! \brief Calculates the interfacial area in units of lattice units squared.
 	double calculateInterfacialAreaVolumeRatio() const;
 
-	//! \brief This function calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.
+	//! \brief Calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.
 	void calculateInterfacialDistance();
 
-	//  This function calculates the number of sites that are adjacent to a site of the opposite type, which represents the interfacial volume in lattice units cubed.
+	//! \brief Calculates the fraction of sites adjacent to an interface.
 	double calculateInterfacialVolumeFraction() const;
 
-	//  This function calculates the fraction of each type sites in the lattice to the total number of sites.
+	//! \brief Calculates the volume fraction of each type site in the lattice to the total number of sites.
 	void calculateMixFractions();
 
-	//  This function calculates the tortuosity histograms that characterize the morphology.
-	//  For all type 1 sites, the shortest distance from the site along a path through other type 1 sites to the boundary at z=0 is calculated.
-	//  For all type 2 sites, the shortest distance from the site along a path through other type 2 sites to the boundary at z=Height-1 is calculated.
-	//  The resulting shortest path divided by the straight vertical path is the tortuosity of the pathway.
-	//  The shortest paths are calculated using Dijkstra's algorithm
-	bool calculateTortuosity(const char site_tye, const bool electrode_num, const bool enable_reduced_memory);
+	//! \brief Calculates the tortuosity histogram for the specified site type.
+	//! \details For all type 1 sites, the shortest paths through other type 1 sites to the boundary at z=0 is calculated.
+	//! For all type 2 sites, the shortest pathes through other type 2 sites to the boundary at z=Height-1 is calculated.
+	//! The shortest paths are calculated using Dijkstra's algorithm.
+	//! \param site_type specifies which site type to perform the tortuosity calculation on.
+	//! \param enable_reduced_memory allows users to choose to use a slower algorithm that uses less RAM.
+	bool calculateTortuosity(const char site_type, const bool enable_reduced_memory);
 
+	//! \brief Creates a 3D checkerboard morphology.
 	void createCheckerboardMorphology();
 
-	//  This function creates a randomly mixed morphology on the lattice.
-	//  Sites are randomly assigned based on the mix_fractions.
+	//! \brief Creates a randomly mixed morphology with the specified blend ratios.
+	//! \param mix_fractions is a vector that specifies the blend ratio of each site type.
 	void createRandomMorphology(const std::vector<double>& mix_fractions);
 
-	//  This function enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart.
-	//  By default third-neighbor interactions are disabled, so this function must be called to enable this option.
+	//! \brief Enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart.
+	//! \details By default third-neighbor interactions are disabled, so this function must be called to enable this option.
 	void enableThirdNeighborInteraction();
 
-	//  This function implements num_MCsteps iterations of the Ising site swapping process.
-	//  This function uses the bond formation algorithm to determine the energy change in the system that results from swapping two neighboring sites.
-	//  The energy change is determined by the input parameters interaction_energy1 and interaction_energy2, which are in units of kT.
-	//  These parameters describe the preference for like-like interactions over like-unlike interactions for each site type.
-	//  Positive values of the interaction energies result in a driving force for phase separation.
-	void executeIsingSwapping(const int num_MCsteps, const double interaction_energy1, const double interaction_energy2, const bool enable_growth_pref, const int growth_direction, const double additional_interaction); // bond formation algorithm
+	//! \brief Executes the Ising site swapping processes with the specified parameters for a given mumber of iterations.
+	//! \details This function uses the bond formation algorithm to determine the energy change in the system that results from swapping two neighboring sites.
+	//! Positive values for the interaction energies result in a driving force for phase separation.
+	//! \param num_MCsteps is the number of Monte Carlo steps to execute, where the number of steps is defined by the total number of iterations divided by the total lattice volume.
+	//! \param interaction_energy1 defines the energetic difference between like-like and unlike-unlike interactions for type 1 sites in units of kT.
+	//! \param interaction_energy2 defines the energetic difference between like-like and unlike-unlike interactions for type 2 sites in units of kT.
+	//! \param enable_growth_pref is a boolean option that allows users to enable preferential interations in one of the pricipal lattice directions.
+	//! \param growth_direction is an integer used when directional interactions are enabled and specifies the direction with a modified interaction energy, with 1 = x-direction, 2 = y-direction, and 3 = z-direction.
+	//! \param additional_interaction is used when directional interactions are enabled and specifies the additional interaction energy with sites in the specified direction.
+	void executeIsingSwapping(const int num_MCsteps, const double interaction_energy1, const double interaction_energy2, const bool enable_growth_pref, const int growth_direction, const double additional_interaction);
 
-	//  This function implements interfacial mixing with a specified interfacial width and a specified mixing concentration in the interfacial region.
-	//  Mixing is implemented by first determining the bounds on either side of the interface where mixing should occur
-	//  Then random swapping of type 1 and type 2 sites within the bounds creates mixing in the interfacial region.
-	void executeMixing(const double width, const double interfacial_conc);
+	//! \brief Executes interfacial mixing with a specified interfacial width and interfacial mixing concentration.
+	//! \details Random swapping of type 1 and type 2 sites near the interface is done to produce an mixed interfaction region with a controlled width and blend ratio.
+	//! \param interfacial_width specifies the desired width of the mixed interfacial region.
+	//! \param interfacial_conc specified the desired blend ratio of mixed interfacial region.
+	void executeMixing(const double interfacial_width, const double interfacial_conc);
 
-	//  This function smoothens out rough domain interfaces and removes small islands and island sites.
-	//  This is done by determining a roughness factor for each site that is given by the fraction of surrounding sites that are a different type.
-	//  Sites with a roughness factor is greater than the specified smoothing_threshold are switched to the opposite type.
-	//  A rescale dependent smoothing process is executed when the rescale factor is greater than 1.
+	//! \brief Executes a smoothing algorithm that smooths out rough domain interfaces and removes small islands and island sites.
+	//! \details Smoothing is done by determining a roughness factor for each site that is given by the fraction of surrounding sites that are a different type.
+	//! Sites with a roughness factor is greater than the specified smoothing_threshold are switched to the opposite type.
+	//! A rescale dependent smoothing process is executed when the rescale factor is greater than 2.
+	//! \param smoothing_threshold is the numerical parameter used to adjust how aggressive the smoothing should be.
+	//! \param rescale_factor specifies whether the smoothing algorithm should be adjust to account for prior lattice rescaling by giving the rescaling factor used. 
 	void executeSmoothing(const double smoothing_threshold, const int rescale_factor);
 
-	//  This function returns a vector containing the pair-pair correlation function data for the specified site type.
+	//! \brief Returns a vector containing the pair-pair autocorrelation function data for the specified site type.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<double> getCorrelationData(const char site_type) const;
 
+	//! \brief Returns a vector containing the film depth dependent blend composition data in the z-direction.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<double> getDepthCompositionData(const char site_type) const;
 
+	//! \brief Returns a vector containing the film depth dependent domain size data in the z-direction.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<double> getDepthDomainSizeData(const char site_type) const;
 
+	//! \brief Returns a vector containing the film depth dependent interfacial volume fraction data in the z-direction.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<double> getDepthIVData(const char site_type) const;
 
-	//  This function returns the domain size determined for the specified site type.
-	//  This function will return zero if the calculateCorrelationDistance function has not been called.
+	//! \brief Returns the domain size determined for the specified site type.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return -1 if the calculateCorrelationDistance function has not been called.
+	//! \return the domain size calculated from the correlation function data.
 	double getDomainSize(const char site_type) const;
 
-	//  This function returns the domain anisotropy determined for the specified site type.
-	//  This function will return zero if the calculateAnisotropy function has not been called.
+	//! \brief Returns the domain anisotropy determined for the specified site type.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return zero if the calculateAnisotropy function has not been called.
+	//! \return the domain anisotropy calculated from the direction dependent correlation function data.
 	double getDomainAnisotropy(const char site_type) const;
 
-	//  This function returns the height or z-direction size of the lattice.
+	//! \brief Gets the height or z-direction size of the lattice.
+	//! \return an integer representing the height or z-direction size of the lattice.
 	int getHeight() const;
 
-	//  This function returns a vector containing the interfacial distance histogram data for the specified site type.
+	//! \brief Returns a vector containing the interfacial distance histogram data for the specified site type.
+	//! \details The histogram bins are distances given by the vector index + 1 in lattice units.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<double> getInterfacialHistogram(const char site_type) const;
 
-	//  This function returns the island volume for the specified site type.
+	//! \brief Returns the island volume for the specified site type.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return -1 if the calculateTortuosity function has not been called.
+	//! \return the volume fraction of island sites not connected to the top or bottom surface (z-dimension).
 	double getIslandVolumeFraction(const char site_type) const;
 
-	//  This function returns the length or x-direction size of the lattice.
+	//! \brief Returns the length or x-direction size of the lattice.
+	//! \return an integer representing the length or x-direction size of the lattice.
 	int getLength() const;
 
-	//  This function return the mix fraction of the morphology.
+	//! \brief Returns the mix fraction for the specified site type.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return -1 if the calculateMixFractions function has not been called.
+	//! \return the volumetric blend ratio of the specified site type.
 	double getMixFraction(const char site_type) const;
 
-	//  This function returns a vector containing the end-to-end tortuosity data for the specified site type.
+	//! \brief Returns a vector containing the end-to-end tortuosity data for the specified site type.
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<float> getTortuosityData(const char site_type) const;
 
-	//  This function returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.
+	//! \brief Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.
+	//! \details Tortuosity values are rounded to the nearest 0.02, resulting in bins centered at 1, 1.02, 1.04, etc. So bin values are equal to the vector index i + 0.02
+	//! \param site_type specifies for which site type the data should be retrieved.
+	//! \return a copy of the data vector.
 	std::vector<double> getTortuosityHistogram(const char site_type) const;
 
+	//! \brief Returns the lattice unit size in units of nm.
 	double getUnitSize() const;
 
-	//  This function returns the width or y-direction size of the lattice.
+	//! \brief Returns the width or y-direction size of the lattice.
+	//! \return an integer representing the width or y-direction size of the lattice.
 	int getWidth() const;
 
 	//! \brief imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters
@@ -221,32 +263,47 @@ public:
 	//! \returns a vector of Morphology objects that consists of a series of subsections of the original tomogram data
 	std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename, const TomogramImport_Params& params);
 
-	//  This function imports the morphology text file given by the input file stream.
-	//  It must be specified whether or not the input file is in the compressed format.
+	//! \brief Imports the Ising_OPV morphology text file given by the specified input filestream.
+	//! \param infile is the already open input filestream pointing to an Ising_OPV morphology file.
+	//! \return false if there is an error during file import.
+	//! \return true if morphology file import is sucessful.
 	bool importMorphologyFile(std::ifstream& infile);
 
+	//! \brief Outputs the areal composition map data to the specified output filestream.
+	//! \param outfile is the already open output filestream.
 	void outputCompositionMaps(std::ofstream& outfile) const;
 
+	//! \brief Outputs the domain autocorrelation function data to the specified output filestream.
+	//! \param outfile is the already open output filestream.
 	void outputCorrelationData(std::ofstream& outfile) const;
 
-	void outputDepthDependentData(std::ofstream& outfilt) const;
+	//! \brief Outputs the lattice depth dependent (z-direction) characteristics to the specified output filestream.
+	//! \details Outputs the depth dependent composition, interfacial volume fraction, and domain size.
+	//! \param outfile is the already open output filestream.
+	void outputDepthDependentData(std::ofstream& outfile) const;
 
-	//  This function outputs the morphology data to a text file specified by the output file stream.
-	//  The user can specify whether to use the compress text format or not.
-	void outputMorphologyFile(std::string version, std::ofstream& outfile, const bool enable_export_compressed_files) const;
+	//! \brief Outputs the morphology data to a file specified by the output filestream.
+	//! \details The user can specify whether to use the compressed format or not.
+	//! \param version is a string used to tag the saved morphology file with the software version used to create it.
+	//! \param outfile is the already open output filestream.
+	//! \param enable_export_compressed is a boolean option that allows users to choose whether the output morphology file uses the compressed format or not.
+	void outputMorphologyFile(std::string version, std::ofstream& outfile, const bool enable_export_compressed) const;
 
-	//  This function outputs to a text file a cross-section of the morphology at x=0 plane.
+	//! \brief Outputs a cross-section of the morphology at the x=0 plane to the specified output filestream.
+	//! \param outfile is the already open output filestream.
 	void outputMorphologyCrossSection(std::ofstream& outfile) const;
 
+	//! \brief Outputs the areal end-to-end tortuosity map data to the specified output filestream.
+	//! \param outfile is the already open output filestream.
 	void outputTortuosityMaps(std::ofstream& outfile) const;
 
-	//  This function shrinks the existing lattice by a fraction of 1 over the integer value called rescale_factor.
-	//  Each of the original lattice dimensions must be divisible by the rescale factor
-	//  This original lattice is overwritten by the newly created smaller lattice
+	//! \brief Shrinks the existing lattice by a fraction of 1 over the integer rescale_factor value.
+	//! \details Each of the original lattice dimensions must be divisible by the rescale factor.
+	//! The original lattice is overwritten by the newly created smaller lattice.
 	void shrinkLattice(const int rescale_factor);
 
-	//  This function stretches the existing lattice by a integer value called rescale_factor.
-	//  This original lattice is overwritten by the newly created larger rescale_factor lattice
+	//! \brief Stretches the existing lattice by a integer rescale_factor value.
+	//! \details The original lattice is overwritten by the newly created larger lattice.
 	void stretchLattice(const int rescale_factor);
 
 protected:

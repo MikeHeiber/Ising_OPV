@@ -61,7 +61,7 @@ void Morphology::addSiteType(const char site_type) {
 	}
 	Site_types.push_back(site_type);
 	Site_type_counts.push_back(0);
-	Mix_fractions.push_back(0);
+	Mix_fractions.push_back(-1);
 	Correlation_data.resize(Correlation_data.size() + 1);
 	Tortuosity_data.resize(Tortuosity_data.size() + 1);
 	InterfacialHistogram_data.resize(InterfacialHistogram_data.size() + 1);
@@ -642,8 +642,8 @@ double Morphology::calculateDissimilarFraction(const Coords& coords, const int r
 	int count_dissimilar = 0;
 	Coords coords_dest;
 	// When the rescale factor is 1, the radius is 1, and the radius increases for larger rescale factors.
-	static int radius = (int)ceil((double)(rescale_factor + 1) / 2);
-	static int cutoff_squared = (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
+	static int radius = (rescale_factor <= 2) ? (int)ceil(3.0 / 2.0) : (int)ceil((double)(rescale_factor + 1) / 2);
+	static int cutoff_squared = (rescale_factor <= 2) ? (int)floor((3.0 / 2.0)*(3.0 / 2.0)) : (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
 	for (int i = -radius; i <= radius; i++) {
 		for (int j = -radius; j <= radius; j++) {
 			for (int k = -radius; k <= radius; k++) {
@@ -957,16 +957,23 @@ void Morphology::calculateInterfacialDistance() {
 	vector<int> counts((int)Site_types.size(), 0);
 	// The interfacial distance data in path_data is rounded to the nearest integer lattice unit
 	// One bin for each integer lattice unit is used to create the histograms.
+	// Set site of histogram vectors
 	for (int m = 0; m < (int)path_distances.size(); m++) {
 		d_int = round_int(path_distances[m]);
 		for (int n = 0; n < (int)Site_types.size(); n++) {
 			if (lattice.getSiteType(m) == Site_types[n]) {
 				if (d_int > (int)InterfacialHistogram_data[n].size()) {
-					InterfacialHistogram_data[n].push_back(1.0);
+					InterfacialHistogram_data[n].assign(d_int,0.0);
 				}
-				else {
-					InterfacialHistogram_data[n][d_int - 1] += 1.0;
-				}
+			}
+		}
+	}
+	// Collect counts in each histogram bin
+	for (int m = 0; m < (int)path_distances.size(); m++) {
+		d_int = round_int(path_distances[m]);
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			if (lattice.getSiteType(m) == Site_types[n]) {
+				InterfacialHistogram_data[n][d_int - 1] += 1.0;
 				counts[n]++;
 			}
 		}
@@ -1356,9 +1363,20 @@ bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distan
 	return true;
 }
 
-bool Morphology::calculateTortuosity(const char site_type, const bool electrode_num, const bool enable_reduced_memory) {
+bool Morphology::calculateTortuosity(const char site_type, const bool enable_reduced_memory) {
 	int bin;
 	bool success;
+	bool electrode_num;
+	if (site_type == (char)1) {
+		electrode_num = false;
+	}
+	else if (site_type == (char)2) {
+		electrode_num = true;
+	}
+	else {
+		cout << ID << ": Error! Tortuosity can only be calculated for site types 1 and 2." << endl;
+		return false;
+	}
 	// The shortest path for each site is stored in the path_distances vector.
 	// The path distances are initialized to -1.
 	vector<float> path_distances(lattice.getNumSites(), -1.0);
@@ -1607,7 +1625,7 @@ void Morphology::executeIsingSwapping(const int num_MCsteps, const double intera
 	vector<NeighborInfo>().swap(Neighbor_info);
 }
 
-void Morphology::executeMixing(const double width, const double interfacial_conc) {
+void Morphology::executeMixing(const double interfacial_width, const double interfacial_conc) {
 	vector<int> sites_maj;
 	vector<int> sites_min;
 	int site_maj;
@@ -1636,7 +1654,7 @@ void Morphology::executeMixing(const double width, const double interfacial_conc
 			for (int z = 0; z < lattice.getHeight(); z++) {
 				coords.setXYZ(x, y, z);
 				if (lattice.getSiteType(x, y, z) == majority_type) {
-					if (isNearInterface(coords, (1 - minority_conc)*width)) {
+					if (isNearInterface(coords, (1 - minority_conc)*interfacial_width)) {
 						sites_maj.push_back(lattice.getSiteIndex(x, y, z));
 						site_count++;
 					}
@@ -1688,8 +1706,8 @@ void Morphology::executeMixing(const double width, const double interfacial_conc
 void Morphology::executeSmoothing(const double smoothing_threshold, const int rescale_factor) {
 	double roughness_factor;
 	Coords coords, coords_dest;
-	static int radius = (int)ceil((double)(rescale_factor + 1) / 2);
-	static int cutoff_squared = (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
+	static int radius = (rescale_factor<=2) ? (int)ceil(3.0/2.0) : (int)ceil((double)(rescale_factor + 1) / 2);
+	static int cutoff_squared = (rescale_factor<=2) ? (int)floor((3.0/2.0)*(3.0 / 2.0)) : (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
 	// The boolean vector consider_smoothing keeps track of whether each site is near the interface and should be considered for smoothing.
 	// Sites in the interior of the domains or at very smooth interfaces do not need to be continually reconsidered for smoothing.
 	vector<bool> consider_smoothing;
@@ -2276,7 +2294,7 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 						stringstream linestream(line);
 						if (!linestream.good()) {
 							cout << "Error parsing file.  End of file reached before expected." << endl;
-							return 0;
+							return false;
 						}
 						type = (char)atoi((line.substr(0, 1)).c_str());
 						site_count = atoi((line.substr(1, line.length() - 1)).c_str());
@@ -2526,8 +2544,8 @@ void Morphology::outputMorphologyCrossSection(ofstream& outfile) const {
 	//}
 }
 
-void Morphology::outputMorphologyFile(string version, ofstream& outfile, bool enable_export_compressed_files) const {
-	if (enable_export_compressed_files) {
+void Morphology::outputMorphologyFile(string version, ofstream& outfile, bool enable_export_compressed) const {
+	if (enable_export_compressed) {
 		outfile << "Ising_OPV " << version << " - compressed format" << endl;
 	}
 	else {
@@ -2546,7 +2564,7 @@ void Morphology::outputMorphologyFile(string version, ofstream& outfile, bool en
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		outfile << Mix_fractions[n] << endl;
 	}
-	if (!enable_export_compressed_files) {
+	if (!enable_export_compressed) {
 		for (int x = 0; x < lattice.getLength(); x++) {
 			for (int y = 0; y < lattice.getWidth(); y++) {
 				for (int z = 0; z < lattice.getHeight(); z++) {
