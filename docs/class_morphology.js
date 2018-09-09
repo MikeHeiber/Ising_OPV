@@ -25,6 +25,7 @@ var class_morphology =
     [ "getDomainAnisotropy", "class_morphology.html#a6cf6db8efabbd1cb71bb73d8932d4954", null ],
     [ "getDomainSize", "class_morphology.html#aacb64029b30f0137845a676c2a67e01c", null ],
     [ "getHeight", "class_morphology.html#a734e6610d0dc6746744ab498c63f3338", null ],
+    [ "getID", "class_morphology.html#a60d5a51d134664c2a8fa14173bd4d750", null ],
     [ "getInterfacialHistogram", "class_morphology.html#ad4b77de914ccb54f72665e48756b9819", null ],
     [ "getIslandVolumeFraction", "class_morphology.html#aba4cca69dab7b355b49f34ad51dc71fc", null ],
     [ "getLength", "class_morphology.html#a3281bc7d4e38d63da8db069cf866d856", null ],

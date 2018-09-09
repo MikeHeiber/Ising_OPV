@@ -11,6 +11,100 @@
 using namespace std;
 using namespace Utils;
 
+namespace MorphologyTests {
+
+	TEST(MorphologyTests, ConstructorTests) {
+		// Test the default constructor
+		Morphology morph(0);
+		// Check that ID number is set properly
+		EXPECT_EQ(0, morph.getID());
+		// Check that the lattice has default size of 0,0,0.
+		EXPECT_EQ(0, morph.getLength());
+
+		// Test the standard constructor
+		morph = Morphology(50, 60, 70, false, 1);
+		// Check that ID number is set properly
+		EXPECT_EQ(1, morph.getID());
+		// Check that the lattice has the correct size.
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(60, morph.getWidth());
+		EXPECT_EQ(70, morph.getHeight());
+
+		// Check the lattice input constructor
+		Lattice_Params params_lattice;
+		params_lattice.Enable_periodic_x = true;
+		params_lattice.Enable_periodic_y = true;
+		params_lattice.Enable_periodic_z = false;
+		params_lattice.Length = 20;
+		params_lattice.Width = 30;
+		params_lattice.Height = 40;
+		params_lattice.Unit_size = 1.5;
+		mt19937_64 gen;
+		Lattice lattice;
+		// Initialize Lattice object
+		lattice.init(params_lattice, &gen);
+		morph = Morphology(lattice, 2);
+		// Check that ID number is set properly
+		EXPECT_EQ(2, morph.getID());
+		// Check that the lattice has the correct size.
+		EXPECT_EQ(20, morph.getLength());
+		EXPECT_EQ(30, morph.getWidth());
+		EXPECT_EQ(40, morph.getHeight());
+		// Check that the lattice has the correct unit size
+		EXPECT_DOUBLE_EQ(1.5, morph.getUnitSize());
+	}
+
+	TEST(MorphologyTests, AnalysisTests) {
+		Morphology morph(50, 50, 50, false, 0);
+		vector<double> mix_fractions;
+		mix_fractions.assign(2, 0.5);
+		morph.createRandomMorphology(mix_fractions);
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.01);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
+		// Calculate initial domain size
+		CorrelationCalc_Params params;
+		params.N_sampling_max = 100000;
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		params.Enable_extended_correlation_calc = false;
+		params.Correlation_cutoff_distance = 5;
+		// Check inital domain size values
+		morph.calculateCorrelationDistances(params);
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Check that random blend domain size is less than 2
+		EXPECT_LT(domain_size1_i, 2.0);
+		EXPECT_LT(domain_size2_i, 2.0);
+		// Check initial domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check that the random blend is isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
+		// Perform some phase separation
+		morph.executeIsingSwapping(100, 0.4, 0.4, false, 0, 0.0);
+		// Check final domain size values
+		morph.calculateCorrelationDistances(params);
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has increased
+		EXPECT_LT(domain_size1_i, domain_size1_f);
+		EXPECT_LT(domain_size2_i, domain_size2_f);
+		// Check new domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check that the phase separated blend is still isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
+		// Check the tortuosity of an isotropic phase seoarated blend
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		auto data = morph.getTortuosityData((char)1);
+		EXPECT_NEAR(1.09, vector_avg(data), 0.01);
+		data = morph.getTortuosityData((char)2);
+		EXPECT_NEAR(1.09, vector_avg(data), 0.01);
+	}
+}
+
 namespace UtilsTests {
 
 	TEST(UtilsTests, CoordsTests) {

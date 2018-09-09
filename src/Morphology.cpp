@@ -171,7 +171,7 @@ double Morphology::calculateAdditionalEnergyChange(const long int site_index_mai
 void Morphology::calculateAnisotropies(const int N_sampling_max) {
 	cout << ID << ": Calculating the domain anisotropy..." << endl;
 	// Select sites for correlation function calculation.
-	// Site indices for each selected site are stored in the Correlation_sites vector.
+	// Site indices for each selected site are stored in the correlation_sites_data vector.
 	vector<vector<long int>> correlation_sites_data(Site_types.size());
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		if ((int)correlation_sites_data[n].size() == 0) {
@@ -300,13 +300,12 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 		correlation_z[n] *= averaging;
 		correlation_z[n] -= Mix_fractions[type_index];
 		correlation_z[n] *= norm;
-
 	}
 	// Find the bounds of where the pair-pair correlation functions reach 1/e
 	bool success_x = false;
 	bool success_y = false;
 	bool success_z = false;
-	for (int n = 2; n <= cutoff_distance; n++) {
+	for (int n = 1; n <= cutoff_distance; n++) {
 		if (!success_x && correlation_x[n] < (1.0 / exp(1.0))) {
 			d1 = n - 1;
 			y1 = correlation_x[n - 1];
@@ -495,12 +494,14 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 		cout << ID << ": Calculating the domain size from the pair-pair correlation function using the 1/e method..." << endl;
 	}
 	vector<vector<long int>> correlation_sites_data(Site_types.size());
-	// Select sites for correlation function calculation.
-	// Site indices for each selected site are stored in the Correlation_sites vector.
 	for (int n = 0; n < (int)Site_types.size(); n++) {
+		// Select sites for correlation function calculation.
+		// Site indices for each selected site are stored in the Correlation_sites vector.
 		if ((int)correlation_sites_data[n].size() == 0) {
 			getSiteSampling(correlation_sites_data[n], Site_types[n], params.N_sampling_max);
 		}
+		// Clear the current Correlation_data
+		Correlation_data[n].clear();
 	}
 	vector<bool> domain_size_updated(Site_types.size(), false);
 	int cutoff_distance;
@@ -1791,6 +1792,10 @@ double Morphology::getDomainSize(char site_type) const {
 
 int Morphology::getHeight() const {
 	return lattice.getHeight();
+}
+
+int Morphology::getID() const {
+	return ID;
 }
 
 vector<double> Morphology::getInterfacialHistogram(char site_type) const {

@@ -23,8 +23,6 @@ All major planned features that are to be included in v4.0 are now implemented a
 However, this software tool is still under development, and as such, there may still be bugs that need to be fixed. 
 Please report any bugs or submit feature requests in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
-Public API documentation for the Ising_OPV package is still under development and can be viewed [here](https://mikeheiber.github.io/Ising_OPV/).
-
 #### Continuous Integration and Testing Status:
 
 Ising_OPV is currently being tested on [Ubuntu](https://www.ubuntu.com/) v14.04 with the [GCC compiler](https://gcc.gnu.org/) (versions 4.7, 4.8, 4.9, 5, 6, 7, and 8) and on both [Open MPI](http://www.open-mpi.org/) v1.6.5 and [MPICH](http://www.mpich.org/) v3.04 using [Travis CI](https://travis-ci.com/).
@@ -46,7 +44,7 @@ Code is being tested using [googletest](https://github.com/google/googletest) wi
 If you would like to contribute to the development of this project or would like some help in using the tool for your research, please contact me (heiber@mailaps.org) to discuss a collaboration. 
 You can check out my research using this tool and other work on [Researchgate](https://www.researchgate.net/profile/Michael_Heiber).
 
-## How to try Ising_OPV?
+## Using Ising_OPV
 
 #### Building an Executable
 
@@ -62,7 +60,8 @@ More information about common MPI packages can be found here:
 - http://www.mpich.org/
 - http://mvapich.cse.ohio-state.edu/
 
-#### Usage
+#### Running Simulations
+
 In most cases, your HPC system will use a job scheduler to manage the computing workload. 
 For performing Ising_OPV simulations, it is recommended to submit batch jobs where you will request the resources needed to perform the simulation. 
 An example batch script for the SLURM job scheduling system is provided with this package (slurm_script.sh). 
@@ -88,11 +87,17 @@ Finally, users can import experimental tomogram data, generate a morphology set 
 
 >    mpiexec -n 10 Ising_OPV.exe parameters_import_tomo.txt -importTomogram tomogram_info.xml tomogram_data.raw
 
-This command will load the metadata about the tomogram image data from the .xml file and then use that for interpreting the .raw data file.  Once the tomogram data is loaded, the morphology will be segmented into 10 equal sub-volumes to form the morphology set and then the normal analysis is performed. Again, these tomogram morphology files must be located in the working directory to be found and imported. Also, the metadata format required by Ising_OPV is defined in XML schema file, tomogram_metadata.xsd.
+This command will load the metadata about the tomogram image data from the .xml file and then use that for interpreting the .raw data file.  
+Once the tomogram data is loaded, the morphology will be segmented into 10 equal sub-volumes to form the morphology set and then the normal analysis is performed. 
+Again, these tomogram morphology files must be located in the working directory to be found and imported. 
+Also, the metadata format required by Ising_OPV is defined in XML schema file, tomogram_metadata.xsd.
 
-#### Output
+#### Simulation Output
+
 Ising_OPV will create several output files:
 - analysis_summary.txt -- This text file will contain statistics about the set of morphologies that has been created.
+- areal_composition_map_#.txt -- This text file will be created for each morphology when areal maps calculation is enabled and contains data to construct areal composition maps to check for in-plane blend compositional variations.
+- areal_tortuosity_map_#.txt -- This text file will be created for each morphology when areal maps calculation is enabled and contains data to construct areal end-to-end tortuosity maps to check for in-plane tortuosity variations.
 - correlation_data_#.txt -- This text file will be created for each morphology when the correlation function calculation is enabled.
 - correlation_data_avg.txt -- This text file will be created when the correlation function calculation is enabled and will contain the average correlation function from all morphologies in the set
 - depth_dependent_data_#.txt -- This text file wll be created for each morphology when the depth dependent calculation is enabled and will contain depth dependent blend composition and domain size data for each site type in the lattice
@@ -100,17 +105,20 @@ Ising_OPV will create several output files:
 -  end-to-end_path_data1.txt and end-to-end_path_data2.txt -- These text files will be created when tortuosity calculation is enabled and will contain the lengths of the shortest end-to-end paths through each domain type.
 - interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type.
 - morphology_#_compressed.txt -- This text file will be created for each morphology generated in the est and stores the data for that morphology.
--  tortuostiy_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contain the overall tortuosity histogram data for each domain type.
+-  tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contain the overall tortuosity histogram data for each domain type.
 
 #### Data Analysis
 
 For [Igor Pro](https://www.wavemetrics.com/) users, I am developing an open-source procedures package for loading, analyzing, and plotting data from Ising_OPV called [Ising_OPV_Analysis](https://github.com/MikeHeiber/Ising_OPV_Analysis). 
 This is a good starting point for managing the data generated by Ising_OPV, and the Igor Pro scripting environment provides a nice playground where users can perform more advanced data analysis as needed.
 
+#### Software API
+
+Public API documentation for the Ising_OPV package can be viewed [here](https://mikeheiber.github.io/Ising_OPV/).
 
 ## Citing this Work
 
-If you find Ising_OPV to be helpful for your research, please cite the orignal study:
+If you find Ising_OPV to be helpful for your research, please cite the original study:
 [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **2**, 014008 (2014).](http://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008) [[ResearchGate]](https://www.researchgate.net/publication/264419218_Efficient_Generation_of_Model_Bulk_Heterojunction_Morphologies_for_Organic_Photovoltaic_Device_Modeling)
 
 If your work involves investigating the effects of morphological tortuosity, please also cite the study that introduced the tortuosity features:
@@ -126,7 +134,7 @@ Several peer-reviewed publications discuss the development and application of th
 - [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **8**, 019902 (2017).](https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.8.019902) [[ResearchGate]](https://www.researchgate.net/publication/318592832_Erratum_Efficient_Generation_of_Model_Bulk_Heterojunction_Morphologies_for_Organic_Photovoltaic_Device_Modeling_Phys_Rev_Applied_2_014008_2014)
 - [M.C. Heiber, K. Kister, A. Baumann, V. Dyakonov, C. Deibel, and T.-Q. Nguyen, Phys. Rev. Appl. **8**, 054043 (2017).](https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.8.054043) [[ResearchGate]](https://www.researchgate.net/publication/321226076_Impact_of_Tortuosity_on_Charge-Carrier_Transport_in_Organic_Bulk_Heterojunction_Blends)
 
-## Acknowledgements
+## Acknowledgments
 Thank you to Dr. Dean DeLongchamp at NIST for providing access to computing resources that support the ongoing development of v4.0. 
 Development of v4.0 is supported by financial assistance award 70NANB14H012 from U.S. Department of Commerce, National Institute of Standards and Technology as part of the Center for Hierarchical Materials Design (CHiMaD).
 

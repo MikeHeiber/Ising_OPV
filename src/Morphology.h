@@ -16,6 +16,10 @@
 #include <numeric>
 #include <sstream>
 
+//! \brief This struct contains all of the input parameters needed by the Morphology class to perform the correlation calculation.
+//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
+//! \author Michael C. Heiber
+//! \date 2014-2018
 struct CorrelationCalc_Params {
 	int N_sampling_max;
 	bool Enable_mix_frac_method;
@@ -24,6 +28,10 @@ struct CorrelationCalc_Params {
 	int Correlation_cutoff_distance;
 };
 
+//! \brief This struct contains all of the input parameters needed by the Morphology class to import a tomogram.
+//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
+//! \author Michael C. Heiber
+//! \date 2014-2018
 struct TomogramImport_Params {
 	double Desired_unit_size;
 	bool Enable_cutoff_analysis;
@@ -215,6 +223,10 @@ public:
 	//! \brief Gets the height or z-direction size of the lattice.
 	//! \return an integer representing the height or z-direction size of the lattice.
 	int getHeight() const;
+
+	//! \brief Gets the ID number of the Morphology object.
+	//! \return the integer ID number.
+	int getID() const;
 
 	//! \brief Returns a vector containing the interfacial distance histogram data for the specified site type.
 	//! \details The histogram bins are distances given by the vector index + 1 in lattice units.
