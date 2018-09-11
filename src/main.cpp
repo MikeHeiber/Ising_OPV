@@ -369,7 +369,7 @@ int main(int argc, char * argv[]) {
 	// Calculate interfacial distance histogram if enabled.
 	if (parameters.Enable_interfacial_distance_calc) {
 		cout << procid << ": Calculating the interfacial distance histogram..." << endl;
-		morph.calculateInterfacialDistance();
+		morph.calculateInterfacialDistanceHistogram();
 	}
 	// Calculate interfacial area to volume ratio.
 	iav_ratio = morph.calculateInterfacialAreaVolumeRatio();
