@@ -1,6 +1,7 @@
 var _utils_8cpp =
 [
     [ "calculateCumulativeHist", "_utils_8cpp.html#aeeafbd56205953143f1a18306da06884", null ],
+    [ "calculateProbabilityHist", "_utils_8cpp.html#a2df88014dd5c6dd6ed57d0613c4a7474", null ],
     [ "calculateProbabilityHist", "_utils_8cpp.html#adcb2e98774b12bc12264034913547a2c", null ],
     [ "calculateProbabilityHist", "_utils_8cpp.html#a0818230f8ad279ef7ca217f3cba81f76", null ],
     [ "calculateProbabilityHist", "_utils_8cpp.html#a08553f36886a36456e8111585029e467", null ],

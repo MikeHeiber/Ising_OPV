@@ -181,7 +181,7 @@ void Morphology::calculateAnisotropies(const int N_sampling_max) {
 	}
 	Domain_anisotropy_updated.assign(Site_types.size(), false);
 	bool success = false;
-	int cutoff_distance = 5;
+	int cutoff_distance = 3;
 	while (!success) {
 		if (2 * cutoff_distance > lattice.getLength() && 2 * cutoff_distance > lattice.getWidth() && 2 * cutoff_distance > lattice.getHeight()) {
 			success = false;
@@ -511,7 +511,7 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 			cutoff_distance = params.Correlation_cutoff_distance;
 		}
 		else {
-			cutoff_distance = 5;
+			cutoff_distance = 3;
 		}
 		domain_size = -1;
 		// The correlation function calculation is called with an increasing cutoff distance until successful.
@@ -888,9 +888,8 @@ double Morphology::calculateInterfacialAreaVolumeRatio() const {
 	return (double)site_count / (double)lattice.getNumSites();
 }
 
-void Morphology::calculateInterfacialDistance() {
+void Morphology::calculateInterfacialDistanceHistogram() {
 	Coords coords, coords_dest;
-	int d_int;
 	float d;
 	float d_temp;
 	// The shortest distance from each site to the interface is stored in the path_distances vector
@@ -951,37 +950,25 @@ void Morphology::calculateInterfacialDistance() {
 		// Incrementing the expansion limit (d_current) one lattice unit at a time ensures that the shortest path to the interface is determined.
 		d_current += 1;
 	}
-	// Construct interfacial distance histograms
-	for (int i = 0; i < (int)Site_types.size(); i++) {
-		InterfacialHistogram_data[i].clear();
+	// Clear existing interfacial distance histogram data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		InterfacialHistogram_data[n].clear();
 	}
 	vector<int> counts((int)Site_types.size(), 0);
-	// The interfacial distance data in path_data is rounded to the nearest integer lattice unit
-	// One bin for each integer lattice unit is used to create the histograms.
-	// Set site of histogram vectors
+	// Gather path data into separate vectors for each site type
+	vector<vector<int>> segmented_path_data(Site_types.size(),vector<int>());
 	for (int m = 0; m < (int)path_distances.size(); m++) {
-		d_int = round_int(path_distances[m]);
 		for (int n = 0; n < (int)Site_types.size(); n++) {
 			if (lattice.getSiteType(m) == Site_types[n]) {
-				if (d_int > (int)InterfacialHistogram_data[n].size()) {
-					InterfacialHistogram_data[n].assign(d_int,0.0);
-				}
+				segmented_path_data[n].push_back(round_int(path_distances[m]));
 			}
 		}
 	}
-	// Collect counts in each histogram bin
-	for (int m = 0; m < (int)path_distances.size(); m++) {
-		d_int = round_int(path_distances[m]);
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			if (lattice.getSiteType(m) == Site_types[n]) {
-				InterfacialHistogram_data[n][d_int - 1] += 1.0;
-				counts[n]++;
-			}
-		}
-	}
+	// Path data is rounded to the nearest integer lattice unit
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		for (int i = 0; i < (int)InterfacialHistogram_data[n].size(); i++) {
-			InterfacialHistogram_data[n][i] /= (double)counts[n];
+		auto hist_data = calculateProbabilityHist(segmented_path_data[n],1);
+		for (int i = 0; i < (int)hist_data.size(); i++) {
+			InterfacialHistogram_data[n].push_back(hist_data[i].second);
 		}
 	}
 }
@@ -1533,6 +1520,10 @@ void Morphology::createRandomMorphology(const vector<double>& mix_fractions) {
 		thresholds[n] += thresholds[n - 1];
 	}
 	Mix_fractions = mix_fractions;
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
+	}
 	double randn;
 	bool success = false;
 	for (int x = 0; x < lattice.getLength(); x++) {
@@ -1798,7 +1789,7 @@ int Morphology::getID() const {
 	return ID;
 }
 
-vector<double> Morphology::getInterfacialHistogram(char site_type) const {
+vector<double> Morphology::getInterfacialDistanceHistogram(char site_type) const {
 	return InterfacialHistogram_data[getSiteTypeIndex(site_type)];
 }
 

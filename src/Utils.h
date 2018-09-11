@@ -68,18 +68,26 @@ namespace Utils {
 	static constexpr double Pi = 3.14159265359;
 	static constexpr double Coulomb_constant = 8.987551787e9; // N m^2 C^-2
 
-	//! \brief Calculates the cumulative hisogram from the input probability histogram data.
+	//! \brief Calculates the cumulative histogram from the input probability histogram data.
 	//! \param data is the input probability histogram which is a vector of x-y pairs consisting of bin-centered x values and probability y values.
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and cumnulative probability y values.
 	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& data);
 
-	//! \brief Calculates the probability histogram for the input data vector using the input number of bins.
+	//! \brief Calculates the probability histogram for the input double data vector using the input number of bins.
 	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 
 	//! The function outputs bin-centered x values and probability y values in a x-y pair vector.
 	//! \param data is the input data vector.
 	//! \param num_bins is the desired number of bins.
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins);
+
+	//! \brief Calculates the probability histogram for the input integer data vector using the input bin size.
+	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set with the specified bin size.
+	//! The function outputs bin-centered x values and probability y values in a x-y pair vector.
+	//! \param data is the input integer data vector.
+	//! \param bin_size is the specified bin size
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<int>& data, int bin_size);
 
 	//! \brief Calculates the probability histogram for the input data vector using the input bin size.
 	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 

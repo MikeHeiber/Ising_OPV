@@ -54,8 +54,8 @@ namespace MorphologyTests {
 		EXPECT_DOUBLE_EQ(1.5, morph.getUnitSize());
 	}
 
-	TEST(MorphologyTests, AnalysisTests) {
-		Morphology morph(50, 50, 50, false, 0);
+	TEST(MorphologyTests, IsotropicPhaseSeparationTests) {
+		Morphology morph(50, 50, 50, true, 0);
 		vector<double> mix_fractions;
 		mix_fractions.assign(2, 0.5);
 		morph.createRandomMorphology(mix_fractions);
@@ -68,40 +68,146 @@ namespace MorphologyTests {
 		params.Enable_e_method = true;
 		params.Enable_mix_frac_method = false;
 		params.Enable_extended_correlation_calc = false;
-		params.Correlation_cutoff_distance = 5;
-		// Check inital domain size values
+		params.Correlation_cutoff_distance = 3;
+		// Calculate the inital domain size values
 		morph.calculateCorrelationDistances(params);
 		double domain_size1_i = morph.getDomainSize((char)1);
 		double domain_size2_i = morph.getDomainSize((char)2);
 		// Check that random blend domain size is less than 2
 		EXPECT_LT(domain_size1_i, 2.0);
 		EXPECT_LT(domain_size2_i, 2.0);
-		// Check initial domain anisotropy
+		// Calculate the initial domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
 		// Check that the random blend is isotropic
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
 		// Perform some phase separation
-		morph.executeIsingSwapping(100, 0.4, 0.4, false, 0, 0.0);
-		// Check final domain size values
+		morph.executeIsingSwapping(200, 0.4, 0.4, false, 0, 0.0);
+		// Calculate the final domain size values
 		morph.calculateCorrelationDistances(params);
 		double domain_size1_f = morph.getDomainSize((char)1);
 		double domain_size2_f = morph.getDomainSize((char)2);
 		// Check that the domain size has increased
 		EXPECT_LT(domain_size1_i, domain_size1_f);
 		EXPECT_LT(domain_size2_i, domain_size2_f);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(5.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(5.0, domain_size2_f, 0.5);
 		// Check new domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
 		// Check that the phase separated blend is still isotropic
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
-		// Check the tortuosity of an isotropic phase seoarated blend
+		// Check the tortuosity of an isotropic phase separated blend
 		morph.calculateTortuosity((char)1, false);
 		morph.calculateTortuosity((char)2, false);
 		auto data = morph.getTortuosityData((char)1);
-		EXPECT_NEAR(1.09, vector_avg(data), 0.01);
+		EXPECT_NEAR(1.1, vector_avg(data), 0.02);
 		data = morph.getTortuosityData((char)2);
-		EXPECT_NEAR(1.09, vector_avg(data), 0.01);
+		EXPECT_NEAR(1.1, vector_avg(data), 0.02);
+		// Apply smoothing and re-recalculate the domain size
+		morph.executeSmoothing(0.52, 1);
+		morph.calculateCorrelationDistances(params);
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
+		// Check that the mix fractions are not severely changed
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.02);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.02);
+		// Calculate domain size using the mix fraction method
+		params.Enable_e_method = false;
+		params.Enable_mix_frac_method = true;
+		morph.calculateCorrelationDistances(params);
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
+		// Calculate the interfacial distance histogram
+		morph.calculateInterfacialDistanceHistogram();
+		auto prob1 = morph.getInterfacialDistanceHistogram((char)1);
+		auto prob2 = morph.getInterfacialDistanceHistogram((char)2);
+		// Check that the probability histograms sum to 1
+		EXPECT_NEAR(1.0, accumulate(prob1.begin(), prob1.end(), 0.0), 0.05);
+		EXPECT_NEAR(1.0, accumulate(prob2.begin(), prob2.end(), 0.0), 0.05);
+		// Check that the size of the histograms are related to the domain size
+		EXPECT_NEAR(5.0, prob1.size(), 1);
+		EXPECT_NEAR(5.0, prob2.size(), 1);
+	}
+
+	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {
+		Morphology morph(40, 40, 40, true, 0);
+		vector<double> mix_fractions;
+		mix_fractions.assign(2, 0.5);
+		morph.createRandomMorphology(mix_fractions);
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.01);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
+		// Calculate initial domain size
+		CorrelationCalc_Params params;
+		params.N_sampling_max = 100000;
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		params.Enable_extended_correlation_calc = false;
+		params.Correlation_cutoff_distance = 3;
+		// Calculate the inital domain size values
+		morph.calculateCorrelationDistances(params);
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Check that random blend domain size is less than 2
+		EXPECT_LT(domain_size1_i, 2.0);
+		EXPECT_LT(domain_size2_i, 2.0);
+		// Calculate the initial domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check that the initial random blend is isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
+		// Perform some anisotropic phase separation that creates aligned structures out-of-plane in the z-direction
+		morph.executeIsingSwapping(220, 0.35, 0.35, true, 3, 0.05);
+		// Calculate the final domain size values
+		morph.calculateCorrelationDistances(params);
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has increased
+		EXPECT_LT(domain_size1_i, domain_size1_f);
+		EXPECT_LT(domain_size2_i, domain_size2_f);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(5.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(5.0, domain_size2_f, 0.5);
+		// Calculate the final domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check the approximate magnitude of the anisotropy factor
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)1), 0.15);
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)2), 0.15);
+		// Reset morphology to a random blend
+		morph.createRandomMorphology(mix_fractions);
+		// Calculate the inital domain size values
+		morph.calculateCorrelationDistances(params);
+		domain_size1_i = morph.getDomainSize((char)1);
+		domain_size2_i = morph.getDomainSize((char)2);
+		// Check that random blend domain size is less than 2
+		EXPECT_LT(domain_size1_i, 2.0);
+		EXPECT_LT(domain_size2_i, 2.0);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
+		morph.executeIsingSwapping(180, 0.4, 0.4, true, 3, -0.05);
+		// Calculate the final domain size values
+		morph.calculateCorrelationDistances(params);
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has increased
+		EXPECT_LT(domain_size1_i, domain_size1_f);
+		EXPECT_LT(domain_size2_i, domain_size2_f);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(5.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(5.0, domain_size2_f, 0.5);
+		// Calculate the final domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check the approximate magnitude of the anisotropy factor
+		EXPECT_NEAR(0.80, morph.getDomainAnisotropy((char)1), 0.1);
+		EXPECT_NEAR(0.80, morph.getDomainAnisotropy((char)2), 0.1);
+
 	}
 }
 

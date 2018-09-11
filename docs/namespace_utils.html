@@ -100,10 +100,13 @@ $(document).ready(function(){initNavTree('namespace_utils.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aeeafbd56205953143f1a18306da06884"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#aeeafbd56205953143f1a18306da06884">calculateCumulativeHist</a> (const std::vector&lt; std::pair&lt; double, double &gt;&gt; &amp;data)</td></tr>
-<tr class="memdesc:aeeafbd56205953143f1a18306da06884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the cumulative hisogram from the input probability histogram data.  <a href="#aeeafbd56205953143f1a18306da06884">More...</a><br /></td></tr>
+<tr class="memdesc:aeeafbd56205953143f1a18306da06884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the cumulative histogram from the input probability histogram data.  <a href="#aeeafbd56205953143f1a18306da06884">More...</a><br /></td></tr>
 <tr class="separator:aeeafbd56205953143f1a18306da06884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2df88014dd5c6dd6ed57d0613c4a7474"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a2df88014dd5c6dd6ed57d0613c4a7474">calculateProbabilityHist</a> (const std::vector&lt; int &gt; &amp;data, int bin_size)</td></tr>
+<tr class="memdesc:a2df88014dd5c6dd6ed57d0613c4a7474"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input integer data vector using the input bin size.  <a href="#a2df88014dd5c6dd6ed57d0613c4a7474">More...</a><br /></td></tr>
+<tr class="separator:a2df88014dd5c6dd6ed57d0613c4a7474"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcb2e98774b12bc12264034913547a2c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#adcb2e98774b12bc12264034913547a2c">calculateProbabilityHist</a> (const std::vector&lt; double &gt; &amp;data, int num_bins)</td></tr>
-<tr class="memdesc:adcb2e98774b12bc12264034913547a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input data vector using the input number of bins.  <a href="#adcb2e98774b12bc12264034913547a2c">More...</a><br /></td></tr>
+<tr class="memdesc:adcb2e98774b12bc12264034913547a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input double data vector using the input number of bins.  <a href="#adcb2e98774b12bc12264034913547a2c">More...</a><br /></td></tr>
 <tr class="separator:adcb2e98774b12bc12264034913547a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0818230f8ad279ef7ca217f3cba81f76"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a0818230f8ad279ef7ca217f3cba81f76">calculateProbabilityHist</a> (const std::vector&lt; double &gt; &amp;data, double bin_size)</td></tr>
 <tr class="memdesc:a0818230f8ad279ef7ca217f3cba81f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input data vector using the input bin size.  <a href="#a0818230f8ad279ef7ca217f3cba81f76">More...</a><br /></td></tr>
@@ -366,7 +369,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Calculates the cumulative hisogram from the input probability histogram data. </p>
+<p>Calculates the cumulative histogram from the input probability histogram data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>is the input probability histogram which is a vector of x-y pairs consisting of bin-centered x values and probability y values. </td></tr>
@@ -377,8 +380,46 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a2df88014dd5c6dd6ed57d0613c4a7474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2df88014dd5c6dd6ed57d0613c4a7474">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt; double, double &gt; &gt; Utils::calculateProbabilityHist </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bin_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculates the probability histogram for the input integer data vector using the input bin size. </p>
+<p>Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set with the specified bin size. The function outputs bin-centered x values and probability y values in a x-y pair vector. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>is the input integer data vector. </td></tr>
+    <tr><td class="paramname">bin_size</td><td>is the specified bin size </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of x-y pairs consisting of bin-centered x values and probability y values. </dd></dl>
+
+</div>
+</div>
 <a id="adcb2e98774b12bc12264034913547a2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcb2e98774b12bc12264034913547a2c">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adcb2e98774b12bc12264034913547a2c">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -403,7 +444,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Calculates the probability histogram for the input data vector using the input number of bins. </p>
+<p>Calculates the probability histogram for the input double data vector using the input number of bins. </p>
 <p>Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. The function outputs bin-centered x values and probability y values in a x-y pair vector. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>is the input data vector. </td></tr>
@@ -416,7 +457,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a0818230f8ad279ef7ca217f3cba81f76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0818230f8ad279ef7ca217f3cba81f76">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0818230f8ad279ef7ca217f3cba81f76">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -454,7 +495,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a08553f36886a36456e8111585029e467"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08553f36886a36456e8111585029e467">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a08553f36886a36456e8111585029e467">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

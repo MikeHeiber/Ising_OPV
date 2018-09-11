@@ -1,11 +1,11 @@
-## Parameters for Ising_OPV v4.0-alpha.3
+## Parameters for Ising_OPV v4.0-rc1
 -------------------------------
 ## General Parameters
 50 //length (integer values only) (specify the x-direction size of the lattice)
 50 //width (integer values only) (specify the y-direction size of the lattice)
 50 //height (integer values only) (specify the z-direction size of the lattice)
 true //enable_z_periodic_boundary (true or false) (periodic boundaries in x- and y-directions are enabled by default, but z-direction can also be enabled here)
-0.5 //mix_fraction (donor fraction)
+0.5 //mix_fraction (type1 volume fraction)
 0.4 //interaction_energy1 (code optimized for values from 0.3 to 1.0) (energetic favorability for type1-type1 interactions over type1-type2 interactions in units of kT)
 0.4 //interaction_energy2 (code optimized for values from 0.3 to 1.0) (energetic favorability for type2-type2 interactions over type1-type2 interactions in units of kT)
 200 //MC_steps (specifies the duration of the phase separation process)

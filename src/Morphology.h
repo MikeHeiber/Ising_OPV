@@ -136,7 +136,7 @@ public:
 	double calculateInterfacialAreaVolumeRatio() const;
 
 	//! \brief Calculates the interfacial distance histograms, which gives the fraction of sites at a specified distance from the interface.
-	void calculateInterfacialDistance();
+	void calculateInterfacialDistanceHistogram();
 
 	//! \brief Calculates the fraction of sites adjacent to an interface.
 	double calculateInterfacialVolumeFraction() const;
@@ -228,11 +228,11 @@ public:
 	//! \return the integer ID number.
 	int getID() const;
 
-	//! \brief Returns a vector containing the interfacial distance histogram data for the specified site type.
+	//! \brief Returns a vector containing the interfacial distance probability histogram data for the specified site type.
 	//! \details The histogram bins are distances given by the vector index + 1 in lattice units.
 	//! \param site_type specifies for which site type the data should be retrieved.
 	//! \return a copy of the data vector.
-	std::vector<double> getInterfacialHistogram(const char site_type) const;
+	std::vector<double> getInterfacialDistanceHistogram(const char site_type) const;
 
 	//! \brief Returns the island volume for the specified site type.
 	//! \param site_type specifies for which site type the data should be retrieved.

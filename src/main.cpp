@@ -480,8 +480,8 @@ int main(int argc, char * argv[]) {
 	}
 	// Calculate the average interfacial distance histograms.
 	if (parameters.Enable_interfacial_distance_calc) {
-		interfacial_dist_hist1_vect = MPI_calculateVectorAvg(morph.getInterfacialHistogram((char)1));
-		interfacial_dist_hist2_vect = MPI_calculateVectorAvg(morph.getInterfacialHistogram((char)2));
+		interfacial_dist_hist1_vect = MPI_calculateVectorAvg(morph.getInterfacialDistanceHistogram((char)1));
+		interfacial_dist_hist2_vect = MPI_calculateVectorAvg(morph.getInterfacialDistanceHistogram((char)2));
 	}
 	// Calculate the average pair-pair correlation functions.
 	if (parameters.Enable_correlation_calc) {

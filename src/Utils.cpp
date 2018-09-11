@@ -18,6 +18,42 @@ namespace Utils {
 		return result;
 	}
 
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<int>& data, int bin_size) {
+		// Check for valid input data
+		if ((int)data.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
+			vector<pair<double, double>> null_output = { { 0.0,0.0 } };
+			return null_output;
+		}
+		// Determine the starting bin position
+		int min_val = *min_element(data.begin(), data.end());
+		int max_val = *max_element(data.begin(), data.end());
+		// Determine number of bins
+		int num_bins = (int)ceil((double)(max_val - min_val) / (double) bin_size);
+		// Calculate bins
+		vector<pair<double, double>> hist(num_bins, make_pair(0.0, 0.0));
+		for (int i = 0; i < num_bins; i++) {
+			hist[i].first = min_val + 0.5*(bin_size-1) + (bin_size-1) * i;	
+		}
+		// Calculate histogram
+		vector<int> counts(num_bins, 0);
+		int index;
+		for (int i = 0; i < (int)data.size(); i++) {
+			index = (data[i] - min_val) / bin_size;
+			counts[index]++;
+		}
+		// Calculate total area
+		double area = 0.0;
+		for (int i = 0; i < num_bins; i++) {
+			area += counts[i] * bin_size;
+		}
+		// Normalized histogram to get probability
+		for (int i = 0; i < num_bins; i++) {
+			hist[i].second = counts[i] / area;
+		}
+		return hist;
+	}
+
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins) {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
