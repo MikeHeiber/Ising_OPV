@@ -17,6 +17,7 @@ var _utils_8h =
     [ "MPI_calculateVectorAvg", "_utils_8h.html#a71eeb04d74f890da3d27128c37fcff78", null ],
     [ "MPI_calculateVectorSum", "_utils_8h.html#a0a17d0ad939418dc745bcfd194ce2bc1", null ],
     [ "MPI_calculateVectorSum", "_utils_8h.html#ad7b634b14633046c6da126945d688aaf", null ],
+    [ "MPI_gatherValues", "_utils_8h.html#ae58a3e87f123ab5d553d9bf0621e4e32", null ],
     [ "MPI_gatherVectors", "_utils_8h.html#aee439dad386e2477d34968311b166c85", null ],
     [ "MPI_gatherVectors", "_utils_8h.html#ad44ab8e489dbb7e24480f4e0778099d0", null ],
     [ "outputVectorToFile", "_utils_8h.html#ab76081fb0fa0e9e1633b1b2255db4164", null ],
@@ -25,5 +26,7 @@ var _utils_8h =
     [ "removeWhitespace", "_utils_8h.html#af9ceee3373ffe317f07d177cf0dfe056", null ],
     [ "round_int", "_utils_8h.html#a7c01171765e90ffe32cdcf6f5cd663fb", null ],
     [ "vector_avg", "_utils_8h.html#acbc030ce708229ea393215fe13e6377b", null ],
-    [ "vector_stdev", "_utils_8h.html#a6bfa9b066d7c0967807d588024c15d4e", null ]
+    [ "vector_median", "_utils_8h.html#a42943c1b17d7ff53692a1a39d9d7fea0", null ],
+    [ "vector_stdev", "_utils_8h.html#a6bfa9b066d7c0967807d588024c15d4e", null ],
+    [ "vector_which_median", "_utils_8h.html#a1b1947f9fcde876be0bef9f3f7c57717", null ]
 ];

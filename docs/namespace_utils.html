@@ -132,6 +132,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad7b634b14633046c6da126945d688aaf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#ad7b634b14633046c6da126945d688aaf">MPI_calculateVectorSum</a> (const std::vector&lt; int &gt; &amp;input_vector)</td></tr>
 <tr class="memdesc:ad7b634b14633046c6da126945d688aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to calculate the element-wise sum vector from separate vectors coming from different processors.  <a href="#ad7b634b14633046c6da126945d688aaf">More...</a><br /></td></tr>
 <tr class="separator:ad7b634b14633046c6da126945d688aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae58a3e87f123ab5d553d9bf0621e4e32"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#ae58a3e87f123ab5d553d9bf0621e4e32">MPI_gatherValues</a> (const double input_val)</td></tr>
+<tr class="memdesc:ae58a3e87f123ab5d553d9bf0621e4e32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to gather values from separate processors to build one vector containing all of the data.  <a href="#ae58a3e87f123ab5d553d9bf0621e4e32">More...</a><br /></td></tr>
+<tr class="separator:ae58a3e87f123ab5d553d9bf0621e4e32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee439dad386e2477d34968311b166c85"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#aee439dad386e2477d34968311b166c85">MPI_gatherVectors</a> (const std::vector&lt; double &gt; &amp;input_vector)</td></tr>
 <tr class="memdesc:aee439dad386e2477d34968311b166c85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to gather vectors from separate processors to build one big vector containing all of the data.  <a href="#aee439dad386e2477d34968311b166c85">More...</a><br /></td></tr>
 <tr class="separator:aee439dad386e2477d34968311b166c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,7 +161,7 @@ Functions</h2></td></tr>
 <tr class="separator:a25d09c704b5ae03f01cf76b6de10aa19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74375f62d5a40cc05f02a84ffcd22627"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a74375f62d5a40cc05f02a84ffcd22627"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a74375f62d5a40cc05f02a84ffcd22627">array_which_median</a> (const T data[], const int array_size)</td></tr>
-<tr class="memdesc:a74375f62d5a40cc05f02a84ffcd22627"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function determine the which element in the data array has the median value of the dataset.  <a href="#a74375f62d5a40cc05f02a84ffcd22627">More...</a><br /></td></tr>
+<tr class="memdesc:a74375f62d5a40cc05f02a84ffcd22627"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function determines which element in the data array has the median value of the dataset.  <a href="#a74375f62d5a40cc05f02a84ffcd22627">More...</a><br /></td></tr>
 <tr class="separator:a74375f62d5a40cc05f02a84ffcd22627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affd19edaa58a3f8425e1f7b4c9233f8a"><td class="memTemplParams" colspan="2">template&lt;typename base_type &gt; </td></tr>
 <tr class="memitem:affd19edaa58a3f8425e1f7b4c9233f8a"><td class="memTemplItemLeft" align="right" valign="top">base_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#affd19edaa58a3f8425e1f7b4c9233f8a">intpow</a> (const base_type base, const int exponent)</td></tr>
@@ -180,10 +183,18 @@ Functions</h2></td></tr>
 <tr class="memitem:acbc030ce708229ea393215fe13e6377b"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#acbc030ce708229ea393215fe13e6377b">vector_avg</a> (const std::vector&lt; T, A &gt; &amp;data)</td></tr>
 <tr class="memdesc:acbc030ce708229ea393215fe13e6377b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function calculates and returns the average value in double format when given a vector of numerical datatypes.  <a href="#acbc030ce708229ea393215fe13e6377b">More...</a><br /></td></tr>
 <tr class="separator:acbc030ce708229ea393215fe13e6377b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42943c1b17d7ff53692a1a39d9d7fea0"><td class="memTemplParams" colspan="2">template&lt;typename T , typename A &gt; </td></tr>
+<tr class="memitem:a42943c1b17d7ff53692a1a39d9d7fea0"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a42943c1b17d7ff53692a1a39d9d7fea0">vector_median</a> (std::vector&lt; T, A &gt; data)</td></tr>
+<tr class="memdesc:a42943c1b17d7ff53692a1a39d9d7fea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function calculates and returns the median value when given a vector of numerical datatypes.  <a href="#a42943c1b17d7ff53692a1a39d9d7fea0">More...</a><br /></td></tr>
+<tr class="separator:a42943c1b17d7ff53692a1a39d9d7fea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bfa9b066d7c0967807d588024c15d4e"><td class="memTemplParams" colspan="2">template&lt;typename T , typename A &gt; </td></tr>
 <tr class="memitem:a6bfa9b066d7c0967807d588024c15d4e"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a6bfa9b066d7c0967807d588024c15d4e">vector_stdev</a> (const std::vector&lt; T, A &gt; &amp;data)</td></tr>
 <tr class="memdesc:a6bfa9b066d7c0967807d588024c15d4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function calculates and returns the standard deviation in double format when given a vector of numerical datatypes.  <a href="#a6bfa9b066d7c0967807d588024c15d4e">More...</a><br /></td></tr>
 <tr class="separator:a6bfa9b066d7c0967807d588024c15d4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b1947f9fcde876be0bef9f3f7c57717"><td class="memTemplParams" colspan="2">template&lt;typename T , typename A &gt; </td></tr>
+<tr class="memitem:a1b1947f9fcde876be0bef9f3f7c57717"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a1b1947f9fcde876be0bef9f3f7c57717">vector_which_median</a> (const std::vector&lt; T, A &gt; &amp;data)</td></tr>
+<tr class="memdesc:a1b1947f9fcde876be0bef9f3f7c57717"><td class="mdescLeft">&#160;</td><td class="mdescRight">This template function determines which element in the data vector is closest to the median value of the dataset.  <a href="#a1b1947f9fcde876be0bef9f3f7c57717">More...</a><br /></td></tr>
+<tr class="separator:a1b1947f9fcde876be0bef9f3f7c57717"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This namespace provides useful constants and utility functions. </p>
@@ -339,7 +350,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>This template function determine the which element in the data array has the median value of the dataset. </p>
+<p>This template function determines which element in the data array has the median value of the dataset. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>is the input array of numerical data. </td></tr>
@@ -773,6 +784,35 @@ An empty vector when called on other processors. </dd></dl>
 
 </div>
 </div>
+<a id="ae58a3e87f123ab5d553d9bf0621e4e32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae58a3e87f123ab5d553d9bf0621e4e32">&#9670;&nbsp;</a></span>MPI_gatherValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; double &gt; Utils::MPI_gatherValues </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>input_val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uses MPI to gather values from separate processors to build one vector containing all of the data. </p>
+<p>Each processor calls this function and sends an input value. Upon function return, processor 0 receives the data vector and all of the other processors receive an empty vector. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input_val</td><td>is the input data value from the processor calling the function. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector that is a collection of the values from each processor, when called on processor 0. </dd>
+<dd>
+An empty vector when called on other processors. </dd></dl>
+
+</div>
+</div>
 <a id="aee439dad386e2477d34968311b166c85"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aee439dad386e2477d34968311b166c85">&#9670;&nbsp;</a></span>MPI_gatherVectors() <span class="overload">[1/2]</span></h2>
 
@@ -1022,6 +1062,35 @@ template&lt;typename T , typename A &gt; </div>
 
 </div>
 </div>
+<a id="a42943c1b17d7ff53692a1a39d9d7fea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42943c1b17d7ff53692a1a39d9d7fea0">&#9670;&nbsp;</a></span>vector_median()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename A &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double Utils::vector_median </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; T, A &gt;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This template function calculates and returns the median value when given a vector of numerical datatypes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>is the vector of numerical data. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The median value in the data set. </dd></dl>
+
+</div>
+</div>
 <a id="a6bfa9b066d7c0967807d588024c15d4e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6bfa9b066d7c0967807d588024c15d4e">&#9670;&nbsp;</a></span>vector_stdev()</h2>
 
@@ -1048,6 +1117,35 @@ template&lt;typename T , typename A &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The standard deviation of the data set in double format. </dd></dl>
+
+</div>
+</div>
+<a id="a1b1947f9fcde876be0bef9f3f7c57717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b1947f9fcde876be0bef9f3f7c57717">&#9670;&nbsp;</a></span>vector_which_median()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename A &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int Utils::vector_which_median </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T, A &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This template function determines which element in the data vector is closest to the median value of the dataset. </p>
+<p>if multiple values are equally close, the first one in the vector is selected. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>is the input vector of numerical data. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the integer vector index that indicates the median value. </dd></dl>
 
 </div>
 </div>

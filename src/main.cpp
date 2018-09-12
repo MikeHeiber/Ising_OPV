@@ -44,9 +44,9 @@ struct Input_Params {
 	bool Enable_mix_frac_method; // choose whether to use the mix fraction method for determining the domain size or not
 	bool Enable_e_method; // choose whether to use the 1/e method for determining the domain size or not
 	bool Enable_extended_correlation_calc; // choose whether to extend the correlation function calculation to the specified cutoff distance or not
-	int Correlation_cutoff_distance; // specify the maximum cutoff distnace for the extended correlation function calculation
+	int Extended_correlation_cutoff_distance; // specify the maximum cutoff distnace for the extended correlation function calculation
 	bool Enable_interfacial_distance_calc; // choose whether to calculate the interfacial distance histograms or not
-	bool Enable_tortuosity_calc; // choose whether to calculate the tortuosity histograms, end-to-end tortuosity, and island volume fraction or not
+	bool Enable_tortuosity_calc; // choose whether to calculate the tortuosity end-to-end histograms and island volume fraction or not
 	bool Enable_reduced_memory_tortuosity_calc; // choose whether to enable a tortuosity calculation method that takes longer, but uses less memory or not
 	bool Enable_depth_dependent_calc; // choose whether to enable calculation and output of film depth dependent morphology characteristics or not
 	bool Enable_areal_maps_calc; // choose whether to enable calculation and output of areal mappings of morphology characteristics or not
@@ -73,7 +73,7 @@ int main(int argc, char * argv[]) {
 	Input_Params parameters;
 	CorrelationCalc_Params correlation_params;
 	// Internal parameters
-	string version = "v4.0-beta.2";
+	string version = "v4.0-rc1";
 	bool Enable_import_morphology = false;
 	bool Enable_import_tomogram = false;
 	double mix_ratio = 0;
@@ -104,31 +104,19 @@ int main(int argc, char * argv[]) {
 	ofstream morphology_output_file;
 	ofstream morphology_cross_section_file;
 	ofstream tortuosity_hist_file;
-	ofstream path_data1_file;
-	ofstream path_data2_file;
 	bool success;
-	double *mix_ratios = NULL;
-	double *domain_sizes1 = NULL;
-	double *domain_sizes2 = NULL;
-	double *domain_anisotropies1 = NULL;
-	double *domain_anisotropies2 = NULL;
-	double *iav_ratios = NULL;
-	double *iv_fractions = NULL;
-	double *island_fractions1 = NULL;
-	double *island_fractions2 = NULL;
-	double *times = NULL;
-	int pathdata1_size = 0;
-	int pathdata2_size = 0;
-	int pathdata1_count = 0;
-	int pathdata2_count = 0;
-	float *pathdata1 = NULL;
-	float *pathdata2 = NULL;
-	float *pathdata1_all = NULL;
-	float *pathdata2_all = NULL;
-	int *pathdata1_sizes = NULL;
-	int *pathdata2_sizes = NULL;
-	int *pathdata1_displacement = NULL;
-	int *pathdata2_displacement = NULL;
+	vector<double> mix_ratios;
+	vector<double> domain_sizes1;
+	vector<double> domain_sizes2;
+	vector<double> domain_anisotropies1;
+	vector<double> domain_anisotropies2;
+	vector<double> iav_ratios;
+	vector<double> iv_fractions;
+	vector<double> island_fractions1;
+	vector<double> island_fractions2;
+	vector<double> times;
+	vector<double> tortuosity_data1;
+	vector<double> tortuosity_data2;
 	vector<double> tortuosity_hist1_vect;
 	vector<double> tortuosity_hist2_vect;
 	vector<double> interfacial_dist_hist1_vect;
@@ -137,8 +125,7 @@ int main(int argc, char * argv[]) {
 	vector<double> correlation2_vect;
 	vector<double> depth_comp1_vect;
 	vector<double> depth_comp2_vect;
-	vector<double> depth_iv1_vect;
-	vector<double> depth_iv2_vect;
+	vector<double> depth_iv_vect;
 	vector<double> depth_size1_vect;
 	vector<double> depth_size2_vect;
 	string input_morphology, input_file_path, filename_prefix;
@@ -447,33 +434,9 @@ int main(int argc, char * argv[]) {
 		cout << "Collecting morphology analysis data from each processor..." << endl;
 	}
 	if (parameters.Enable_tortuosity_calc) {
-		// Get path data for end-to-end tortuosity calculation.
-		vector<float> data = morph.getTortuosityData((char)1);
-		// Determine size of the data vector.
-		pathdata1_size = (int)data.size();
-		// Allocate an array to store the data.
-		pathdata1 = (float *)malloc(sizeof(float)*pathdata1_size);
-		// Put data from the vector into the array.
-		for (int i = 0; i < pathdata1_size; i++) {
-			pathdata1[i] = data[i];
-		}
-		data.clear();
-		// Repeat for type 2 path data.
-		data = morph.getTortuosityData((char)2);
-		pathdata2_size = (int)data.size();
-		pathdata2 = (float *)malloc(sizeof(float)*pathdata2_size);
-		for (int i = 0; i < pathdata2_size; i++) {
-			pathdata2[i] = data[i];
-		}
-		data.clear();
-		// Create array on the root processor that will contain the size of the path data arrays from each processor.
-		if (procid == 0) {
-			pathdata1_sizes = (int *)malloc(sizeof(int)*nproc);
-			pathdata2_sizes = (int *)malloc(sizeof(int)*nproc);
-		}
-		// Gather the size of the data arrays from all processors into the size array on the root processor.
-		MPI_Gather(&pathdata1_size, 1, MPI_INT, pathdata1_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Gather(&pathdata2_size, 1, MPI_INT, pathdata2_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Collect path data from all procs onto proc 0
+		tortuosity_data1 = MPI_gatherVectors(morph.getTortuosityData((char)1));
+		tortuosity_data2 = MPI_gatherVectors(morph.getTortuosityData((char)2));
 		// Calculate the average tortuosity histograms.
 		tortuosity_hist1_vect = MPI_calculateVectorAvg(morph.getTortuosityHistogram((char)1));
 		tortuosity_hist2_vect = MPI_calculateVectorAvg(morph.getTortuosityHistogram((char)2));
@@ -492,63 +455,25 @@ int main(int argc, char * argv[]) {
 	if (parameters.Enable_depth_dependent_calc) {
 		depth_comp1_vect = MPI_calculateVectorAvg(morph.getDepthCompositionData((char)1));
 		depth_comp2_vect = MPI_calculateVectorAvg(morph.getDepthCompositionData((char)2));
-		depth_iv1_vect = MPI_calculateVectorAvg(morph.getDepthIVData((char)1));
-		depth_iv2_vect = MPI_calculateVectorAvg(morph.getDepthIVData((char)2));
+		depth_iv_vect = MPI_calculateVectorAvg(morph.getDepthIVData());
 		depth_size1_vect = MPI_calculateVectorAvg(morph.getDepthDomainSizeData((char)1));
 		depth_size2_vect = MPI_calculateVectorAvg(morph.getDepthDomainSizeData((char)2));
 	}
-	// Prepare root processor for data collection.
-	if (procid == 0) {
-		// Create arrays to store property values gathered from each processor.
-		mix_ratios = (double *)malloc(sizeof(double)*nproc);
-		iav_ratios = (double *)malloc(sizeof(double)*nproc);
-		iv_fractions = (double *)malloc(sizeof(double)*nproc);
-		times = (double *)malloc(sizeof(double)*nproc);
-		if (parameters.Enable_correlation_calc) {
-			domain_sizes1 = (double *)malloc(sizeof(double)*nproc);
-			domain_sizes2 = (double *)malloc(sizeof(double)*nproc);
-			domain_anisotropies1 = (double *)malloc(sizeof(double)*nproc);
-			domain_anisotropies2 = (double *)malloc(sizeof(double)*nproc);
-		}
-		if (parameters.Enable_tortuosity_calc) {
-			island_fractions1 = (double *)malloc(sizeof(double)*nproc);
-			island_fractions2 = (double *)malloc(sizeof(double)*nproc);
-			// The final path data array will have a size that is the sum of the sizes of the arrays coming from each processor.
-			for (int i = 0; i < nproc; i++) {
-				pathdata1_count += pathdata1_sizes[i];
-				pathdata2_count += pathdata2_sizes[i];
-			}
-			pathdata1_all = (float *)malloc(sizeof(float)*pathdata1_count);
-			pathdata2_all = (float *)malloc(sizeof(float)*pathdata2_count);
-			// The path data array from the processors may have different sizes, and so displacements must be determined to know where to insert them into the full path data array.
-			pathdata1_displacement = (int *)malloc(sizeof(int)*nproc);
-			pathdata2_displacement = (int *)malloc(sizeof(int)*nproc);
-			pathdata1_displacement[0] = 0;
-			pathdata2_displacement[0] = 0;
-			for (int i = 1; i < nproc; i++) {
-				pathdata1_displacement[i] = pathdata1_displacement[i - 1] + pathdata1_sizes[i - 1];
-				pathdata2_displacement[i] = pathdata2_displacement[i - 1] + pathdata2_sizes[i - 1];
-			}
-		}
-	}
 	// Gather the properties from each processor into the previously created arrays on the root processor.
-	MPI_Gather(&mix_ratio, 1, MPI_DOUBLE, mix_ratios, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Gather(&iav_ratio, 1, MPI_DOUBLE, iav_ratios, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Gather(&iv_fraction, 1, MPI_DOUBLE, iv_fractions, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Gather(&elapsedtime, 1, MPI_DOUBLE, times, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	mix_ratios = MPI_gatherValues(mix_ratio);
+	iav_ratios = MPI_gatherValues(iav_ratio);
+	iv_fractions = MPI_gatherValues(iv_fraction);
+	times = MPI_gatherValues(elapsedtime);
 	if (parameters.Enable_correlation_calc) {
-		MPI_Gather(&domain_size1, 1, MPI_DOUBLE, domain_sizes1, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		MPI_Gather(&domain_size2, 1, MPI_DOUBLE, domain_sizes2, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		MPI_Gather(&domain_anisotropy1, 1, MPI_DOUBLE, domain_anisotropies1, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		MPI_Gather(&domain_anisotropy2, 1, MPI_DOUBLE, domain_anisotropies2, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		domain_sizes1 = MPI_gatherValues(domain_size1);
+		domain_sizes2 = MPI_gatherValues(domain_size2);
+		domain_anisotropies1 = MPI_gatherValues(domain_anisotropy1);
+		domain_anisotropies2 = MPI_gatherValues(domain_anisotropy2);
 	}
-	// Gather the path data arrays from each processor into the previously created full path data array on the root processor at the positions defined by the displacement array.
 	if (parameters.Enable_tortuosity_calc) {
-		MPI_Gatherv(pathdata1, pathdata1_size, MPI_FLOAT, pathdata1_all, pathdata1_sizes, pathdata1_displacement, MPI_FLOAT, 0, MPI_COMM_WORLD);
-		MPI_Gatherv(pathdata2, pathdata2_size, MPI_FLOAT, pathdata2_all, pathdata2_sizes, pathdata2_displacement, MPI_FLOAT, 0, MPI_COMM_WORLD);
 		// Gather the island volume fraction property from each processor into the previously created array on the root processor.
-		MPI_Gather(&island_fraction1, 1, MPI_DOUBLE, island_fractions1, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		MPI_Gather(&island_fraction2, 1, MPI_DOUBLE, island_fractions2, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		island_fractions1 = MPI_gatherValues(island_fraction1);
+		island_fractions2 = MPI_gatherValues(island_fraction2);
 	}
 	// Output the analysis results to text files.
 	if (procid == 0) {
@@ -576,19 +501,13 @@ int main(int argc, char * argv[]) {
 		if (parameters.Enable_tortuosity_calc) {
 			if (!Enable_import_morphology || Enable_import_tomogram) {
 				tortuosity_hist_file.open("tortuosity_histograms.txt");
-				path_data1_file.open("end-to-end_path_data1.txt");
-				path_data2_file.open("end-to-end_path_data2.txt");
 			}
 			else {
 				if (parameters.Enable_analysis_only) {
 					tortuosity_hist_file.open("tortuosity_histograms_new.txt");
-					path_data1_file.open("end-to-end_path_data1_new.txt");
-					path_data2_file.open("end-to-end_path_data2_new.txt");
 				}
 				else {
 					tortuosity_hist_file.open("tortuosity_histograms_mod.txt");
-					path_data1_file.open("end-to-end_path_data1_mod.txt");
-					path_data2_file.open("end-to-end_path_data2_mod.txt");
 				}
 			}
 			tortuosity_hist_file << "Distance (nm),Tortuosity1,Tortuosity2" << endl;
@@ -609,15 +528,7 @@ int main(int argc, char * argv[]) {
 					tortuosity_hist_file << "0,";
 				}
 			}
-			for (int i = 0; i < pathdata1_count; i++) {
-				path_data1_file << pathdata1_all[i] << "\n";
-			}
-			for (int i = 0; i < pathdata2_count; i++) {
-				path_data2_file << pathdata2_all[i] << "\n";
-			}
 			tortuosity_hist_file.close();
-			path_data1_file.close();
-			path_data2_file.close();
 		}
 		// Output the interfacial distance histograms.
 		if (parameters.Enable_interfacial_distance_calc) {
@@ -651,9 +562,9 @@ int main(int argc, char * argv[]) {
 					depthdata_avg_file.open("depth_dependent_data_avg_mod.txt");
 				}
 			}
-			depthdata_avg_file << "Z-Position,Type1_composition,Type2_composition,Type1_IV_fraction,Type2_IV_fraction,Type1_domain_size,Type2_domain_size" << endl;
+			depthdata_avg_file << "Z-Position,Type1_composition,Type2_composition,Type1_domain_size,Type2_domain_size,IV_fraction" << endl;
 			for (int i = 0; i < (int)depth_size1_vect.size(); i++) {
-				depthdata_avg_file << i << "," << depth_comp1_vect[i] << "," << depth_comp2_vect[i] << "," << depth_iv1_vect[i] << "," << depth_iv2_vect[i] << "," << depth_size1_vect[i] << "," << depth_size2_vect[i] << endl;
+				depthdata_avg_file << i << "," << depth_comp1_vect[i] << "," << depth_comp2_vect[i] << "," << depth_size1_vect[i] << "," << depth_size2_vect[i] << "," << depth_iv_vect[i] << endl;
 			}
 			depthdata_avg_file.close();
 		}
@@ -676,21 +587,21 @@ int main(int argc, char * argv[]) {
 		analysis_file << "tortuosity1_avg,tortuosity1_stdev,tortuosity2_avg,tortuosity2_stdev,island_volume_ratio1_avg,island_volume_ratio1_stdev,";
 		analysis_file << "island_volume_ratio2_avg,island_volume_ratio2_stdev,calc_time_avg(min),calc_time_stdev(min)" << endl;
 		analysis_file << morph.getLength() << "," << morph.getWidth() << "," << morph.getHeight() << ",";
-		analysis_file << array_avg(mix_ratios, nproc) << "," << array_stdev(mix_ratios, nproc) << ",";
+		analysis_file << vector_avg(mix_ratios) << "," << vector_stdev(mix_ratios) << ",";
 		if (parameters.Enable_correlation_calc) {
-			analysis_file << array_avg(domain_sizes1, nproc) << "," << array_stdev(domain_sizes1, nproc) << "," << array_avg(domain_sizes2, nproc) << "," << array_stdev(domain_sizes2, nproc) << ",";
-			analysis_file << array_avg(domain_anisotropies1, nproc) << "," << array_stdev(domain_anisotropies1, nproc) << "," << array_avg(domain_anisotropies2, nproc) << "," << array_stdev(domain_anisotropies2, nproc) << ",";
+			analysis_file << vector_avg(domain_sizes1) << "," << vector_stdev(domain_sizes1) << "," << vector_avg(domain_sizes2) << "," << vector_stdev(domain_sizes2) << ",";
+			analysis_file << vector_avg(domain_anisotropies1) << "," << vector_stdev(domain_anisotropies1) << "," << vector_avg(domain_anisotropies2) << "," << vector_stdev(domain_anisotropies2) << ",";
 		}
 		else {
 			analysis_file << "-" << "," << "-" << "," << "-" << "," << "-" << ",";
 			analysis_file << "-" << "," << "-" << "," << "-" << "," << "-" << ",";
 		}
-		analysis_file << array_avg(iav_ratios, nproc) << "," << array_stdev(iav_ratios, nproc) << "," << array_avg(iv_fractions, nproc) << "," << array_stdev(iv_fractions, nproc) << ",";
+		analysis_file << vector_avg(iav_ratios) << "," << vector_stdev(iav_ratios) << "," << vector_avg(iv_fractions) << "," << vector_stdev(iv_fractions) << ",";
 		if (parameters.Enable_tortuosity_calc) {
-			analysis_file << array_avg(pathdata1_all, pathdata1_count) << "," << array_stdev(pathdata1_all, pathdata1_count) << ",";
-			analysis_file << array_avg(pathdata2_all, pathdata2_count) << "," << array_stdev(pathdata2_all, pathdata2_count) << ",";
-			analysis_file << array_avg(island_fractions1, nproc) << "," << array_stdev(island_fractions1, nproc) << ",";
-			analysis_file << array_avg(island_fractions2, nproc) << "," << array_stdev(island_fractions2, nproc) << ",";
+			analysis_file << vector_avg(tortuosity_data1) << "," << vector_stdev(tortuosity_data1) << ",";
+			analysis_file << vector_avg(tortuosity_data2) << "," << vector_stdev(tortuosity_data2) << ",";
+			analysis_file << vector_avg(island_fractions1) << "," << vector_stdev(island_fractions1) << ",";
+			analysis_file << vector_avg(island_fractions2) << "," << vector_stdev(island_fractions2) << ",";
 		}
 		else {
 			analysis_file << "-" << "," << "-" << ",";
@@ -698,15 +609,15 @@ int main(int argc, char * argv[]) {
 			analysis_file << "-" << "," << "-" << ",";
 			analysis_file << "-" << "," << "-" << ",";
 		}
-		analysis_file << array_avg(times, nproc) << "," << array_stdev(times, nproc) << endl;
+		analysis_file << vector_avg(times) << "," << vector_stdev(times) << endl;
 		analysis_file << endl;
 		analysis_file << "Detailed results for each of the morphologies in the set:" << endl;
 		analysis_file << "id#,length,width,height,mix_ratio,domain1_size,domain2_size,";
 		analysis_file << "domain1_anisotropy,domain2_anisotropy,";
 		analysis_file << "interfacial_area_volume_ratio,interfacial_volume_ratio,";
 		analysis_file << "tortuosity1,tortuosity2,island_volume_ratio1,island_volume_ratio2,calc_time(min)" << endl;
-		double *tortuosities1 = (double *)malloc(sizeof(double)*nproc);
-		double *tortuosities2 = (double *)malloc(sizeof(double)*nproc);
+		vector<double> tortuosities1(nproc);
+		vector<double> tortuosities2(nproc);
 		for (int i = 0; i < nproc; i++) {
 			analysis_file << i << "," << morph.getLength() << "," << morph.getWidth() << "," << morph.getHeight() << "," << mix_ratios[i] << ",";
 			if (parameters.Enable_correlation_calc) {
@@ -719,18 +630,8 @@ int main(int argc, char * argv[]) {
 			}
 			analysis_file << iav_ratios[i] << "," << iv_fractions[i] << ",";
 			if (parameters.Enable_tortuosity_calc) {
-				pathdata1 = (float *)malloc(sizeof(float)*pathdata1_sizes[i]);
-				pathdata2 = (float *)malloc(sizeof(float)*pathdata2_sizes[i]);
-				copy(pathdata1_all + pathdata1_displacement[i], pathdata1_all + pathdata1_displacement[i] + pathdata1_sizes[i], pathdata1);
-				copy(pathdata2_all + pathdata2_displacement[i], pathdata2_all + pathdata2_displacement[i] + pathdata2_sizes[i], pathdata2);
-				tortuosities1[i] = array_avg(pathdata1, pathdata1_sizes[i]);
-				tortuosities2[i] = array_avg(pathdata2, pathdata2_sizes[i]);
-				if (std::isnan(tortuosities1[i])) {
-					tortuosities1[i] = -1;
-				}
-				if (std::isnan(tortuosities2[i])) {
-					tortuosities2[i] = -1;
-				}
+				tortuosities1[i] = vector_avg(morph.getTortuosityData((char)1));
+				tortuosities2[i] = vector_avg(morph.getTortuosityData((char)2));
 				analysis_file << tortuosities1[i] << "," << tortuosities2[i] << ",";
 				analysis_file << island_fractions1[i] << "," << island_fractions2[i] << ",";
 			}
@@ -742,10 +643,12 @@ int main(int argc, char * argv[]) {
 		}
 		analysis_file << endl;
 		if (parameters.Enable_correlation_calc) {
-			analysis_file << "Morphology number " << array_which_median(domain_sizes1, nproc) << " has the median domain1 size of " << array_median(domain_sizes1, nproc) << endl;
+			int index = vector_which_median(domain_sizes1);
+			analysis_file << "Morphology number " << index << " has the median domain1 size of " << domain_sizes1[index] << endl;
 		}
 		if (parameters.Enable_tortuosity_calc) {
-			analysis_file << "Morphology number " << array_which_median(tortuosities1, nproc) << " has the median tortuosity1 of " << array_median(tortuosities1, nproc) << endl;
+			int index = vector_which_median(tortuosities1);
+			analysis_file << "Morphology number " << index << " has the median tortuosity1 of " << tortuosities1[index] << endl;
 		}
 		if (Enable_import_tomogram) {
 			analysis_file << endl;
@@ -888,7 +791,7 @@ bool importParameters(ifstream& parameterfile, Input_Params& params, Correlation
 		return false;
 	}
 	i++;
-	params.Correlation_cutoff_distance = atoi(stringvars[i].c_str());
+	params.Extended_correlation_cutoff_distance = atoi(stringvars[i].c_str());
 	i++;
 	//enable_interfacial_distance_calc
 	params.Enable_interfacial_distance_calc = importBooleanParam(stringvars[i], error_status);
@@ -972,6 +875,6 @@ bool importParameters(ifstream& parameterfile, Input_Params& params, Correlation
 	correlation_params.Enable_mix_frac_method = params.Enable_mix_frac_method;
 	correlation_params.Enable_e_method = params.Enable_e_method;
 	correlation_params.Enable_extended_correlation_calc = params.Enable_extended_correlation_calc;
-	correlation_params.Correlation_cutoff_distance = params.Correlation_cutoff_distance;
+	correlation_params.Extended_correlation_cutoff_distance = params.Extended_correlation_cutoff_distance;
 	return true;
 }

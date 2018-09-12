@@ -1,7 +1,6 @@
 var struct_input___params =
 [
     [ "Additional_interaction", "struct_input___params.html#aeec30325a300fcdca0f87c78917df489", null ],
-    [ "Correlation_cutoff_distance", "struct_input___params.html#aec1e2c61048f4a9e9eb1d55353a9cc16", null ],
     [ "Desired_unit_size", "struct_input___params.html#ac054de063bcf42ffaba833fbc9be27a4", null ],
     [ "Enable_analysis_only", "struct_input___params.html#af192c6b54931aaeac8335f34caf2fa96", null ],
     [ "Enable_areal_maps_calc", "struct_input___params.html#a510672833f83eeb7a1e723cefcd6d097", null ],
@@ -24,6 +23,7 @@ var struct_input___params =
     [ "Enable_shrink", "struct_input___params.html#ab198c3d23e8f6306ab5c30e4dc636114", null ],
     [ "Enable_smoothing", "struct_input___params.html#ab6a394391a934fdd03313fed2e99b76d", null ],
     [ "Enable_tortuosity_calc", "struct_input___params.html#a1b9648312b798210074ed4fc48a3b9b4", null ],
+    [ "Extended_correlation_cutoff_distance", "struct_input___params.html#abcce6ae62d4eebcfe61898ef1f4ff135", null ],
     [ "Growth_direction", "struct_input___params.html#a3d5dfb17e825564eedd5f1c9624eafbf", null ],
     [ "Height", "struct_input___params.html#aeae3b5fcb969e05a6e21aafb3ba920a7", null ],
     [ "Interaction_energy1", "struct_input___params.html#ac5fb3d67ef960d12c01840c637cd1ced", null ],

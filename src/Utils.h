@@ -150,6 +150,14 @@ namespace Utils {
 	//! \return An empty vector when called on other processors.
 	std::vector<int> MPI_calculateVectorSum(const std::vector<int>& input_vector);
 
+	//! \brief Uses MPI to gather values from separate processors to build one vector containing all of the data.
+	//! \details Each processor calls this function and sends an input value.  Upon function return, processor 0
+	//! receives the data vector and all of the other processors receive an empty vector.
+	//! \param input_val is the input data value from the processor calling the function.
+	//! \return A vector that is a collection of the values from each processor, when called on processor 0.
+	//! \return An empty vector when called on other processors.
+	std::vector<double> MPI_gatherValues(const double input_val);
+
 	//! \brief Uses MPI to gather vectors from separate processors to build one big vector containing all of the data.
 	//! \details Each processor calls this function and sends an input vector.  Upon function return, processor 0
 	//! receives the large data vector and all of the other processors receive an empty vector.
@@ -219,7 +227,7 @@ namespace Utils {
 		return sqrt(sum / (array_size - 1));
 	}
 
-	//! \brief This template function determine the which element in the data array has the median value of the dataset.
+	//! \brief This template function determines which element in the data array has the median value of the dataset.
 	//! \param data is the input array of numerical data.
 	//! \param array_size is the size of the input data array.
 	//! \return the integer array index that indicates the median value.
@@ -316,6 +324,27 @@ namespace Utils {
 		return sum / data.size();
 	}
 
+	//! \brief This template function calculates and returns the median value when given a vector of numerical datatypes.
+	//! \param data is the vector of numerical data.
+	//! \return The median value in the data set.
+	template<typename T, typename A>
+	double vector_median(std::vector<T, A> data) {
+		if (data.size() % 2 == 0) {
+			const auto median_it1 = data.begin() + data.size() / 2 - 1;
+			const auto median_it2 = data.begin() + data.size() / 2;
+			std::nth_element(data.begin(), median_it1, data.end());
+			T val1 = *median_it1;
+			std::nth_element(data.begin(), median_it2, data.end());
+			T val2 = *median_it2;
+			return (double)(val1 + val2) / 2.0;
+		}
+		else {
+			const auto median_it = data.begin() + data.size() / 2;
+			std::nth_element(data.begin(), median_it, data.end());
+			return *median_it;
+		}
+	}
+
 	//! \brief This template function calculates and returns the standard deviation in double format when given a vector of numerical datatypes.
 	//! \param data is the vector of numerical data.
 	//! \return The standard deviation of the data set in double format.
@@ -327,6 +356,21 @@ namespace Utils {
 			sum += (*it - avg)*(*it - avg);
 		}
 		return sqrt(sum / (data.size() - 1));
+	}
+
+	//! \brief This template function determines which element in the data vector is closest to the median value of the dataset.
+	//! \details if multiple values are equally close, the first one in the vector is selected.
+	//! \param data is the input vector of numerical data.
+	//! \return the integer vector index that indicates the median value.
+	template<typename T, typename A>
+	int vector_which_median(const std::vector<T, A>& data) {
+		double median = vector_median(data);
+		auto diff = data;
+		for (auto& item : diff) {
+			item = fabs(item - median);
+		}
+		auto it = min_element(diff.begin(), diff.end());
+		return distance(diff.begin(),it);
 	}
 }
 

@@ -17,7 +17,6 @@ var searchData=
   ['calculatetortuosity',['calculateTortuosity',['../class_morphology.html#a6759d842269ad3c1681a8fd8f6bcef9d',1,'Morphology']]],
   ['checkmovevalidity',['checkMoveValidity',['../class_lattice.html#ad0592298c4b92e9e84a768b95cd6d0f0',1,'Lattice']]],
   ['coords',['Coords',['../struct_coords.html',1,'']]],
-  ['correlation_5fcutoff_5fdistance',['Correlation_cutoff_distance',['../struct_input___params.html#aec1e2c61048f4a9e9eb1d55353a9cc16',1,'Input_Params::Correlation_cutoff_distance()'],['../struct_correlation_calc___params.html#a5b982c0c9a919bbf15b59274f7453936',1,'CorrelationCalc_Params::Correlation_cutoff_distance()']]],
   ['correlationcalc_5fparams',['CorrelationCalc_Params',['../struct_correlation_calc___params.html',1,'']]],
   ['createcheckerboardmorphology',['createCheckerboardMorphology',['../class_morphology.html#ae4e6534fd06b5b9d93e9908247f3c6f2',1,'Morphology']]],
   ['createrandommorphology',['createRandomMorphology',['../class_morphology.html#aeadb44cbafeaeed463f19ffbc3f6077e',1,'Morphology']]]

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['correlation_5fcutoff_5fdistance',['Correlation_cutoff_distance',['../struct_input___params.html#aec1e2c61048f4a9e9eb1d55353a9cc16',1,'Input_Params::Correlation_cutoff_distance()'],['../struct_correlation_calc___params.html#a5b982c0c9a919bbf15b59274f7453936',1,'CorrelationCalc_Params::Correlation_cutoff_distance()']]]
+  ['desired_5funit_5fsize',['Desired_unit_size',['../struct_input___params.html#ac054de063bcf42ffaba833fbc9be27a4',1,'Input_Params::Desired_unit_size()'],['../struct_tomogram_import___params.html#af98c0799e56f7b60b098f656a34abca2',1,'TomogramImport_Params::Desired_unit_size()']]]
 ];

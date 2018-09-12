@@ -1,26 +1,4 @@
 var searchData=
 [
-  ['enable_5fanalysis_5fonly',['Enable_analysis_only',['../struct_input___params.html#af192c6b54931aaeac8335f34caf2fa96',1,'Input_Params']]],
-  ['enable_5fareal_5fmaps_5fcalc',['Enable_areal_maps_calc',['../struct_input___params.html#a510672833f83eeb7a1e723cefcd6d097',1,'Input_Params']]],
-  ['enable_5fcheckerboard_5fstart',['Enable_checkerboard_start',['../struct_input___params.html#a7eed16cb99b33ae03bcee81e43533c5f',1,'Input_Params']]],
-  ['enable_5fcorrelation_5fcalc',['Enable_correlation_calc',['../struct_input___params.html#acd29ae9fc35eb2b2747b98f7effb706f',1,'Input_Params']]],
-  ['enable_5fcutoff_5fanalysis',['Enable_cutoff_analysis',['../struct_input___params.html#ad29dc32c5fbb167a8338039b3ed73b85',1,'Input_Params::Enable_cutoff_analysis()'],['../struct_tomogram_import___params.html#a22c7900d2df4bd474fb66db902c99c99',1,'TomogramImport_Params::Enable_cutoff_analysis()']]],
-  ['enable_5fdepth_5fdependent_5fcalc',['Enable_depth_dependent_calc',['../struct_input___params.html#ad19a8752046bdb5a22f2ef6eb5246553',1,'Input_Params']]],
-  ['enable_5fe_5fmethod',['Enable_e_method',['../struct_input___params.html#a2ac6d45b081ec5293cc91f8b87b2e1be',1,'Input_Params::Enable_e_method()'],['../struct_correlation_calc___params.html#aefae684d4f373ff7208b61b8c3e1eeb0',1,'CorrelationCalc_Params::Enable_e_method()']]],
-  ['enable_5fexport_5fcompressed_5ffiles',['Enable_export_compressed_files',['../struct_input___params.html#acb80bc90a2ba48d0c9d6d358657ebc8f',1,'Input_Params']]],
-  ['enable_5fexport_5fcross_5fsection',['Enable_export_cross_section',['../struct_input___params.html#ad87ed01c3fe444907e6a98241611436c',1,'Input_Params']]],
-  ['enable_5fextended_5fcorrelation_5fcalc',['Enable_extended_correlation_calc',['../struct_input___params.html#ab3ae276f49f1191cd41e3d9c85aca23f',1,'Input_Params::Enable_extended_correlation_calc()'],['../struct_correlation_calc___params.html#a6b3edd394fd4b3536c066fadb0b654e8',1,'CorrelationCalc_Params::Enable_extended_correlation_calc()']]],
-  ['enable_5fgrowth_5fpref',['Enable_growth_pref',['../struct_input___params.html#aa669b7cb0b37410ec1b003e736794731',1,'Input_Params']]],
-  ['enable_5finterfacial_5fdistance_5fcalc',['Enable_interfacial_distance_calc',['../struct_input___params.html#aaea070818c8a4d63e4ba8ad9ec7705db',1,'Input_Params']]],
-  ['enable_5finterfacial_5fmixing',['Enable_interfacial_mixing',['../struct_input___params.html#a5dcf5c24fae0367a74a65c894bc6fc8e',1,'Input_Params']]],
-  ['enable_5fmix_5ffrac_5fmethod',['Enable_mix_frac_method',['../struct_input___params.html#aeb03efacc0192c0e254e669851939c20',1,'Input_Params::Enable_mix_frac_method()'],['../struct_correlation_calc___params.html#a53ca0275dbbcc5fa40053b04898ab8dc',1,'CorrelationCalc_Params::Enable_mix_frac_method()']]],
-  ['enable_5fperiodic_5fx',['Enable_periodic_x',['../struct_lattice___params.html#a2132d74511f6c0562fd344a6331dcbba',1,'Lattice_Params']]],
-  ['enable_5fperiodic_5fy',['Enable_periodic_y',['../struct_lattice___params.html#a02574fd571949edb8039524b02e259b9',1,'Lattice_Params']]],
-  ['enable_5fperiodic_5fz',['Enable_periodic_z',['../struct_lattice___params.html#a18a6d0ed85e579f4275785e02974a8d9',1,'Lattice_Params::Enable_periodic_z()'],['../struct_input___params.html#a28ab173371d540d8f584b62b68ba437d',1,'Input_Params::Enable_periodic_z()']]],
-  ['enable_5fprobability_5fanalysis',['Enable_probability_analysis',['../struct_input___params.html#a06c540bbe880f1cb40e4f3a946ceee92',1,'Input_Params::Enable_probability_analysis()'],['../struct_tomogram_import___params.html#af43498c4d5d5355a3ad698d3b5d4cef6',1,'TomogramImport_Params::Enable_probability_analysis()']]],
-  ['enable_5freduced_5fmemory_5ftortuosity_5fcalc',['Enable_reduced_memory_tortuosity_calc',['../struct_input___params.html#a231b3d535b6497a8698393a01abadcaa',1,'Input_Params']]],
-  ['enable_5frescale',['Enable_rescale',['../struct_input___params.html#a196c55b196c0d987e31ec442544c58d2',1,'Input_Params']]],
-  ['enable_5fshrink',['Enable_shrink',['../struct_input___params.html#ab198c3d23e8f6306ab5c30e4dc636114',1,'Input_Params']]],
-  ['enable_5fsmoothing',['Enable_smoothing',['../struct_input___params.html#ab6a394391a934fdd03313fed2e99b76d',1,'Input_Params']]],
-  ['enable_5ftortuosity_5fcalc',['Enable_tortuosity_calc',['../struct_input___params.html#a1b9648312b798210074ed4fc48a3b9b4',1,'Input_Params']]]
+  ['growth_5fdirection',['Growth_direction',['../struct_input___params.html#a3d5dfb17e825564eedd5f1c9624eafbf',1,'Input_Params']]]
 ];

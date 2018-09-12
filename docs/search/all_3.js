@@ -27,5 +27,6 @@ var searchData=
   ['executeisingswapping',['executeIsingSwapping',['../class_morphology.html#add05d70258dadc5bbe85d5fd95cfed76',1,'Morphology']]],
   ['executemixing',['executeMixing',['../class_morphology.html#a780dcee5396964381a1567281aea86fb',1,'Morphology']]],
   ['executesmoothing',['executeSmoothing',['../class_morphology.html#ad2cc5cbd0a78b1782a480d71538eba40',1,'Morphology']]],
+  ['extended_5fcorrelation_5fcutoff_5fdistance',['Extended_correlation_cutoff_distance',['../struct_input___params.html#abcce6ae62d4eebcfe61898ef1f4ff135',1,'Input_Params::Extended_correlation_cutoff_distance()'],['../struct_correlation_calc___params.html#a11fac2e9989ae7b8a665229e9eaad9a5',1,'CorrelationCalc_Params::Extended_correlation_cutoff_distance()']]],
   ['extractsublattice',['extractSublattice',['../class_lattice.html#a970cf50a29aa36a2c3f4bc89186449af',1,'Lattice']]]
 ];

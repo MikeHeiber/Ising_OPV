@@ -11,6 +11,7 @@ var _utils_8cpp =
     [ "MPI_calculateVectorAvg", "_utils_8cpp.html#a71eeb04d74f890da3d27128c37fcff78", null ],
     [ "MPI_calculateVectorSum", "_utils_8cpp.html#a0a17d0ad939418dc745bcfd194ce2bc1", null ],
     [ "MPI_calculateVectorSum", "_utils_8cpp.html#ad7b634b14633046c6da126945d688aaf", null ],
+    [ "MPI_gatherValues", "_utils_8cpp.html#ae58a3e87f123ab5d553d9bf0621e4e32", null ],
     [ "MPI_gatherVectors", "_utils_8cpp.html#aee439dad386e2477d34968311b166c85", null ],
     [ "MPI_gatherVectors", "_utils_8cpp.html#ad44ab8e489dbb7e24480f4e0778099d0", null ],
     [ "removeWhitespace", "_utils_8cpp.html#af9ceee3373ffe317f07d177cf0dfe056", null ],

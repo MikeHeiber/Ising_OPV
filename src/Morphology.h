@@ -21,11 +21,16 @@
 //! \author Michael C. Heiber
 //! \date 2014-2018
 struct CorrelationCalc_Params {
+	//! Specifies the maximum number of starting sites to use for the correlation function calculation.
 	int N_sampling_max;
+	//! Choose whether the domain size is determined from where the correlation function crosses the mix fraction.
 	bool Enable_mix_frac_method;
+	//! Choose whether the domain size is determined from where the correlation function decays to 1/e.
 	bool Enable_e_method;
+	//! Choose whether to extended the distance of the correlation function to a specified radius.
 	bool Enable_extended_correlation_calc;
-	int Correlation_cutoff_distance;
+	//! Specifies the cutoff distance to use when extending the correlation function calculation.
+	int Extended_correlation_cutoff_distance;
 };
 
 //! \brief This struct contains all of the input parameters needed by the Morphology class to import a tomogram.
@@ -33,12 +38,19 @@ struct CorrelationCalc_Params {
 //! \author Michael C. Heiber
 //! \date 2014-2018
 struct TomogramImport_Params {
+	//! Specifies the final unit size (resolution) of the output morphology dataset.
 	double Desired_unit_size;
+	//! Choose whether to enable the image brightness cutoff threshold-based interpretation of the tomography data.
 	bool Enable_cutoff_analysis;
+	//! Specifies the pixel brightness range to assign to a distinct mixed third phase.
 	int Mixed_greyscale_width;
+	//! Specifies the volume fraction of the mixed third phase.
 	double Mixed_conc;
+	//! Choose whether to enable a probability-based analysis of pixel brightness for interpreting the tomography data. 
 	bool Enable_probability_analysis;
+	//! Specifies the probability scaling exponent use by the probability-based pixel brightness analysis method.
 	double Probability_scaling_exponent;
+	//! Specify the number of equal size cuboids to extract from the tomogram.
 	int N_extracted_segments;
 };
 
@@ -204,9 +216,8 @@ public:
 	std::vector<double> getDepthDomainSizeData(const char site_type) const;
 
 	//! \brief Returns a vector containing the film depth dependent interfacial volume fraction data in the z-direction.
-	//! \param site_type specifies for which site type the data should be retrieved.
 	//! \return a copy of the data vector.
-	std::vector<double> getDepthIVData(const char site_type) const;
+	std::vector<double> getDepthIVData() const;
 
 	//! \brief Returns the domain size determined for the specified site type.
 	//! \param site_type specifies for which site type the data should be retrieved.
@@ -253,7 +264,7 @@ public:
 	//! \brief Returns a vector containing the end-to-end tortuosity data for the specified site type.
 	//! \param site_type specifies for which site type the data should be retrieved.
 	//! \return a copy of the data vector.
-	std::vector<float> getTortuosityData(const char site_type) const;
+	std::vector<double> getTortuosityData(const char site_type) const;
 
 	//! \brief Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.
 	//! \details Tortuosity values are rounded to the nearest 0.02, resulting in bins centered at 1, 1.02, 1.04, etc. So bin values are equal to the vector index i + 0.02
@@ -328,12 +339,12 @@ private:
 	std::vector<char> Site_types;
 	std::vector<int> Site_type_counts;
 	std::vector<std::vector<double>> Correlation_data;
-	std::vector<std::vector<float>> Tortuosity_data;
+	std::vector<std::vector<double>> Tortuosity_data;
 	std::vector<std::vector<double>> InterfacialHistogram_data;
 	std::vector<std::vector<double>> TortuosityHistogram_data;
 	std::vector<std::vector<double>> Depth_composition_data;
-	std::vector<std::vector<double>> Depth_iv_data;
 	std::vector<std::vector<double>> Depth_domain_size_data;
+	std::vector<double> Depth_iv_data;
 	std::vector<bool> Domain_anisotropy_updated;
 	std::vector<double> Domain_sizes;
 	std::vector<double> Domain_anisotropies;
@@ -388,7 +399,7 @@ private:
 	//  Calculates the change in energy of the system that would occur if the adjacent sites at (x1,y1,z1) and (x2,y2,z2) were to be swapped
 	//  Sites must be adjacent to each other for calculation to be correct. (Works for adjacent sites across periodic boundaries)
 	//  When non-periodic/hard z-boundaries are used, it is assumed that neither site type has a preferential interaction with the z-boundary
-	double calculateEnergyChange(const Coords& coords1, const Coords& coords2, const double interaction_energy1, const double interaction_energy2) const;
+	//double calculateEnergyChange(const Coords& coords1, const Coords& coords2, const double interaction_energy1, const double interaction_energy2) const;
 
 	Morphology::NeighborCounts calculateNeighborCounts(const Coords& coords) const;
 

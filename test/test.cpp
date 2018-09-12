@@ -68,7 +68,7 @@ namespace MorphologyTests {
 		params.Enable_e_method = true;
 		params.Enable_mix_frac_method = false;
 		params.Enable_extended_correlation_calc = false;
-		params.Correlation_cutoff_distance = 3;
+		params.Extended_correlation_cutoff_distance = 3;
 		// Calculate the inital domain size values
 		morph.calculateCorrelationDistances(params);
 		double domain_size1_i = morph.getDomainSize((char)1);
@@ -98,13 +98,40 @@ namespace MorphologyTests {
 		// Check that the phase separated blend is still isotropic
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
-		// Check the tortuosity of an isotropic phase separated blend
+		// Calculate the tortuosity
 		morph.calculateTortuosity((char)1, false);
 		morph.calculateTortuosity((char)2, false);
-		auto data = morph.getTortuosityData((char)1);
-		EXPECT_NEAR(1.1, vector_avg(data), 0.02);
-		data = morph.getTortuosityData((char)2);
-		EXPECT_NEAR(1.1, vector_avg(data), 0.02);
+		// Check the tortuosity of an isotropic phase separated blend
+		auto data1 = morph.getTortuosityData((char)1);
+		auto data2 = morph.getTortuosityData((char)2);
+		EXPECT_NEAR(1.1, vector_avg(data1), 0.025);
+		EXPECT_NEAR(1.1, vector_avg(data2), 0.025);
+		// Calculate the depth dependent characteristics
+		morph.calculateDepthDependentData(params);
+		data1 = morph.getDepthDomainSizeData((char)1);
+		data2 = morph.getDepthDomainSizeData((char)2);
+		// Check the approximate domain size at each depth
+		for (auto item : data1) {
+			EXPECT_NEAR(5.0, item, 1.5);
+		}
+		for (auto item : data2) {
+			EXPECT_NEAR(5.0, item, 1.5);
+		}
+		data1 = morph.getDepthCompositionData((char)1);
+		data2 = morph.getDepthCompositionData((char)2);
+		// Check the approximate composition at each depth
+		for (auto item : data1) {
+			EXPECT_NEAR(0.5, item, 0.15);
+		}
+		for (auto item : data2) {
+			EXPECT_NEAR(0.5, item, 0.15);
+		}
+		// Check depth dependent interfacial volume fraction compared to bulk value
+		auto data = morph.getDepthIVData();
+		double iv_frac = morph.calculateInterfacialVolumeFraction();
+		for (auto item : data) {
+			EXPECT_NEAR(iv_frac, item, 0.05);
+		}
 		// Apply smoothing and re-recalculate the domain size
 		morph.executeSmoothing(0.52, 1);
 		morph.calculateCorrelationDistances(params);
@@ -125,6 +152,25 @@ namespace MorphologyTests {
 		// Check the approximate magnitude of the domain size
 		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
 		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
+		// Calculate the final tortuosity
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		// Check the tortuosity of an isotropic smoothed phase separated blend
+		auto tortuosity1_avg = vector_avg(morph.getTortuosityData((char)1));
+		auto tortuosity2_avg = vector_avg(morph.getTortuosityData((char)2));
+		EXPECT_NEAR(1.085, tortuosity1_avg, 0.025);
+		EXPECT_NEAR(1.085, tortuosity2_avg, 0.025);
+		// Check the island volume fraction
+		EXPECT_LT(morph.getIslandVolumeFraction((char)1), 0.001);
+		EXPECT_LT(morph.getIslandVolumeFraction((char)2), 0.001);
+		// Calculate the tortuosity using the reduced memory option
+		morph.calculateTortuosity((char)1, true);
+		morph.calculateTortuosity((char)2, true);
+		// Check that both tortuosity methods give the same answer
+		data1 = morph.getTortuosityData((char)1);
+		data2 = morph.getTortuosityData((char)2);
+		EXPECT_DOUBLE_EQ(tortuosity1_avg, vector_avg(data1));
+		EXPECT_DOUBLE_EQ(tortuosity2_avg, vector_avg(data2));
 		// Calculate the interfacial distance histogram
 		morph.calculateInterfacialDistanceHistogram();
 		auto prob1 = morph.getInterfacialDistanceHistogram((char)1);
@@ -135,6 +181,7 @@ namespace MorphologyTests {
 		// Check that the size of the histograms are related to the domain size
 		EXPECT_NEAR(5.0, prob1.size(), 1);
 		EXPECT_NEAR(5.0, prob2.size(), 1);
+
 	}
 
 	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {
@@ -151,7 +198,7 @@ namespace MorphologyTests {
 		params.Enable_e_method = true;
 		params.Enable_mix_frac_method = false;
 		params.Enable_extended_correlation_calc = false;
-		params.Correlation_cutoff_distance = 3;
+		params.Extended_correlation_cutoff_distance = 3;
 		// Calculate the inital domain size values
 		morph.calculateCorrelationDistances(params);
 		double domain_size1_i = morph.getDomainSize((char)1);
@@ -179,8 +226,8 @@ namespace MorphologyTests {
 		// Calculate the final domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
 		// Check the approximate magnitude of the anisotropy factor
-		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)1), 0.15);
-		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)2), 0.15);
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)1), 0.2);
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)2), 0.2);
 		// Reset morphology to a random blend
 		morph.createRandomMorphology(mix_fractions);
 		// Calculate the inital domain size values
@@ -389,12 +436,16 @@ namespace UtilsTests {
 		}
 		EXPECT_DOUBLE_EQ(5.5, vector_avg(int_data));
 		EXPECT_NEAR(3.02765035409749, vector_stdev(int_data), 1e-14);
+		EXPECT_DOUBLE_EQ(5.5, vector_median(int_data));
+		EXPECT_EQ(4, vector_which_median(int_data));
 		// negative ints
 		for (int i = 0; i < 10; i++) {
 			int_data[i] = -(i + 1);
 		}
 		EXPECT_DOUBLE_EQ(-5.5, vector_avg(int_data));
 		EXPECT_NEAR(3.02765035409749, vector_stdev(int_data), 1e-14);
+		EXPECT_DOUBLE_EQ(-5.5, vector_median(int_data));
+		EXPECT_EQ(4, vector_which_median(int_data));
 		// positive doubles
 		vector<double> double_data;
 		double_data.assign(10, 0);
@@ -403,6 +454,8 @@ namespace UtilsTests {
 		}
 		EXPECT_DOUBLE_EQ(2.75, vector_avg(double_data));
 		EXPECT_NEAR(1.51382517704875, vector_stdev(double_data), 1e-14);
+		EXPECT_DOUBLE_EQ(2.75, vector_median(double_data));
+		EXPECT_EQ(4, vector_which_median(double_data));
 		// negative doubles
 		double_data.assign(10, 0);
 		for (int i = 0; i < 10; i++) {
@@ -410,6 +463,12 @@ namespace UtilsTests {
 		}
 		EXPECT_DOUBLE_EQ(-2.75, vector_avg(double_data));
 		EXPECT_NEAR(1.51382517704875, vector_stdev(double_data), 1e-14);
+		EXPECT_DOUBLE_EQ(-2.75, vector_median(double_data));
+		EXPECT_EQ(4, vector_which_median(double_data));
+		// Check simple odd size vector median
+		vector<double> data = { 3.0, 0.0, 1.0, 5.0, 10.0 };
+		EXPECT_DOUBLE_EQ(3.0, vector_median(data));
+		EXPECT_EQ(0, vector_which_median(data));
 	}
 }
 

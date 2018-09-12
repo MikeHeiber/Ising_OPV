@@ -29,11 +29,11 @@ namespace Utils {
 		int min_val = *min_element(data.begin(), data.end());
 		int max_val = *max_element(data.begin(), data.end());
 		// Determine number of bins
-		int num_bins = (int)ceil((double)(max_val - min_val) / (double) bin_size);
+		int num_bins = (int)ceil((double)(max_val - min_val) / (double)bin_size);
 		// Calculate bins
 		vector<pair<double, double>> hist(num_bins, make_pair(0.0, 0.0));
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].first = min_val + 0.5*(bin_size-1) + (bin_size-1) * i;	
+			hist[i].first = min_val + 0.5*(bin_size - 1) + (bin_size - 1) * i;
 		}
 		// Calculate histogram
 		vector<int> counts(num_bins, 0);
@@ -274,6 +274,24 @@ namespace Utils {
 		}
 		delete[] data;
 		delete[] sum;
+		return output_vector;
+	}
+
+	std::vector<double> MPI_gatherValues(const double input_val) {
+		double *data = NULL;
+		vector<double> output_vector;
+		int procid;
+		int nproc;
+		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
+		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+		data = new double[nproc];
+		MPI_Gather(&input_val, 1, MPI_DOUBLE, data, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		if (procid == 0) {
+			for (int i = 0; i < nproc; i++) {
+				output_vector.push_back(data[i]);
+			}
+		}
+		delete[] data;
 		return output_vector;
 	}
 
