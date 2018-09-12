@@ -126,11 +126,14 @@ namespace MorphologyTests {
 		for (auto item : data2) {
 			EXPECT_NEAR(0.5, item, 0.15);
 		}
+		// Calculate the interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
 		// Check depth dependent interfacial volume fraction compared to bulk value
 		auto data = morph.getDepthIVData();
-		double iv_frac = morph.calculateInterfacialVolumeFraction();
+
 		for (auto item : data) {
-			EXPECT_NEAR(iv_frac, item, 0.075);
+			EXPECT_NEAR(iv_frac_i, item, 0.075);
 		}
 		// Apply smoothing and re-recalculate the domain size
 		morph.executeSmoothing(0.52, 1);
@@ -143,6 +146,12 @@ namespace MorphologyTests {
 		// Check that the mix fractions are not severely changed
 		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.02);
 		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.02);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_f = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_f = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been reduced
+		EXPECT_LT(iv_frac_f, iv_frac_i);
+		EXPECT_LT(iav_ratio_f, iav_ratio_i);
 		// Calculate domain size using the mix fraction method
 		params.Enable_e_method = false;
 		params.Enable_mix_frac_method = true;
@@ -181,7 +190,21 @@ namespace MorphologyTests {
 		// Check that the size of the histograms are related to the domain size
 		EXPECT_NEAR(5.0, prob1.size(), 1);
 		EXPECT_NEAR(5.0, prob2.size(), 1);
-
+		// Apply interfacial mixing to the smoothed morphology
+		morph.executeMixing(2.0, 0.5);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_mix = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_mix = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been increased
+		EXPECT_LT(iv_frac_f, iv_frac_mix);
+		EXPECT_LT(iav_ratio_f, iav_ratio_mix);
+		// Calculate domain size using the 1/e method
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		morph.calculateCorrelationDistances(params);
+		// Check that the domain size has not greatly increased
+		EXPECT_NEAR(domain_size1_f, morph.getDomainSize((char)1), 0.5);
+		EXPECT_NEAR(domain_size2_f, morph.getDomainSize((char)2), 0.5);
 	}
 
 	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {
@@ -254,7 +277,41 @@ namespace MorphologyTests {
 		// Check the approximate magnitude of the anisotropy factor
 		EXPECT_NEAR(0.80, morph.getDomainAnisotropy((char)1), 0.1);
 		EXPECT_NEAR(0.80, morph.getDomainAnisotropy((char)2), 0.1);
+		// Reset morphology to a random blend
+		morph.createRandomMorphology(mix_fractions);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-direction
+		morph.executeIsingSwapping(200, 0.35, 0.35, true, 1, 0.05);
+		// Calculate the domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		auto anisotropy1 = morph.getDomainAnisotropy((char)1);
+		auto anisotropy2 = morph.getDomainAnisotropy((char)2);
+		// Reset morphology to a random blend
+		morph.createRandomMorphology(mix_fractions);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-direction
+		morph.executeIsingSwapping(200, 0.35, 0.35, true, 2, 0.05);
+		// Calculate the domain anisotropy
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check that anisotropic phase separation in the x- or y-directions produces approximately the same anisotropy metric
+		EXPECT_NEAR(anisotropy1, morph.getDomainAnisotropy((char)1), 0.1);
+		EXPECT_NEAR(anisotropy2, morph.getDomainAnisotropy((char)2), 0.1);
+	}
 
+	TEST(MorphologyTests, MorphologyAnalysisTests) {
+		Morphology morph(40, 40, 40, false, 0);
+		morph.createBilayerMorphology();
+		// Calculate interfacial volume and interfacial area to volume ratio
+		double iv_fraction = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio = morph.calculateInterfacialAreaVolumeRatio();
+		// Check interfacial metrics for the well-defined bilayer morphology
+		EXPECT_DOUBLE_EQ((double)(40 * 40 * 2) / (double)(40 * 40 * 40), iv_fraction);
+		EXPECT_DOUBLE_EQ((double)(40 * 40) / (double)(40 * 40 * 40), iav_ratio);
+		// Create a checkerboard morphology
+		morph.createCheckerboardMorphology();
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.01);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
+		// Check the interfacial volume fraction
+		EXPECT_DOUBLE_EQ(1.0, morph.calculateInterfacialVolumeFraction());
 	}
 }
 

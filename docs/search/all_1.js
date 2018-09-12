@@ -18,6 +18,7 @@ var searchData=
   ['checkmovevalidity',['checkMoveValidity',['../class_lattice.html#ad0592298c4b92e9e84a768b95cd6d0f0',1,'Lattice']]],
   ['coords',['Coords',['../struct_coords.html',1,'']]],
   ['correlationcalc_5fparams',['CorrelationCalc_Params',['../struct_correlation_calc___params.html',1,'']]],
+  ['createbilayermorphology',['createBilayerMorphology',['../class_morphology.html#a9373bb06bff0149fcd866272fd2db590',1,'Morphology']]],
   ['createcheckerboardmorphology',['createCheckerboardMorphology',['../class_morphology.html#ae4e6534fd06b5b9d93e9908247f3c6f2',1,'Morphology']]],
   ['createrandommorphology',['createRandomMorphology',['../class_morphology.html#aeadb44cbafeaeed463f19ffbc3f6077e',1,'Morphology']]]
 ];

@@ -12,6 +12,7 @@ var class_morphology =
     [ "calculateInterfacialVolumeFraction", "class_morphology.html#ad0ed42e5fda897c0a0ef52ccf630971b", null ],
     [ "calculateMixFractions", "class_morphology.html#aa2f352fb666e1fd5093d7b2c1619f171", null ],
     [ "calculateTortuosity", "class_morphology.html#a6759d842269ad3c1681a8fd8f6bcef9d", null ],
+    [ "createBilayerMorphology", "class_morphology.html#a9373bb06bff0149fcd866272fd2db590", null ],
     [ "createCheckerboardMorphology", "class_morphology.html#ae4e6534fd06b5b9d93e9908247f3c6f2", null ],
     [ "createRandomMorphology", "class_morphology.html#aeadb44cbafeaeed463f19ffbc3f6077e", null ],
     [ "enableThirdNeighborInteraction", "class_morphology.html#ae3bebe4b4b770014e903417cf294d26b", null ],

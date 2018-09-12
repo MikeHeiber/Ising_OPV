@@ -370,7 +370,7 @@ namespace Utils {
 			item = fabs(item - median);
 		}
 		auto it = min_element(diff.begin(), diff.end());
-		return distance(diff.begin(),it);
+		return distance(diff.begin(), it);
 	}
 }
 

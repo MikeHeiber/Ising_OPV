@@ -164,6 +164,9 @@ public:
 	//! \param enable_reduced_memory allows users to choose to use a slower algorithm that uses less RAM.
 	bool calculateTortuosity(const char site_type, const bool enable_reduced_memory);
 
+	//! \brief Creates a split bilayer morphology in the z-direction.
+	void createBilayerMorphology();
+
 	//! \brief Creates a 3D checkerboard morphology.
 	void createCheckerboardMorphology();
 

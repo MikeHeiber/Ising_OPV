@@ -340,19 +340,6 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 			correlation_length_z = lattice.getHeight();
 			success_z = true;
 		}
-		// If cross-over point is not reached, return the point where the first minimum is reached.
-		if (!success_x && correlation_x[n] > correlation_x[n - 1]) {
-			correlation_length_x = n - 1;
-			success_x = true;
-		}
-		if (!success_y && correlation_y[n] > correlation_y[n - 1]) {
-			correlation_length_y = n - 1;
-			success_y = true;
-		}
-		if (!success_z && correlation_z[n] > correlation_z[n - 1]) {
-			correlation_length_z = n - 1;
-			success_z = true;
-		}
 	}
 	if (!success_x || !success_y || !success_z) {
 		cout << ID << ": Cutoff distance of " << cutoff_distance << " is too small to calculate anisotropy of domain type " << (int)site_type << "." << endl;
@@ -852,7 +839,7 @@ double Morphology::calculateEnergyChangeSimple(const long int site_index1, const
 //}
 
 double Morphology::calculateInterfacialAreaVolumeRatio() const {
-	unsigned long site_count = 0;
+	unsigned long site_face_count = 0;
 	Coords coords, coords_dest;
 	for (int m = 0; m < (int)Site_types.size() - 1; m++) {
 		for (int n = m + 1; n < (int)Site_types.size(); n++) {
@@ -872,7 +859,7 @@ double Morphology::calculateInterfacialAreaVolumeRatio() const {
 										}
 										lattice.calculateDestinationCoords(coords, i, j, k, coords_dest);
 										if (lattice.getSiteType(coords_dest) == Site_types[n]) {
-											site_count++;
+											site_face_count++;
 										}
 									}
 								}
@@ -883,7 +870,7 @@ double Morphology::calculateInterfacialAreaVolumeRatio() const {
 			}
 		}
 	}
-	return (double)site_count / (double)lattice.getNumSites();
+	return (double)site_face_count / (double)lattice.getNumSites();
 }
 
 void Morphology::calculateInterfacialDistanceHistogram() {
@@ -1430,9 +1417,38 @@ void Morphology::enableThirdNeighborInteraction() {
 	Enable_third_neighbor_interaction = true;
 }
 
+void Morphology::createBilayerMorphology() {
+	addSiteType((char)1);
+	addSiteType((char)2);
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
+	}
+	for (int x = 0; x < lattice.getLength(); x++) {
+		for (int y = 0; y < lattice.getWidth(); y++) {
+			for (int z = 0; z < lattice.getHeight(); z++) {
+				if (z < lattice.getHeight() / 2) {
+					lattice.setSiteType(x, y, z, (char)1);
+					Site_type_counts[0]++;
+				}
+				else {
+					lattice.setSiteType(x, y, z, (char)2);
+					Site_type_counts[1]++;
+				}
+			}
+		}
+	}
+	// This function calculates the actual mix fraction and updates Mix_fraction vector
+	calculateMixFractions();
+}
+
 void Morphology::createCheckerboardMorphology() {
 	addSiteType((char)1);
 	addSiteType((char)2);
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
+	}
 	for (int x = 0; x < lattice.getLength(); x++) {
 		for (int y = 0; y < lattice.getWidth(); y++) {
 			for (int z = 0; z < lattice.getHeight(); z++) {
@@ -2401,15 +2417,16 @@ void Morphology::initializeNeighborInfo() {
 }
 
 bool Morphology::isNearInterface(const Coords& coords, const double distance) const {
-	int d = (int)floor(distance);
+	int range = (int)ceil(distance);
+	double distance_sq = distance * distance;
 	Coords coords_dest;
-	for (int i = -d; i <= d; i++) {
-		for (int j = -d; j <= d; j++) {
-			for (int k = -d; k <= d; k++) {
-				if (d == 1 && abs(i) + abs(j) + abs(k) > 1) {
+	for (int i = -range; i <= range; i++) {
+		for (int j = -range; j <= range; j++) {
+			for (int k = -range; k <= range; k++) {
+				if (abs(i) + abs(j) + abs(k) > range) {
 					continue;
 				}
-				else if ((double)(i*i + j * j + k * k) > distance*distance) {
+				else if ((double)(i*i + j * j + k * k) > distance_sq) {
 					continue;
 				}
 				if (!lattice.checkMoveValidity(coords, i, j, k)) {
