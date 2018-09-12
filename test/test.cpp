@@ -130,7 +130,7 @@ namespace MorphologyTests {
 		auto data = morph.getDepthIVData();
 		double iv_frac = morph.calculateInterfacialVolumeFraction();
 		for (auto item : data) {
-			EXPECT_NEAR(iv_frac, item, 0.05);
+			EXPECT_NEAR(iv_frac, item, 0.075);
 		}
 		// Apply smoothing and re-recalculate the domain size
 		morph.executeSmoothing(0.52, 1);
@@ -226,8 +226,8 @@ namespace MorphologyTests {
 		// Calculate the final domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
 		// Check the approximate magnitude of the anisotropy factor
-		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)1), 0.2);
-		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)2), 0.2);
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)1), 0.25);
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)2), 0.25);
 		// Reset morphology to a random blend
 		morph.createRandomMorphology(mix_fractions);
 		// Calculate the inital domain size values
