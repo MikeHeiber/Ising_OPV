@@ -52,7 +52,7 @@ This software tool uses Message Passing Interface (MPI) to utilize parallel comp
 As a result, using Ising_OPV requires that an MPI library is pre-installed on your system, and the final Ising_OPV executable must be built on your specific system. 
 We cannot provide pre-built binaries for your system. 
 Contact your HPC admin to determine the protocols for building MPI applications on your HPC system. 
-In many cases, the HPC system will already be configured for you, and the package comes with a default makefile that can be used with the gcc compiler. 
+In many cases, the HPC system will already be configured for you, and the package comes with a default makefile that can be used with the GCC compiler. 
 
 If you wish, you can also install MPI on your own personal workstation and then build Excimontec there as well. For development and preliminary simulation tests, sometimes it is more efficient to run on your own workstation instead of an HPC system. 
 More information about common MPI packages can be found here:
@@ -110,10 +110,9 @@ Ising_OPV will create several output files:
 - areal_composition_map_#.txt -- This text file will be created for each morphology when areal maps calculation is enabled and contains data to construct areal composition maps to check for in-plane blend compositional variations.
 - areal_tortuosity_map_#.txt -- This text file will be created for each morphology when areal maps calculation is enabled and contains data to construct areal end-to-end tortuosity maps to check for in-plane tortuosity variations.
 - correlation_data_#.txt -- This text file will be created for each morphology when the correlation function calculation is enabled.
-- correlation_data_avg.txt -- This text file will be created when the correlation function calculation is enabled and will contain the average correlation function from all morphologies in the set
-- depth_dependent_data_#.txt -- This text file wll be created for each morphology when the depth dependent calculation is enabled and will contain depth dependent blend composition and domain size data for each site type in the lattice
-- depth_dependent_data_avg.txt -- This text file wll be created for each morphology when the depth dependent calculation is enabled and will contain average depth dependent blend composition and domain size data for each site type in the lattice for the whole morphology set
--  end-to-end_path_data1.txt and end-to-end_path_data2.txt -- These text files will be created when tortuosity calculation is enabled and will contain the lengths of the shortest end-to-end paths through each domain type.
+- correlation_data_avg.txt -- This text file will be created when the correlation function calculation is enabled and will contain the average correlation function from all morphologies in the set.
+- depth_dependent_data_#.txt -- This text file will be created for each morphology when the depth dependent calculation is enabled and will contain depth dependent blend composition and domain size data for each site type in the lattice.
+- depth_dependent_data_avg.txt -- This text file will be created for each morphology when the depth dependent calculation is enabled and will contain average depth dependent blend composition and domain size data for each site type and depth dependent interfacial volume fraction data for the whole morphology set.
 - interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type.
 - morphology_#_compressed.txt -- This text file will be created for each morphology generated in the est and stores the data for that morphology.
 -  tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contain the overall tortuosity histogram data for each domain type.

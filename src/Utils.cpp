@@ -277,7 +277,7 @@ namespace Utils {
 		return output_vector;
 	}
 
-	std::vector<double> MPI_gatherValues(const double input_val) {
+	std::vector<double> MPI_gatherValues(double input_val) {
 		double *data = NULL;
 		vector<double> output_vector;
 		int procid;
