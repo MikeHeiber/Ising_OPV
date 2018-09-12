@@ -202,9 +202,9 @@ namespace MorphologyTests {
 		params.Enable_e_method = true;
 		params.Enable_mix_frac_method = false;
 		morph.calculateCorrelationDistances(params);
-		// Check that the domain size has not greatly increased
-		EXPECT_NEAR(domain_size1_f, morph.getDomainSize((char)1), 0.5);
-		EXPECT_NEAR(domain_size2_f, morph.getDomainSize((char)2), 0.5);
+		// Check that the domain size has not greatly decreased
+		EXPECT_NEAR(domain_size1_f, morph.getDomainSize((char)1), 1.0);
+		EXPECT_NEAR(domain_size2_f, morph.getDomainSize((char)2), 1.0);
 	}
 
 	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {

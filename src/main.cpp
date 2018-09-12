@@ -515,13 +515,13 @@ int main(int argc, char * argv[]) {
 			int hist_size = (tortuosity_hist1_vect.size() > tortuosity_hist2_vect.size()) ? (int)tortuosity_hist1_vect.size() : (int)tortuosity_hist2_vect.size();
 			for (int i = 1; i < hist_size; i++) {
 				tortuosity_hist_file << morph.getUnitSize()*(i + 49.0) / 50.0 << ",";
-				if (i < tortuosity_hist1_vect.size()) {
+				if (i < (int)tortuosity_hist1_vect.size()) {
 					tortuosity_hist_file << tortuosity_hist1_vect[i] << ",";
 				}
 				else {
 					tortuosity_hist_file << "0,";
 				}
-				if (i < tortuosity_hist2_vect.size()) {
+				if (i < (int)tortuosity_hist2_vect.size()) {
 					tortuosity_hist_file << tortuosity_hist2_vect[i] << ",";
 				}
 				else {
