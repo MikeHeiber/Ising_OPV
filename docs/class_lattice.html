@@ -106,9 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a70a5cebc3c0c5a0f609be0592e7cc117"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_lattice.html#a70a5cebc3c0c5a0f609be0592e7cc117">Lattice</a> ()</td></tr>
 <tr class="memdesc:a70a5cebc3c0c5a0f609be0592e7cc117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor that creates an empty <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object.  <a href="#a70a5cebc3c0c5a0f609be0592e7cc117">More...</a><br /></td></tr>
 <tr class="separator:a70a5cebc3c0c5a0f609be0592e7cc117"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa24e78477d79a9d898c057644c74f1a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_lattice.html#aa24e78477d79a9d898c057644c74f1a8">init</a> (const <a class="el" href="struct_lattice___params.html">Lattice_Params</a> &amp;params, std::mt19937_64 *generator_ptr)</td></tr>
-<tr class="memdesc:aa24e78477d79a9d898c057644c74f1a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object using the provided Parameters_Lattice input parameter struct.  <a href="#aa24e78477d79a9d898c057644c74f1a8">More...</a><br /></td></tr>
-<tr class="separator:aa24e78477d79a9d898c057644c74f1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a256bfcf35b60f8cd979e57fb016258d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_lattice.html#a256bfcf35b60f8cd979e57fb016258d8">init</a> (const <a class="el" href="struct_lattice___params.html">Lattice_Params</a> &amp;params)</td></tr>
+<tr class="memdesc:a256bfcf35b60f8cd979e57fb016258d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object using the provided Parameters_Lattice input parameter struct.  <a href="#a256bfcf35b60f8cd979e57fb016258d8">More...</a><br /></td></tr>
+<tr class="separator:a256bfcf35b60f8cd979e57fb016258d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6b80d6264bfc23ae5fea39abd2557d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_lattice.html#aa6b80d6264bfc23ae5fea39abd2557d5">calculateDestinationCoords</a> (const <a class="el" href="struct_coords.html">Coords</a> &amp;coords_initial, const int i, const int j, const int k, <a class="el" href="struct_coords.html">Coords</a> &amp;coords_dest) const</td></tr>
 <tr class="memdesc:aa6b80d6264bfc23ae5fea39abd2557d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the destination coordinates when given the starting coordinates and the displacement vector (i,j,k).  <a href="#aa6b80d6264bfc23ae5fea39abd2557d5">More...</a><br /></td></tr>
 <tr class="separator:aa6b80d6264bfc23ae5fea39abd2557d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1128,8 +1128,8 @@ false if a move event is not possible. </dd></dl>
 
 </div>
 </div>
-<a id="aa24e78477d79a9d898c057644c74f1a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa24e78477d79a9d898c057644c74f1a8">&#9670;&nbsp;</a></span>init()</h2>
+<a id="a256bfcf35b60f8cd979e57fb016258d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256bfcf35b60f8cd979e57fb016258d8">&#9670;&nbsp;</a></span>init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1138,18 +1138,8 @@ false if a move event is not possible. </dd></dl>
           <td class="memname">void Lattice::init </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="struct_lattice___params.html">Lattice_Params</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>params</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::mt19937_64 *&#160;</td>
-          <td class="paramname"><em>generator_ptr</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1158,7 +1148,6 @@ false if a move event is not possible. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">params</td><td>is a <a class="el" href="struct_lattice___params.html" title="This struct contains all of the main input parameters needed by the Lattice class. ">Lattice_Params</a> struct that contains all of the required parameters to initialize the <a class="el" href="class_lattice.html" title="This class contains the properties of a three-dimensional lattice and the functions needed to interac...">Lattice</a> object. </td></tr>
-    <tr><td class="paramname">generator_ptr</td><td>is a pointer to a Mersenne twister number generator. </td></tr>
   </table>
   </dd>
 </dl>

@@ -11,7 +11,7 @@ Lattice::Lattice() {
 
 }
 
-void Lattice::init(const Lattice_Params& params, mt19937_64* generator_ptr) {
+void Lattice::init(const Lattice_Params& params) {
 	Enable_periodic_x = params.Enable_periodic_x;
 	Enable_periodic_y = params.Enable_periodic_y;
 	Enable_periodic_z = params.Enable_periodic_z;
@@ -21,7 +21,7 @@ void Lattice::init(const Lattice_Params& params, mt19937_64* generator_ptr) {
 	Unit_size = params.Unit_size;
 	Site site;
 	sites.assign(Length*Width*Height, site);
-	gen_ptr = generator_ptr;
+	gen.seed((int)time(0));
 }
 
 void Lattice::calculateDestinationCoords(const Coords& coords_initial, const int i, const int j, const int k, Coords& coords_dest) const {
@@ -154,7 +154,7 @@ Lattice Lattice::extractSublattice(const int x, const int sublength, const int y
 	params.Width = subwidth;
 	params.Height = subheight;
 	params.Unit_size = Unit_size;
-	sublattice.init(params, gen_ptr);
+	sublattice.init(params);
 	Coords coords, coords_sub;
 	for (int i = 0; i < sublength; i++) {
 		for (int j = 0; j < subwidth; j++) {
@@ -178,19 +178,19 @@ Coords Lattice::generateRandomCoords() {
 
 int Lattice::generateRandomX() {
 	uniform_int_distribution<int> distx(0, Length - 1);
-	auto randx = bind(distx, ref(*gen_ptr));
+	auto randx = bind(distx, ref(gen));
 	return randx();
 }
 
 int Lattice::generateRandomY() {
 	uniform_int_distribution<int> disty(0, Width - 1);
-	auto randy = bind(disty, ref(*gen_ptr));
+	auto randy = bind(disty, ref(gen));
 	return randy();
 }
 
 int Lattice::generateRandomZ() {
 	uniform_int_distribution<int> distz(0, Height - 1);
-	auto randz = bind(distz, ref(*gen_ptr));
+	auto randz = bind(distz, ref(gen));
 	return randz();
 }
 
@@ -207,12 +207,17 @@ long int Lattice::getNumSites() const {
 }
 
 Coords Lattice::getSiteCoords(long int site_index) const {
-	Coords coords;
-	coords.x = site_index / (Width*Height);
-	int remainder = site_index % (Width*Height);
-	coords.y = remainder / Height;
-	coords.z = remainder % Height;
-	return coords;
+	if (site_index >= getNumSites()) {
+		throw std::out_of_range("The input site_index does not produce coordinates within the lattice.");
+	}
+	else {
+		Coords coords;
+		coords.x = site_index / (Width*Height);
+		int remainder = site_index % (Width*Height);
+		coords.y = remainder / Height;
+		coords.z = remainder % Height;
+		return coords;
+	}
 }
 
 long int Lattice::getSiteIndex(const Coords& coords) const {
@@ -230,7 +235,12 @@ vector<Lattice::Site>::iterator Lattice::getSiteIt(const Coords& coords) {
 }
 
 char Lattice::getSiteType(const long int site_index) const {
-	return sites[site_index].type;
+	if (site_index < getNumSites()) {
+		return sites[site_index].type;
+	}
+	else {
+		throw std::out_of_range("The input site_index is not in range of the sites vector.");
+	}
 }
 
 char Lattice::getSiteType(const Coords& coords) const {

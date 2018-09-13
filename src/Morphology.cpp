@@ -9,6 +9,10 @@ using namespace std;
 using namespace Utils;
 using namespace tinyxml2;
 
+Morphology::Morphology() {
+
+}
+
 Morphology::Morphology(const int id) {
 	ID = id;
 	gen.seed((int)time(0)*(id + 1));
@@ -25,7 +29,7 @@ Morphology::Morphology(const int length, const int width, const int height, cons
 	params.Height = height;
 	params.Unit_size = 1.0;
 	Enable_third_neighbor_interaction = false;
-	lattice.init(params, &gen);
+	lattice.init(params);
 	gen.seed((int)time(0)*(id + 1));
 }
 
@@ -628,8 +632,8 @@ double Morphology::calculateDissimilarFraction(const Coords& coords, const int r
 	int count_dissimilar = 0;
 	Coords coords_dest;
 	// When the rescale factor is 1, the radius is 1, and the radius increases for larger rescale factors.
-	static int radius = (rescale_factor <= 2) ? (int)ceil(3.0 / 2.0) : (int)ceil((double)(rescale_factor + 1) / 2);
-	static int cutoff_squared = (rescale_factor <= 2) ? (int)floor((3.0 / 2.0)*(3.0 / 2.0)) : (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
+	int radius = (rescale_factor <= 2) ? 1 : (int)ceil((double)(rescale_factor + 1) / 2);
+	int cutoff_squared = (rescale_factor <= 2) ? 2 : (int)floor(intpow((rescale_factor + 1.0) / 2.0, 2));
 	for (int i = -radius; i <= radius; i++) {
 		for (int j = -radius; j <= radius; j++) {
 			for (int k = -radius; k <= radius; k++) {
@@ -1515,34 +1519,23 @@ void Morphology::createRandomMorphology(const vector<double>& mix_fractions) {
 		cout << ID << ": Error creating random morphology: Sum of all mix fractions must be equal to one." << endl;
 		return;
 	}
-	vector<double> thresholds = mix_fractions;
-	for (int n = 1; n < (int)Site_types.size(); n++) {
-		thresholds[n] += thresholds[n - 1];
+	vector<char> type_entries;
+	// Calculate the number of sites of each type based on the mix fractions
+	for (int n = 0; n < (int)Site_types.size() - 1; n++) {
+		Site_type_counts[n] = round_int(mix_fractions[n] * lattice.getNumSites());
+		type_entries.insert(type_entries.end(), Site_type_counts[n], Site_types[n]);
 	}
-	Mix_fractions = mix_fractions;
-	// Clear existing Site_type_counts data
-	for (int n = 0; n < (int)Site_types.size(); n++) {
-		Site_type_counts[n] = 0;
-	}
-	double randn;
-	bool success = false;
+	// Whatever sites are left unaccounted for are assigned to the final site type so that there are the correct number of total counts.
+	Site_type_counts.back() = lattice.getNumSites() - accumulate(Site_type_counts.begin(), Site_type_counts.end() - 1, 0);
+	type_entries.insert(type_entries.end(), Site_type_counts.back(), Site_types.back());
+	// Shuffle the site types
+	shuffle(type_entries.begin(), type_entries.end(), gen);
+	Coords coords;
 	for (int x = 0; x < lattice.getLength(); x++) {
 		for (int y = 0; y < lattice.getWidth(); y++) {
 			for (int z = 0; z < lattice.getHeight(); z++) {
-				success = false;
-				randn = rand01();
-				for (int n = 0; n < (int)Site_types.size(); n++) {
-					if (randn < thresholds[n]) {
-						lattice.setSiteType(x, y, z, Site_types[n]);
-						Site_type_counts[n]++;
-						success = true;
-						break;
-					}
-				}
-				if (!success) {
-					lattice.setSiteType(x, y, z, Site_types.back());
-					Site_type_counts.back()++;
-				}
+				coords.setXYZ(x, y, z);
+				lattice.setSiteType(x, y, z, type_entries[lattice.getSiteIndex(coords)]);
 			}
 		}
 	}
@@ -1554,15 +1547,12 @@ void Morphology::executeIsingSwapping(const int num_MCsteps, const double intera
 	int loop_count = 0;
 	// N counts the number of MC steps that have been executed
 	int N = 0;
-	int neighbor_count;
 	long int main_site_index;
 	long int neighbor_site_index;
 	char temp;
 	double energy_delta, probability;
 	Coords main_site_coords;
-	vector<long int> neighbors;
-	const long int *neighbor_pointer;
-	neighbors.assign(6, 0);
+	std::array<long int, 6> neighbors;
 	initializeNeighborInfo();
 	// Begin site swapping
 	int m = 1;
@@ -1576,24 +1566,27 @@ void Morphology::executeIsingSwapping(const int num_MCsteps, const double intera
 			continue;
 		}
 		// Randomly choose a nearest neighbor site that has a different type
-		// First find all nearest neighbor sites of differing type
-		neighbor_count = 0;
-		neighbor_pointer = Neighbor_info[main_site_index].first_indices;
-		for (int i = 0; i < 6; i++) {
-			if (*(neighbor_pointer + i) >= 0 && lattice.getSiteType(main_site_index) != lattice.getSiteType(*(neighbor_pointer + i))) {
-				// Store site index of differing neighbor site
-				neighbors[neighbor_count] = *(neighbor_pointer + i);
-				neighbor_count++;
+		// Copy all valid indices corresponding to sites with a different type
+		auto it = copy_if(Neighbor_info[main_site_index].first_indices.begin(), Neighbor_info[main_site_index].first_indices.end(), neighbors.begin(), [this, main_site_index](long int i) {
+			if (i >= 0) {
+				return lattice.getSiteType(i) != lattice.getSiteType(main_site_index);
 			}
-		}
-		// Randomly select one of the differing neighbor sites
-		neighbor_site_index = neighbors[(int)floor(rand01()*neighbor_count)];
+			else {
+				return false;
+			}
+		});
+		// Select random dissimilar neighbor site
+		uniform_int_distribution<int> dist(0, distance(neighbors.begin(), it) - 1);
+		auto selected_it = neighbors.begin();
+		advance(selected_it, dist(gen));
+		neighbor_site_index = *selected_it;
 		// Calculate energy change and swapping probability
 		energy_delta = calculateEnergyChangeSimple(main_site_index, neighbor_site_index, interaction_energy1, interaction_energy2);
 		if (enable_growth_pref) {
 			energy_delta += calculateAdditionalEnergyChange(main_site_index, neighbor_site_index, growth_direction, additional_interaction);
 		}
-		probability = exp(-energy_delta) / (1 + exp(-energy_delta));
+		double E_term = exp(-energy_delta);
+		probability = E_term / (1.0 + E_term);
 		if (rand01() <= probability) {
 			// Swap Sites
 			temp = lattice.getSiteType(main_site_index);
@@ -1698,8 +1691,8 @@ void Morphology::executeMixing(const double interfacial_width, const double inte
 void Morphology::executeSmoothing(const double smoothing_threshold, const int rescale_factor) {
 	double roughness_factor;
 	Coords coords, coords_dest;
-	static int radius = (rescale_factor <= 2) ? (int)ceil(3.0 / 2.0) : (int)ceil((double)(rescale_factor + 1) / 2);
-	static int cutoff_squared = (rescale_factor <= 2) ? (int)floor((3.0 / 2.0)*(3.0 / 2.0)) : (int)floor(((double)(rescale_factor + 1) / 2)*((double)(rescale_factor + 1) / 2));
+	int radius = (rescale_factor <= 2) ? 1 : (int)ceil((double)(rescale_factor + 1) / 2);
+	int cutoff_squared = (rescale_factor <= 2) ? 2 : (int)floor(intpow((rescale_factor + 1.0) / 2.0, 2));
 	// The boolean vector consider_smoothing keeps track of whether each site is near the interface and should be considered for smoothing.
 	// Sites in the interior of the domains or at very smooth interfaces do not need to be continually reconsidered for smoothing.
 	vector<bool> consider_smoothing;
@@ -1741,7 +1734,7 @@ void Morphology::executeSmoothing(const double smoothing_threshold, const int re
 							}
 						}
 					}
-					// Sites with a low roughness_factor are not swapped and removed from reconsideration.
+					// Sites with a low roughness_factor are not swapped and are removed from reconsideration.
 					else {
 						consider_smoothing[lattice.getSiteIndex(x, y, z)] = false;
 					}
@@ -1763,7 +1756,6 @@ vector<double> Morphology::getCorrelationData(const char site_type) const {
 vector<double> Morphology::getDepthCompositionData(const char site_type) const {
 	return Depth_composition_data[getSiteTypeIndex(site_type)];
 }
-
 
 vector<double> Morphology::getDepthDomainSizeData(const char site_type) const {
 	return Depth_domain_size_data[getSiteTypeIndex(site_type)];
@@ -1955,7 +1947,11 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 	lattice_params.Enable_periodic_y = false;
 	lattice_params.Enable_periodic_z = false;
 	Lattice lattice_i;
-	lattice_i.init(lattice_params, &gen);
+	lattice_i.init(lattice_params);
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
+	}
 	// Open and read data file
 	ifstream data_file(data_filename, ifstream::in | ifstream::binary);
 	if (data_file.is_open()) {
@@ -2002,7 +1998,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		lattice_params.Width = (int)floor(lattice_params.Width*(lattice_params.Unit_size / import_params.Desired_unit_size));
 		lattice_params.Height = (int)floor(lattice_params.Height*(lattice_params.Unit_size / import_params.Desired_unit_size));
 		lattice_params.Unit_size = import_params.Desired_unit_size;
-		lattice.init(lattice_params, &gen);
+		lattice.init(lattice_params);
 		int index = 0;
 		vector<float> data_vec_new(data_vec.size());
 		for (int k = 0; k < lattice_i.getHeight(); k++) {
@@ -2225,7 +2221,7 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 		// Assume z-direction periodic boundary is disabled for an imported morphology
 		params.Enable_periodic_z = false;
 	}
-	lattice.init(params, &gen);
+	lattice.init(params);
 	if (isV4) {
 		getline(infile, line);
 		int num_types = atoi(line.c_str());
@@ -2251,6 +2247,10 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 		getline(infile, line);
 		Mix_fractions[0] = atof(line.c_str());
 		Mix_fractions[1] = 1 - Mix_fractions[0];
+	}
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
 	}
 	if (!is_file_compressed) {
 		while ((infile).good()) {
@@ -2278,6 +2278,7 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 				j++;
 			}
 			lattice.setSiteType(x, y, z, type);
+			Site_type_counts[getSiteTypeIndex(type)]++;
 		}
 	}
 	else {

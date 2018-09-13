@@ -28,7 +28,7 @@ var class_lattice =
     [ "getUnitSize", "class_lattice.html#ac6963a6b2b4b8d96d3417f6e9c2a509d", null ],
     [ "getVolume", "class_lattice.html#a46f9cec33419459b64ff0efdf47a38b9", null ],
     [ "getWidth", "class_lattice.html#aeb60d2b8bfb02d9da8bef463f0d41428", null ],
-    [ "init", "class_lattice.html#aa24e78477d79a9d898c057644c74f1a8", null ],
+    [ "init", "class_lattice.html#a256bfcf35b60f8cd979e57fb016258d8", null ],
     [ "isXPeriodic", "class_lattice.html#accf3b995e0d0cb422907728a29b1b523", null ],
     [ "isYPeriodic", "class_lattice.html#ac3192acefb019c5258143a6c758b3e48", null ],
     [ "isZPeriodic", "class_lattice.html#ad7dd1b12a253e506aba5cedb57bf86ea", null ],

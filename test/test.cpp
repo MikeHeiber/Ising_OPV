@@ -15,12 +15,17 @@ namespace MorphologyTests {
 
 	TEST(MorphologyTests, ConstructorTests) {
 		// Test the default constructor
-		Morphology morph(0);
+		Morphology morph;
+		// Check that the object has the default ID number
+		EXPECT_EQ(0, morph.getID());
+		// Check that the lattice has default size of 0,0,0.
+		EXPECT_EQ(0, morph.getLength());
+		// Test simple constructor
+		morph = Morphology(0);
 		// Check that ID number is set properly
 		EXPECT_EQ(0, morph.getID());
 		// Check that the lattice has default size of 0,0,0.
 		EXPECT_EQ(0, morph.getLength());
-
 		// Test the standard constructor
 		morph = Morphology(50, 60, 70, false, 1);
 		// Check that ID number is set properly
@@ -29,7 +34,6 @@ namespace MorphologyTests {
 		EXPECT_EQ(50, morph.getLength());
 		EXPECT_EQ(60, morph.getWidth());
 		EXPECT_EQ(70, morph.getHeight());
-
 		// Check the lattice input constructor
 		Lattice_Params params_lattice;
 		params_lattice.Enable_periodic_x = true;
@@ -39,10 +43,9 @@ namespace MorphologyTests {
 		params_lattice.Width = 30;
 		params_lattice.Height = 40;
 		params_lattice.Unit_size = 1.5;
-		mt19937_64 gen;
 		Lattice lattice;
 		// Initialize Lattice object
-		lattice.init(params_lattice, &gen);
+		lattice.init(params_lattice);
 		morph = Morphology(lattice, 2);
 		// Check that ID number is set properly
 		EXPECT_EQ(2, morph.getID());
@@ -54,167 +57,43 @@ namespace MorphologyTests {
 		EXPECT_DOUBLE_EQ(1.5, morph.getUnitSize());
 	}
 
-	TEST(MorphologyTests, IsotropicPhaseSeparationTests) {
+	TEST(MorphologyTests, RandomMorphologyTests) {
+		// Initialize Morphology object
 		Morphology morph(50, 50, 50, true, 0);
 		vector<double> mix_fractions;
 		mix_fractions.assign(2, 0.5);
 		morph.createRandomMorphology(mix_fractions);
 		// Check that the mix fractions were implemented properly
-		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.01);
-		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
-		// Calculate initial domain size
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.001);
+		// Calculate the inital domain size values
 		CorrelationCalc_Params params;
 		params.N_sampling_max = 100000;
 		params.Enable_e_method = true;
 		params.Enable_mix_frac_method = false;
 		params.Enable_extended_correlation_calc = false;
 		params.Extended_correlation_cutoff_distance = 3;
-		// Calculate the inital domain size values
 		morph.calculateCorrelationDistances(params);
-		double domain_size1_i = morph.getDomainSize((char)1);
-		double domain_size2_i = morph.getDomainSize((char)2);
+		double domain_size1 = morph.getDomainSize((char)1);
+		double domain_size2 = morph.getDomainSize((char)2);
 		// Check that random blend domain size is less than 2
-		EXPECT_LT(domain_size1_i, 2.0);
-		EXPECT_LT(domain_size2_i, 2.0);
+		EXPECT_LT(domain_size1, 2.0);
+		EXPECT_LT(domain_size2, 2.0);
 		// Calculate the initial domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
 		// Check that the random blend is isotropic
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
-		// Perform some phase separation
-		morph.executeIsingSwapping(200, 0.4, 0.4, false, 0, 0.0);
-		// Calculate the final domain size values
-		morph.calculateCorrelationDistances(params);
-		double domain_size1_f = morph.getDomainSize((char)1);
-		double domain_size2_f = morph.getDomainSize((char)2);
-		// Check that the domain size has increased
-		EXPECT_LT(domain_size1_i, domain_size1_f);
-		EXPECT_LT(domain_size2_i, domain_size2_f);
-		// Check the approximate magnitude of the domain size
-		EXPECT_NEAR(5.0, domain_size1_f, 0.5);
-		EXPECT_NEAR(5.0, domain_size2_f, 0.5);
-		// Check new domain anisotropy
-		morph.calculateAnisotropies(params.N_sampling_max);
-		// Check that the phase separated blend is still isotropic
-		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
-		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
-		// Calculate the tortuosity
-		morph.calculateTortuosity((char)1, false);
-		morph.calculateTortuosity((char)2, false);
-		// Check the tortuosity of an isotropic phase separated blend
-		auto data1 = morph.getTortuosityData((char)1);
-		auto data2 = morph.getTortuosityData((char)2);
-		EXPECT_NEAR(1.1, vector_avg(data1), 0.025);
-		EXPECT_NEAR(1.1, vector_avg(data2), 0.025);
-		// Calculate the depth dependent characteristics
-		morph.calculateDepthDependentData(params);
-		data1 = morph.getDepthDomainSizeData((char)1);
-		data2 = morph.getDepthDomainSizeData((char)2);
-		// Check the approximate domain size at each depth
-		for (auto item : data1) {
-			EXPECT_NEAR(5.0, item, 1.5);
-		}
-		for (auto item : data2) {
-			EXPECT_NEAR(5.0, item, 1.5);
-		}
-		data1 = morph.getDepthCompositionData((char)1);
-		data2 = morph.getDepthCompositionData((char)2);
-		// Check the approximate composition at each depth
-		for (auto item : data1) {
-			EXPECT_NEAR(0.5, item, 0.15);
-		}
-		for (auto item : data2) {
-			EXPECT_NEAR(0.5, item, 0.15);
-		}
-		// Calculate the interfacial volume fraction and interfacial area to volume ratio
-		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
-		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
-		// Check depth dependent interfacial volume fraction compared to bulk value
-		auto data = morph.getDepthIVData();
-
-		for (auto item : data) {
-			EXPECT_NEAR(iv_frac_i, item, 0.075);
-		}
-		// Apply smoothing and re-recalculate the domain size
-		morph.executeSmoothing(0.52, 1);
-		morph.calculateCorrelationDistances(params);
-		domain_size1_f = morph.getDomainSize((char)1);
-		domain_size2_f = morph.getDomainSize((char)2);
-		// Check the approximate magnitude of the domain size
-		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
-		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
-		// Check that the mix fractions are not severely changed
-		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.02);
-		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.02);
-		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
-		double iv_frac_f = morph.calculateInterfacialVolumeFraction();
-		double iav_ratio_f = morph.calculateInterfacialAreaVolumeRatio();
-		// Check that the interfacial volume ratio and interfacial area to volume ratio have been reduced
-		EXPECT_LT(iv_frac_f, iv_frac_i);
-		EXPECT_LT(iav_ratio_f, iav_ratio_i);
-		// Calculate domain size using the mix fraction method
-		params.Enable_e_method = false;
-		params.Enable_mix_frac_method = true;
-		morph.calculateCorrelationDistances(params);
-		domain_size1_f = morph.getDomainSize((char)1);
-		domain_size2_f = morph.getDomainSize((char)2);
-		// Check the approximate magnitude of the domain size
-		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
-		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
-		// Calculate the final tortuosity
-		morph.calculateTortuosity((char)1, false);
-		morph.calculateTortuosity((char)2, false);
-		// Check the tortuosity of an isotropic smoothed phase separated blend
-		auto tortuosity1_avg = vector_avg(morph.getTortuosityData((char)1));
-		auto tortuosity2_avg = vector_avg(morph.getTortuosityData((char)2));
-		EXPECT_NEAR(1.085, tortuosity1_avg, 0.025);
-		EXPECT_NEAR(1.085, tortuosity2_avg, 0.025);
-		// Check the island volume fraction
-		EXPECT_LT(morph.getIslandVolumeFraction((char)1), 0.001);
-		EXPECT_LT(morph.getIslandVolumeFraction((char)2), 0.001);
-		// Calculate the tortuosity using the reduced memory option
-		morph.calculateTortuosity((char)1, true);
-		morph.calculateTortuosity((char)2, true);
-		// Check that both tortuosity methods give the same answer
-		data1 = morph.getTortuosityData((char)1);
-		data2 = morph.getTortuosityData((char)2);
-		EXPECT_DOUBLE_EQ(tortuosity1_avg, vector_avg(data1));
-		EXPECT_DOUBLE_EQ(tortuosity2_avg, vector_avg(data2));
-		// Calculate the interfacial distance histogram
-		morph.calculateInterfacialDistanceHistogram();
-		auto prob1 = morph.getInterfacialDistanceHistogram((char)1);
-		auto prob2 = morph.getInterfacialDistanceHistogram((char)2);
-		// Check that the probability histograms sum to 1
-		EXPECT_NEAR(1.0, accumulate(prob1.begin(), prob1.end(), 0.0), 0.05);
-		EXPECT_NEAR(1.0, accumulate(prob2.begin(), prob2.end(), 0.0), 0.05);
-		// Check that the size of the histograms are related to the domain size
-		EXPECT_NEAR(5.0, prob1.size(), 1);
-		EXPECT_NEAR(5.0, prob2.size(), 1);
-		// Apply interfacial mixing to the smoothed morphology
-		morph.executeMixing(2.0, 0.5);
-		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
-		double iv_frac_mix = morph.calculateInterfacialVolumeFraction();
-		double iav_ratio_mix = morph.calculateInterfacialAreaVolumeRatio();
-		// Check that the interfacial volume ratio and interfacial area to volume ratio have been increased
-		EXPECT_LT(iv_frac_f, iv_frac_mix);
-		EXPECT_LT(iav_ratio_f, iav_ratio_mix);
-		// Calculate domain size using the 1/e method
-		params.Enable_e_method = true;
-		params.Enable_mix_frac_method = false;
-		morph.calculateCorrelationDistances(params);
-		// Check that the domain size has not greatly decreased
-		EXPECT_NEAR(domain_size1_f, morph.getDomainSize((char)1), 1.0);
-		EXPECT_NEAR(domain_size2_f, morph.getDomainSize((char)2), 1.0);
 	}
 
 	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {
-		Morphology morph(40, 40, 40, true, 0);
+		Morphology morph(40, 40, 40, false, 0);
 		vector<double> mix_fractions;
 		mix_fractions.assign(2, 0.5);
 		morph.createRandomMorphology(mix_fractions);
 		// Check that the mix fractions were implemented properly
-		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.01);
-		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.001);
 		// Calculate initial domain size
 		CorrelationCalc_Params params;
 		params.N_sampling_max = 100000;
@@ -275,8 +154,8 @@ namespace MorphologyTests {
 		// Calculate the final domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
 		// Check the approximate magnitude of the anisotropy factor
-		EXPECT_NEAR(0.80, morph.getDomainAnisotropy((char)1), 0.1);
-		EXPECT_NEAR(0.80, morph.getDomainAnisotropy((char)2), 0.1);
+		EXPECT_NEAR(0.83, morph.getDomainAnisotropy((char)1), 0.1);
+		EXPECT_NEAR(0.83, morph.getDomainAnisotropy((char)2), 0.1);
 		// Reset morphology to a random blend
 		morph.createRandomMorphology(mix_fractions);
 		// Perform some anisotropic phase separation that creates aligned structures in the x-direction
@@ -287,7 +166,7 @@ namespace MorphologyTests {
 		auto anisotropy2 = morph.getDomainAnisotropy((char)2);
 		// Reset morphology to a random blend
 		morph.createRandomMorphology(mix_fractions);
-		// Perform some anisotropic phase separation that creates aligned structures in the x-direction
+		// Perform some anisotropic phase separation that creates aligned structures in the y-direction
 		morph.executeIsingSwapping(200, 0.35, 0.35, true, 2, 0.05);
 		// Calculate the domain anisotropy
 		morph.calculateAnisotropies(params.N_sampling_max);
@@ -312,6 +191,219 @@ namespace MorphologyTests {
 		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
 		// Check the interfacial volume fraction
 		EXPECT_DOUBLE_EQ(1.0, morph.calculateInterfacialVolumeFraction());
+	}
+
+	class MorphologyTest : public ::testing::Test {
+	protected:
+		static Morphology* morph_start;
+		CorrelationCalc_Params params;
+
+		static void SetUpTestCase() {
+			// Correlation function calculation parameters	
+			CorrelationCalc_Params params1;
+			params1.N_sampling_max = 100000;
+			params1.Enable_e_method = true;
+			params1.Enable_mix_frac_method = false;
+			params1.Enable_extended_correlation_calc = false;
+			params1.Extended_correlation_cutoff_distance = 3;
+			// Initialize Morphology object
+			morph_start = new Morphology(50, 50, 50, true, 0);
+			vector<double> mix_fractions;
+			mix_fractions.assign(2, 0.5);
+			morph_start->createRandomMorphology(mix_fractions);
+			// Perform some phase separation
+			morph_start->executeIsingSwapping(290, 0.4, 0.4, false, 0, 0.0);
+			// Calculate the domain size values
+			morph_start->calculateCorrelationDistances(params1);
+		}
+
+		static void TearDownTestCase() {
+			delete morph_start;
+			morph_start = NULL;
+		}
+
+		virtual void SetUp() {
+			// Correlation function calculation parameters	
+			params.N_sampling_max = 100000;
+			params.Enable_e_method = true;
+			params.Enable_mix_frac_method = false;
+			params.Enable_extended_correlation_calc = false;
+			params.Extended_correlation_cutoff_distance = 3;
+		}
+
+		virtual void TearDown() { }
+	};
+
+	Morphology* MorphologyTest::morph_start = NULL;
+
+	TEST_F(MorphologyTest, FixtureSetupTests) {
+		// Check that the Morphology's Lattice object was setup properly
+		EXPECT_EQ(50, morph_start->getLength());
+		EXPECT_EQ(50, morph_start->getWidth());
+		EXPECT_EQ(50, morph_start->getHeight());
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph_start->getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(0.5, morph_start->getMixFraction((char)2), 0.001);
+	}
+
+	TEST_F(MorphologyTest, IsotropicAnalysisTests) {
+		Morphology morph = *morph_start;
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(6.0, domain_size1_i, 0.5);
+		EXPECT_NEAR(6.0, domain_size2_i, 0.5);
+		// Calculate domain size using the mix fraction method
+		params.Enable_e_method = false;
+		params.Enable_mix_frac_method = true;
+		morph.calculateCorrelationDistances(params);
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
+		// Check domain anisotropy
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		morph.calculateAnisotropies(params.N_sampling_max);
+		// Check that the phase separated blend is isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
+		// Calculate the tortuosity
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		// Check the tortuosity
+		double tortuosity1 = vector_avg(morph.getTortuosityData((char)1));
+		double tortuosity2 = vector_avg(morph.getTortuosityData((char)2));
+		EXPECT_NEAR(1.1, tortuosity1, 0.025);
+		EXPECT_NEAR(1.1, tortuosity2, 0.025);
+		// Calculate the tortuosity using the reduced memory option
+		morph.calculateTortuosity((char)1, true);
+		morph.calculateTortuosity((char)2, true);
+		// Check that both tortuosity methods give the same answer
+		auto data1 = morph.getTortuosityData((char)1);
+		auto data2 = morph.getTortuosityData((char)2);
+		EXPECT_DOUBLE_EQ(tortuosity1, vector_avg(data1));
+		EXPECT_DOUBLE_EQ(tortuosity2, vector_avg(data2));
+		// Calculate the depth dependent characteristics
+		morph.calculateDepthDependentData(params);
+		data1 = morph.getDepthDomainSizeData((char)1);
+		data2 = morph.getDepthDomainSizeData((char)2);
+		// Check the average depth dependent domain size 
+		EXPECT_NEAR(domain_size1_i, vector_avg(data1), 0.5);
+		EXPECT_NEAR(domain_size2_i, vector_avg(data2), 0.5);
+		// Gather depth dependent composition data
+		data1 = morph.getDepthCompositionData((char)1);
+		data2 = morph.getDepthCompositionData((char)2);
+		// Check the approximate composition at each depth
+		for (auto item : data1) {
+			EXPECT_NEAR(0.5, item, 0.15);
+		}
+		for (auto item : data2) {
+			EXPECT_NEAR(0.5, item, 0.15);
+		}
+		// Calculate the interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
+		// Check depth dependent interfacial volume fraction compared to bulk value
+		auto data = morph.getDepthIVData();
+		for (auto item : data) {
+			EXPECT_NEAR(iv_frac_i, item, 0.075);
+		}
+		// Calculate the interfacial distance histogram
+		morph.calculateInterfacialDistanceHistogram();
+		auto prob1 = morph.getInterfacialDistanceHistogram((char)1);
+		auto prob2 = morph.getInterfacialDistanceHistogram((char)2);
+		// Check that the probability histograms sum to 1
+		EXPECT_NEAR(1.0, accumulate(prob1.begin(), prob1.end(), 0.0), 0.05);
+		EXPECT_NEAR(1.0, accumulate(prob2.begin(), prob2.end(), 0.0), 0.05);
+		// Check that the size of the histograms are related to the domain size
+		EXPECT_NEAR(6.0 / 2.0, prob1.size(), 1);
+		EXPECT_NEAR(6.0 / 2.0, prob2.size(), 1);
+	}
+
+	TEST_F(MorphologyTest, SmoothingTests) {
+		Morphology morph = *morph_start;
+		// Calculate the interfacial volume fraction and interfacial area to volume ratio of the starting morphology
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
+		// Get the initial domain size
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Apply smoothing
+		morph.executeSmoothing(0.52, 1);
+		// Check that the mix fractions are not severely changed
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.02);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.02);
+		// Recalculate the domain size
+		morph.calculateCorrelationDistances(params);
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has not significantly increased
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 1.0);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 1.0);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_f = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_f = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been reduced
+		EXPECT_LT(iv_frac_f, iv_frac_i);
+		EXPECT_LT(iav_ratio_f, iav_ratio_i);
+		// Calculate the final tortuosity
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		// Check the tortuosity of an isotropic smoothed phase separated blend
+		auto tortuosity1_avg = vector_avg(morph.getTortuosityData((char)1));
+		auto tortuosity2_avg = vector_avg(morph.getTortuosityData((char)2));
+		EXPECT_NEAR(1.085, tortuosity1_avg, 0.025);
+		EXPECT_NEAR(1.085, tortuosity2_avg, 0.025);
+		// Check the island volume fraction
+		EXPECT_LT(morph.getIslandVolumeFraction((char)1), 0.001);
+		EXPECT_LT(morph.getIslandVolumeFraction((char)2), 0.001);
+	}
+
+	TEST_F(MorphologyTest, InterfacialMixingTests) {
+		Morphology morph = *morph_start;
+		// Get initial domain sizes
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Apply smoothing
+		morph.executeSmoothing(0.52, 1);
+		// Calculate the interfacial volume fraction and interfacial area to volume ratio of the smoothed morphology
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
+		// Apply interfacial mixing to the smoothed morphology
+		morph.executeMixing(2.0, 0.5);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_mix = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_mix = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been increased
+		EXPECT_LT(iv_frac_i, iv_frac_mix);
+		EXPECT_LT(iav_ratio_i, iav_ratio_mix);
+		// Calculate domain size
+		morph.calculateCorrelationDistances(params);
+		// Check that the domain size has not greatly decreased
+		EXPECT_NEAR(domain_size1_i, morph.getDomainSize((char)1), 0.5);
+		EXPECT_NEAR(domain_size2_i, morph.getDomainSize((char)2), 0.5);
+	}
+
+	TEST_F(MorphologyTest, ExportImportTests) {
+		// Get the domain size of the initial morphology
+		double domain_size1 = morph_start->getDomainSize((char)1);
+		double domain_size2 = morph_start->getDomainSize((char)2);
+		// output original morphology
+		ofstream outfile("morphology_file.txt", ofstream::out | ofstream::trunc);
+		morph_start->outputMorphologyFile("v4.0", outfile, true);
+		outfile.close();
+		// Create a local copy of the Morphology object
+		Morphology morph = *morph_start;
+		ifstream infile("morphology_file.txt", ifstream::in);
+		morph.importMorphologyFile(infile);
+		infile.close();
+		// Calculate domain size of imported morphology
+		morph.calculateCorrelationDistances(params);
+		// Check that domain size of original and imported morphologies are the same
+		EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.001);
+		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.001);
 	}
 }
 
@@ -533,12 +625,10 @@ namespace LatticeTests {
 
 	class LatticeTest : public ::testing::Test {
 	protected:
-		mt19937_64 gen;
 		Lattice_Params params_lattice;
 		Lattice lattice;
 
 		void SetUp() {
-			gen.seed(std::random_device{}());
 			// Setup params
 			params_lattice.Enable_periodic_x = true;
 			params_lattice.Enable_periodic_y = true;
@@ -548,7 +638,7 @@ namespace LatticeTests {
 			params_lattice.Height = 50;
 			params_lattice.Unit_size = 1.0;
 			// Initialize Lattice object
-			lattice.init(params_lattice, &gen);
+			lattice.init(params_lattice);
 		}
 	};
 
@@ -613,7 +703,7 @@ namespace LatticeTests {
 		params_lattice.Enable_periodic_y = false;
 		params_lattice.Enable_periodic_z = true;
 		Lattice lattice2;
-		lattice2.init(params_lattice, &gen);
+		lattice2.init(params_lattice);
 		EXPECT_FALSE(lattice2.isXPeriodic());
 		EXPECT_FALSE(lattice2.isYPeriodic());
 		EXPECT_TRUE(lattice2.isZPeriodic());
@@ -624,7 +714,7 @@ namespace LatticeTests {
 		EXPECT_TRUE(lattice2.checkMoveValidity(coords1, 0, 0, 1));
 		EXPECT_TRUE(lattice2.checkMoveValidity(coords1, -1, 1, -1));
 		params_lattice.Enable_periodic_z = false;
-		lattice2.init(params_lattice, &gen);
+		lattice2.init(params_lattice);
 		EXPECT_FALSE(lattice2.isZPeriodic());
 		EXPECT_FALSE(lattice2.checkMoveValidity(coords1, 0, 0, 1));
 	}

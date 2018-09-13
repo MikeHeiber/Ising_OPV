@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "tinyxml2/tinyxml2.h"
 #include <algorithm>
+#include <array>
 #include <ctime>
 #include <fstream>
 #include <functional>
@@ -98,9 +99,9 @@ class Morphology {
 	};
 
 	struct NeighborInfo {
-		long int first_indices[6];
-		long int second_indices[12];
-		long int third_indices[8];
+		std::array<long int, 6> first_indices;
+		std::array<long int, 12> second_indices;
+		std::array<long int, 8> third_indices;
 		char total1;
 		char total2;
 		char total3;
@@ -108,6 +109,10 @@ class Morphology {
 
 public:
 	// Functions
+
+	//! \brief Default constructor that creates a Morphology object with the default parameters and an empty lattice.
+	//! \warning An empty Morphology object should not be used without defining a lattice.
+	Morphology();
 
 	//! \brief This is the simplest constructor that creates a Morphology object with the default member variables and an empty lattice.
 	//! \param id is the input integer ID number that will be assigned to the Morphology object.
@@ -357,7 +362,7 @@ private:
 	std::vector<NeighborInfo> Neighbor_info;
 	NeighborCounts Temp_counts1;
 	NeighborCounts Temp_counts2;
-	std::mt19937_64 gen;
+	std::mt19937_64 gen = std::mt19937_64((int)time(0));
 
 	// Functions
 	void addSiteType(const char site_type);

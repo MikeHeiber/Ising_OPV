@@ -7,6 +7,7 @@
 #define LATTICE_H
 
 #include "Utils.h"
+#include <ctime>
 #include <functional>
 
 //! \brief This struct contains all of the main input parameters needed by the Lattice class.
@@ -50,8 +51,7 @@ public:
 	//! \brief Initializes the Lattice object using the provided Parameters_Lattice input parameter struct.
 	//! \param params is a Lattice_Params struct that contains all of the required
 	//! parameters to initialize the Lattice object. 
-	//! \param generator_ptr is a pointer to a Mersenne twister number generator.
-	void init(const Lattice_Params& params, std::mt19937_64* generator_ptr);
+	void init(const Lattice_Params& params);
 
 	//! \brief Calculates the destination coordinates when given the starting coordinates and the displacement vector (i,j,k).
 	//! \details When the starting coordinates are near one or more of the lattice boundaries and periodic boundary conditions are enabled,
@@ -264,7 +264,7 @@ private:
 	int Height = 0; // nm
 	double Unit_size = 1.0; // nm
 	std::vector<Site> sites;
-	std::mt19937_64* gen_ptr;
+	std::mt19937_64 gen;
 };
 
 #endif // LATTICE_H

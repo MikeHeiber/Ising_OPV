@@ -4,7 +4,7 @@ var searchData=
   ['importmorphologyfile',['importMorphologyFile',['../class_morphology.html#ad9290e3efa6fa08ee8bf0504f8fec9ac',1,'Morphology']]],
   ['importparameters',['importParameters',['../main_8cpp.html#a88805a6551d44e07f9ee0503d1403713',1,'main.cpp']]],
   ['importtomogrammorphologyfile',['importTomogramMorphologyFile',['../class_morphology.html#a45baf8ef4564b6cab3eeec43e897fb57',1,'Morphology']]],
-  ['init',['init',['../class_lattice.html#aa24e78477d79a9d898c057644c74f1a8',1,'Lattice']]],
+  ['init',['init',['../class_lattice.html#a256bfcf35b60f8cd979e57fb016258d8',1,'Lattice']]],
   ['input_5fparams',['Input_Params',['../struct_input___params.html',1,'']]],
   ['integratedata',['integrateData',['../namespace_utils.html#a49411c9d4c7a065dbcf237aa27a84023',1,'Utils']]],
   ['interaction_5fenergy1',['Interaction_energy1',['../struct_input___params.html#ac5fb3d67ef960d12c01840c637cd1ced',1,'Input_Params']]],
