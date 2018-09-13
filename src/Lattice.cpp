@@ -207,17 +207,17 @@ long int Lattice::getNumSites() const {
 }
 
 Coords Lattice::getSiteCoords(long int site_index) const {
+	Coords coords;
 	if (site_index >= getNumSites()) {
 		throw std::out_of_range("The input site_index does not produce coordinates within the lattice.");
 	}
 	else {
-		Coords coords;
 		coords.x = site_index / (Width*Height);
 		int remainder = site_index % (Width*Height);
 		coords.y = remainder / Height;
 		coords.z = remainder % Height;
-		return coords;
 	}
+	return coords;
 }
 
 long int Lattice::getSiteIndex(const Coords& coords) const {
@@ -240,6 +240,7 @@ char Lattice::getSiteType(const long int site_index) const {
 	}
 	else {
 		throw std::out_of_range("The input site_index is not in range of the sites vector.");
+		return (char)0;
 	}
 }
 

@@ -9,6 +9,7 @@
 #include "Utils.h"
 #include <ctime>
 #include <functional>
+#include <stdexcept>
 
 //! \brief This struct contains all of the main input parameters needed by the Lattice class.
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
