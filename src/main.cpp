@@ -119,8 +119,8 @@ int main(int argc, char * argv[]) {
 	vector<double> tortuosity_data2;
 	vector<double> tortuosity_hist1_vect;
 	vector<double> tortuosity_hist2_vect;
-	vector<double> interfacial_dist_hist1_vect;
-	vector<double> interfacial_dist_hist2_vect;
+	vector<pair<double, double>> interfacial_dist_probhist1;
+	vector<pair<double, double>> interfacial_dist_probhist2;
 	vector<double> correlation1_vect;
 	vector<double> correlation2_vect;
 	vector<double> depth_comp1_vect;
@@ -434,17 +434,16 @@ int main(int argc, char * argv[]) {
 		cout << "Collecting morphology analysis data from each processor..." << endl;
 	}
 	if (parameters.Enable_tortuosity_calc) {
-		// Collect path data from all procs onto proc 0
+		// Collect end-to-end tortuosity data from all procs onto proc 0
 		tortuosity_data1 = MPI_gatherVectors(morph.getTortuosityData((char)1));
 		tortuosity_data2 = MPI_gatherVectors(morph.getTortuosityData((char)2));
-		// Calculate the average tortuosity histograms.
-		tortuosity_hist1_vect = MPI_calculateVectorAvg(morph.getTortuosityHistogram((char)1));
-		tortuosity_hist2_vect = MPI_calculateVectorAvg(morph.getTortuosityHistogram((char)2));
 	}
 	// Calculate the average interfacial distance histograms.
 	if (parameters.Enable_interfacial_distance_calc) {
-		interfacial_dist_hist1_vect = MPI_calculateVectorAvg(morph.getInterfacialDistanceHistogram((char)1));
-		interfacial_dist_hist2_vect = MPI_calculateVectorAvg(morph.getInterfacialDistanceHistogram((char)2));
+		auto hist1 = morph.getInterfacialDistanceHistogram((char)1);
+		auto hist2 = morph.getInterfacialDistanceHistogram((char)2);
+		interfacial_dist_probhist1 = MPI_calculateProbHistAvg(hist1);
+		interfacial_dist_probhist2 = MPI_calculateProbHistAvg(hist2);
 	}
 	// Calculate the average pair-pair correlation functions.
 	if (parameters.Enable_correlation_calc) {
@@ -510,22 +509,24 @@ int main(int argc, char * argv[]) {
 					tortuosity_hist_file.open("tortuosity_histograms_mod.txt");
 				}
 			}
-			tortuosity_hist_file << "Distance (nm),Tortuosity1,Tortuosity2" << endl;
-			tortuosity_hist_file << 0 << "," << tortuosity_hist1_vect[0] << "," << tortuosity_hist2_vect[0] << endl;
-			int hist_size = (tortuosity_hist1_vect.size() > tortuosity_hist2_vect.size()) ? (int)tortuosity_hist1_vect.size() : (int)tortuosity_hist2_vect.size();
+			auto probhist1 = calculateProbabilityHist(tortuosity_data1, 0.02);
+			auto probhist2 = calculateProbabilityHist(tortuosity_data2, 0.02);
+			tortuosity_hist_file << "Tortuosity, Probability1,Probability2" << endl;
+			int hist_size = (probhist1.size() > probhist2.size()) ? (int)probhist1.size() : (int)probhist2.size();
 			for (int i = 1; i < hist_size; i++) {
-				tortuosity_hist_file << morph.getUnitSize()*(i + 49.0) / 50.0 << ",";
-				if (i < (int)tortuosity_hist1_vect.size()) {
-					tortuosity_hist_file << tortuosity_hist1_vect[i] << ",";
+				// output bin value
+				tortuosity_hist_file << 0.02*i + 1 << ",";
+				if (i < (int)probhist1.size()) {
+					tortuosity_hist_file << probhist1[i].second << ",";
 				}
 				else {
 					tortuosity_hist_file << "0,";
 				}
-				if (i < (int)tortuosity_hist2_vect.size()) {
-					tortuosity_hist_file << tortuosity_hist2_vect[i] << ",";
+				if (i < (int)probhist2.size()) {
+					tortuosity_hist_file << probhist2[i].second << endl;;
 				}
 				else {
-					tortuosity_hist_file << "0,";
+					tortuosity_hist_file << "0" << endl;
 				}
 			}
 			tortuosity_hist_file.close();
@@ -544,8 +545,21 @@ int main(int argc, char * argv[]) {
 				}
 			}
 			interfacial_dist_hist_file << "Distance (a),Probability1,Probability2" << endl;
-			for (int i = 0; i < (int)interfacial_dist_hist1_vect.size(); i++) {
-				interfacial_dist_hist_file << i + 1 << "," << interfacial_dist_hist1_vect[i] << "," << interfacial_dist_hist2_vect[i] << "\n";
+			int hist_size = (interfacial_dist_probhist1.size() > interfacial_dist_probhist2.size()) ? (int)interfacial_dist_probhist1.size() : (int)interfacial_dist_probhist2.size();
+			for (int i = 0; i < hist_size; i++) {
+				interfacial_dist_hist_file << i + 1 << ",";
+				if (i < (int)interfacial_dist_probhist1.size()) {
+					interfacial_dist_hist_file << interfacial_dist_probhist1[i].second << ",";
+				}
+				else {
+					interfacial_dist_hist_file << "0,";
+				}
+				if (i < (int)interfacial_dist_probhist2.size()) {
+					interfacial_dist_hist_file << interfacial_dist_probhist2[i].second << endl;
+				}
+				else {
+					interfacial_dist_hist_file << "0" << endl;
+				}
 			}
 			interfacial_dist_hist_file.close();
 		}

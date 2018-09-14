@@ -113,9 +113,9 @@ Ising_OPV will create several output files:
 - correlation_data_avg.txt -- This text file will be created when the correlation function calculation is enabled and will contain the average correlation function from all morphologies in the set.
 - depth_dependent_data_#.txt -- This text file will be created for each morphology when the depth dependent calculation is enabled and will contain depth dependent blend composition and domain size data for each site type in the lattice.
 - depth_dependent_data_avg.txt -- This text file will be created for each morphology when the depth dependent calculation is enabled and will contain average depth dependent blend composition and domain size data for each site type and depth dependent interfacial volume fraction data for the whole morphology set.
-- interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type.
+- interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type averaged over all morphologies in the set.
 - morphology_#_compressed.txt -- This text file will be created for each morphology generated in the est and stores the data for that morphology.
--  tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contain the overall tortuosity histogram data for each domain type.
+-  tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contains the end-to-end tortuosity histogram data for each domain type averaged over all morphologies in the set.
 
 #### Data Analysis
 

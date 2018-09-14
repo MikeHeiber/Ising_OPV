@@ -102,6 +102,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aeeafbd56205953143f1a18306da06884"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#aeeafbd56205953143f1a18306da06884">calculateCumulativeHist</a> (const std::vector&lt; std::pair&lt; double, double &gt;&gt; &amp;data)</td></tr>
 <tr class="memdesc:aeeafbd56205953143f1a18306da06884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the cumulative histogram from the input probability histogram data.  <a href="#aeeafbd56205953143f1a18306da06884">More...</a><br /></td></tr>
 <tr class="separator:aeeafbd56205953143f1a18306da06884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5e5fa4d75dc4ad4d1680ca44fea200c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#af5e5fa4d75dc4ad4d1680ca44fea200c">calculateHist</a> (const std::vector&lt; int &gt; &amp;data, int bin_size)</td></tr>
+<tr class="memdesc:af5e5fa4d75dc4ad4d1680ca44fea200c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the histogram for the input integer data vector using the input bin size.  <a href="#af5e5fa4d75dc4ad4d1680ca44fea200c">More...</a><br /></td></tr>
+<tr class="separator:af5e5fa4d75dc4ad4d1680ca44fea200c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4839feb965d30f4d5135e18f0466aac5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a4839feb965d30f4d5135e18f0466aac5">calculateProbabilityHist</a> (const std::vector&lt; std::pair&lt; double, int &gt;&gt; hist)</td></tr>
+<tr class="memdesc:a4839feb965d30f4d5135e18f0466aac5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input histogram data vector. The function outputs bin-centered x values and probability y values in a x-y pair vector.  <a href="#a4839feb965d30f4d5135e18f0466aac5">More...</a><br /></td></tr>
+<tr class="separator:a4839feb965d30f4d5135e18f0466aac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2df88014dd5c6dd6ed57d0613c4a7474"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a2df88014dd5c6dd6ed57d0613c4a7474">calculateProbabilityHist</a> (const std::vector&lt; int &gt; &amp;data, int bin_size)</td></tr>
 <tr class="memdesc:a2df88014dd5c6dd6ed57d0613c4a7474"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the probability histogram for the input integer data vector using the input bin size.  <a href="#a2df88014dd5c6dd6ed57d0613c4a7474">More...</a><br /></td></tr>
 <tr class="separator:a2df88014dd5c6dd6ed57d0613c4a7474"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,11 +129,14 @@ Functions</h2></td></tr>
 <tr class="memitem:af68995497777ee14d812c65991a4046f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#af68995497777ee14d812c65991a4046f">interpolateData</a> (const std::vector&lt; std::pair&lt; double, double &gt;&gt; &amp;data, const double x_val)</td></tr>
 <tr class="memdesc:af68995497777ee14d812c65991a4046f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linearly interpolates an x-y data set to determine the interpolated y-value corresponding to an input x-value.  <a href="#af68995497777ee14d812c65991a4046f">More...</a><br /></td></tr>
 <tr class="separator:af68995497777ee14d812c65991a4046f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab47a08b3511c527bb43a43c64373a4e0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#ab47a08b3511c527bb43a43c64373a4e0">MPI_calculateProbHistAvg</a> (const std::vector&lt; std::pair&lt; double, int &gt;&gt; &amp;input_hist)</td></tr>
+<tr class="memdesc:ab47a08b3511c527bb43a43c64373a4e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to calculate the average probability histogram from separate histograms coming from different processors.  <a href="#ab47a08b3511c527bb43a43c64373a4e0">More...</a><br /></td></tr>
+<tr class="separator:ab47a08b3511c527bb43a43c64373a4e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71eeb04d74f890da3d27128c37fcff78"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a71eeb04d74f890da3d27128c37fcff78">MPI_calculateVectorAvg</a> (const std::vector&lt; double &gt; &amp;input_vector)</td></tr>
 <tr class="memdesc:a71eeb04d74f890da3d27128c37fcff78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to calculate the element-wise average vector from separate vectors coming from different processors.  <a href="#a71eeb04d74f890da3d27128c37fcff78">More...</a><br /></td></tr>
 <tr class="separator:a71eeb04d74f890da3d27128c37fcff78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a17d0ad939418dc745bcfd194ce2bc1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#a0a17d0ad939418dc745bcfd194ce2bc1">MPI_calculateVectorSum</a> (const std::vector&lt; double &gt; &amp;input_vector)</td></tr>
-<tr class="memdesc:a0a17d0ad939418dc745bcfd194ce2bc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to calculate the element-wise sum vector from separate vectors coming from different processors.  <a href="#a0a17d0ad939418dc745bcfd194ce2bc1">More...</a><br /></td></tr>
+<tr class="memdesc:a0a17d0ad939418dc745bcfd194ce2bc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to calculate the element-wise sum vector from separate equally sized vectors coming from different processors.  <a href="#a0a17d0ad939418dc745bcfd194ce2bc1">More...</a><br /></td></tr>
 <tr class="separator:a0a17d0ad939418dc745bcfd194ce2bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7b634b14633046c6da126945d688aaf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_utils.html#ad7b634b14633046c6da126945d688aaf">MPI_calculateVectorSum</a> (const std::vector&lt; int &gt; &amp;input_vector)</td></tr>
 <tr class="memdesc:ad7b634b14633046c6da126945d688aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses MPI to calculate the element-wise sum vector from separate vectors coming from different processors.  <a href="#ad7b634b14633046c6da126945d688aaf">More...</a><br /></td></tr>
@@ -387,12 +396,77 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A vector of x-y pairs consisting of bin-centered x values and cumnulative probability y values. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of x-y pairs consisting of bin-centered x values and cumulative probability y values. </dd></dl>
+
+</div>
+</div>
+<a id="af5e5fa4d75dc4ad4d1680ca44fea200c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5e5fa4d75dc4ad4d1680ca44fea200c">&#9670;&nbsp;</a></span>calculateHist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt; double, int &gt; &gt; Utils::calculateHist </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bin_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculates the histogram for the input integer data vector using the input bin size. </p>
+<p>Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set with the specified bin size. The function outputs bin-centered x values and counts y values in a x-y pair vector. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>is the input integer data vector. </td></tr>
+    <tr><td class="paramname">bin_size</td><td>is the specified bin size </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of x-y pairs consisting of bin-centered x values and counts y values. </dd></dl>
+
+</div>
+</div>
+<a id="a4839feb965d30f4d5135e18f0466aac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4839feb965d30f4d5135e18f0466aac5">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt; double, double &gt; &gt; Utils::calculateProbabilityHist </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::pair&lt; double, int &gt;&gt;&#160;</td>
+          <td class="paramname"><em>hist</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculates the probability histogram for the input histogram data vector. The function outputs bin-centered x values and probability y values in a x-y pair vector. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hist</td><td>is the input histogram data vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of x-y pairs consisting of bin-centered x values and probability y values. </dd></dl>
 
 </div>
 </div>
 <a id="a2df88014dd5c6dd6ed57d0613c4a7474"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2df88014dd5c6dd6ed57d0613c4a7474">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2df88014dd5c6dd6ed57d0613c4a7474">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -430,7 +504,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="adcb2e98774b12bc12264034913547a2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcb2e98774b12bc12264034913547a2c">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adcb2e98774b12bc12264034913547a2c">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[3/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -468,7 +542,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a0818230f8ad279ef7ca217f3cba81f76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0818230f8ad279ef7ca217f3cba81f76">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0818230f8ad279ef7ca217f3cba81f76">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[4/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -506,7 +580,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a08553f36886a36456e8111585029e467"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08553f36886a36456e8111585029e467">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a08553f36886a36456e8111585029e467">&#9670;&nbsp;</a></span>calculateProbabilityHist() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -697,6 +771,36 @@ template&lt;typename base_type &gt; </div>
 
 </div>
 </div>
+<a id="ab47a08b3511c527bb43a43c64373a4e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab47a08b3511c527bb43a43c64373a4e0">&#9670;&nbsp;</a></span>MPI_calculateProbHistAvg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt; double, double &gt; &gt; Utils::MPI_calculateProbHistAvg </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::pair&lt; double, int &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>input_hist</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uses MPI to calculate the average probability histogram from separate histograms coming from different processors. </p>
+<p>Each processor calls this function and sends an input histogram. Each input histogram must have the same starting bin and bin size. <br />
+Upon function return, processor 0 receives the average probabiliy histogram and all of the other processors receive an empty probability histogram. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input_hist</td><td>is the input histogram data from the processor calling the function. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pair vector that is the average probability histogram of all input histograms from each processor, when called on processor 0. </dd>
+<dd>
+An empty vector when called on other processors. </dd></dl>
+
+</div>
+</div>
 <a id="a71eeb04d74f890da3d27128c37fcff78"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a71eeb04d74f890da3d27128c37fcff78">&#9670;&nbsp;</a></span>MPI_calculateVectorAvg()</h2>
 
@@ -742,7 +846,7 @@ An empty vector when called on other processors. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Uses MPI to calculate the element-wise sum vector from separate vectors coming from different processors. </p>
+<p>Uses MPI to calculate the element-wise sum vector from separate equally sized vectors coming from different processors. </p>
 <p>Each processor calls this function and sends an input vector. Upon function return, processor 0 receives the sum vector and all of the other processors receive an empty vector. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">input_vector</td><td>is the input data from the processor calling the function. </td></tr>

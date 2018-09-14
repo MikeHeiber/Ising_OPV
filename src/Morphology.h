@@ -251,7 +251,7 @@ public:
 	//! \details The histogram bins are distances given by the vector index + 1 in lattice units.
 	//! \param site_type specifies for which site type the data should be retrieved.
 	//! \return a copy of the data vector.
-	std::vector<double> getInterfacialDistanceHistogram(const char site_type) const;
+	std::vector<std::pair<double, int>> getInterfacialDistanceHistogram(const char site_type) const;
 
 	//! \brief Returns the island volume for the specified site type.
 	//! \param site_type specifies for which site type the data should be retrieved.
@@ -273,12 +273,6 @@ public:
 	//! \param site_type specifies for which site type the data should be retrieved.
 	//! \return a copy of the data vector.
 	std::vector<double> getTortuosityData(const char site_type) const;
-
-	//! \brief Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.
-	//! \details Tortuosity values are rounded to the nearest 0.02, resulting in bins centered at 1, 1.02, 1.04, etc. So bin values are equal to the vector index i + 0.02
-	//! \param site_type specifies for which site type the data should be retrieved.
-	//! \return a copy of the data vector.
-	std::vector<double> getTortuosityHistogram(const char site_type) const;
 
 	//! \brief Returns the lattice unit size in units of nm.
 	double getUnitSize() const;
@@ -348,8 +342,7 @@ private:
 	std::vector<int> Site_type_counts;
 	std::vector<std::vector<double>> Correlation_data;
 	std::vector<std::vector<double>> Tortuosity_data;
-	std::vector<std::vector<double>> InterfacialHistogram_data;
-	std::vector<std::vector<double>> TortuosityHistogram_data;
+	std::vector<std::vector<std::pair<double, int>>> InterfacialHistogram_data;
 	std::vector<std::vector<double>> Depth_composition_data;
 	std::vector<std::vector<double>> Depth_domain_size_data;
 	std::vector<double> Depth_iv_data;

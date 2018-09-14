@@ -12,7 +12,7 @@ var searchData=
   ['getdomainsize',['getDomainSize',['../class_morphology.html#aacb64029b30f0137845a676c2a67e01c',1,'Morphology']]],
   ['getheight',['getHeight',['../class_lattice.html#aaa0cba3ab33ac620d9b9f9508c56d1ac',1,'Lattice::getHeight()'],['../class_morphology.html#a734e6610d0dc6746744ab498c63f3338',1,'Morphology::getHeight()']]],
   ['getid',['getID',['../class_morphology.html#a60d5a51d134664c2a8fa14173bd4d750',1,'Morphology']]],
-  ['getinterfacialdistancehistogram',['getInterfacialDistanceHistogram',['../class_morphology.html#a27e58642b35a1368b4edc87369e1fc46',1,'Morphology']]],
+  ['getinterfacialdistancehistogram',['getInterfacialDistanceHistogram',['../class_morphology.html#a8987f31a0a948aadaadbf705b50c04ce',1,'Morphology']]],
   ['getislandvolumefraction',['getIslandVolumeFraction',['../class_morphology.html#aba4cca69dab7b355b49f34ad51dc71fc',1,'Morphology']]],
   ['getlength',['getLength',['../class_lattice.html#a4b43b67a36fcd3dfe62c9eeaffa561d2',1,'Lattice::getLength()'],['../class_morphology.html#a3281bc7d4e38d63da8db069cf866d856',1,'Morphology::getLength()']]],
   ['getmixfraction',['getMixFraction',['../class_morphology.html#a9615fbd6e20bc3595bbf09c2a0a727b0',1,'Morphology']]],
@@ -22,7 +22,6 @@ var searchData=
   ['getsiteit',['getSiteIt',['../class_lattice.html#a2bf73ce210cd896f92099498a347f966',1,'Lattice']]],
   ['getsitetype',['getSiteType',['../class_lattice.html#a7d2db4b81db95baa30a841d4354c621a',1,'Lattice::getSiteType(const long int site_index) const'],['../class_lattice.html#a8637f75a4930631dbd11cc64e56b4fbc',1,'Lattice::getSiteType(const Coords &amp;coords) const'],['../class_lattice.html#a3f68c6011aea6c7ae5c25141b87ddbfd',1,'Lattice::getSiteType(const int x, const int y, const int z) const']]],
   ['gettortuositydata',['getTortuosityData',['../class_morphology.html#a25e44bd12a814f83a93e46f0d6c28362',1,'Morphology']]],
-  ['gettortuosityhistogram',['getTortuosityHistogram',['../class_morphology.html#a00737bb81b0fbe7f2511fe73fcb62c50',1,'Morphology']]],
   ['getunitsize',['getUnitSize',['../class_lattice.html#ac6963a6b2b4b8d96d3417f6e9c2a509d',1,'Lattice::getUnitSize()'],['../class_morphology.html#aac27576c0f5331a9e8de755fcce65faa',1,'Morphology::getUnitSize()']]],
   ['getvolume',['getVolume',['../class_lattice.html#a46f9cec33419459b64ff0efdf47a38b9',1,'Lattice']]],
   ['getwidth',['getWidth',['../class_lattice.html#aeb60d2b8bfb02d9da8bef463f0d41428',1,'Lattice::getWidth()'],['../class_morphology.html#ac5be6b8e1b0316a3d3c2ea406853e66d',1,'Morphology::getWidth()']]]

@@ -42,9 +42,6 @@ before_install:
     - if [[ "$TARGET" = test_coverage ]]; then pip install --user cpp-coveralls; fi
     
 script:
-    - make -j10 $TARGET
-    - cd test
-    - travis_wait ./Ising_OPV_tests.exe
-    - cd ..
+    - make -j10 $TARGET && travis_wait ./test/Ising_OPV_tests.exe && travis_wait mpiexec -n 4 ./test/Ising_OPV_MPI_tests.exe
     - if [[ "$TARGET" = test_coverage ]]; then coveralls --include src --exclude "googletest/*" --gcov-options '\-lp'; fi
     - if [[ "$TARGET" = test ]]; then make -j10 && mpiexec -n 4 ./Ising_OPV.exe parameters_default.txt; fi

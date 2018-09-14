@@ -55,9 +55,9 @@ ifeq ($(lastword $(subst /, ,$(CXX))),pgc++)
 endif
 
 test_coverage : FLAGS = -fprofile-arcs -ftest-coverage -std=c++11 -Wall -Wextra -I. -Isrc
-test_coverage : test/Ising_OPV_tests.exe
+test_coverage : test/Ising_OPV_tests.exe test/Ising_OPV_MPI_tests.exe
 
-test : test/Ising_OPV_tests.exe
+test : test/Ising_OPV_tests.exe test/Ising_OPV_MPI_tests.exe
 	
 test/Ising_OPV_tests.exe : test/test.o test/gtest-all.o $(OBJS)
 	mpicxx $(GTEST_FLAGS) $(FLAGS) $^ -lpthread -o $@
@@ -68,5 +68,11 @@ test/gtest-all.o : $(GTEST_SRCS_)
 test/test.o : test/test.cpp $(GTEST_HEADERS) $(OBJS)
 	mpicxx $(GTEST_FLAGS) $(FLAGS) -c $< -o $@
 	
+test/Ising_OPV_MPI_tests.exe : test/test_mpi.o test/gtest-all.o $(OBJS)
+	mpicxx $(GTEST_FLAGS) $(FLAGS) -lpthread $^ -o $@
+
+test/test_mpi.o : test/test_mpi.cpp $(GTEST_HEADERS) $(OBJS)
+	mpicxx $(GTEST_FLAGS) $(FLAGS) -c $< -o $@
+	
 clean:
-	\rm src/*.o tinyxml/*.o *~ Ising_OPV.exe src/*.gcno* src/*.gcda test/*.o test/*.gcno* test/*.gcda test/Ising_OPV_tests.exe
+	\rm src/*.o tinyxml/*.o *~ Ising_OPV.exe src/*.gcno* src/*.gcda test/*.o test/*.gcno* test/*.gcda test/Ising_OPV_tests.exe test/Ising_OPV_MPI_tests.exe

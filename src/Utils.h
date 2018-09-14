@@ -8,11 +8,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <mpi.h>
-#include <fstream>
+#include <numeric>
 #include <random>
 #include <set>
 #include <string>
@@ -70,16 +71,16 @@ namespace Utils {
 
 	//! \brief Calculates the cumulative histogram from the input probability histogram data.
 	//! \param data is the input probability histogram which is a vector of x-y pairs consisting of bin-centered x values and probability y values.
-	//! \returns A vector of x-y pairs consisting of bin-centered x values and cumnulative probability y values.
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and cumulative probability y values.
 	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& data);
 
-	//! \brief Calculates the probability histogram for the input double data vector using the input number of bins.
-	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 
-	//! The function outputs bin-centered x values and probability y values in a x-y pair vector.
-	//! \param data is the input data vector.
-	//! \param num_bins is the desired number of bins.
-	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
-	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins);
+	//! \brief Calculates the histogram for the input integer data vector using the input bin size.
+	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set with the specified bin size.
+	//! The function outputs bin-centered x values and counts y values in a x-y pair vector.
+	//! \param data is the input integer data vector.
+	//! \param bin_size is the specified bin size
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and counts y values.
+	std::vector<std::pair<double, int>> calculateHist(const std::vector<int>& data, int bin_size);
 
 	//! \brief Calculates the probability histogram for the input integer data vector using the input bin size.
 	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set with the specified bin size.
@@ -88,6 +89,20 @@ namespace Utils {
 	//! \param bin_size is the specified bin size
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<int>& data, int bin_size);
+
+	//! \brief Calculates the probability histogram for the input histogram data vector.
+	//! The function outputs bin-centered x values and probability y values in a x-y pair vector.
+	//! \param hist is the input histogram data vector.
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<std::pair<double, int>> hist);
+
+	//! \brief Calculates the probability histogram for the input double data vector using the input number of bins.
+	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 
+	//! The function outputs bin-centered x values and probability y values in a x-y pair vector.
+	//! \param data is the input data vector.
+	//! \param num_bins is the desired number of bins.
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins);
 
 	//! \brief Calculates the probability histogram for the input data vector using the input bin size.
 	//! \details Linearly spaced bins are automatically created from the minimum value to the maximum value of the data set. 
@@ -126,6 +141,14 @@ namespace Utils {
 	//! \return the interpolated y-value when the input x-value lies within the range of the input data.
 	double interpolateData(const std::vector<std::pair<double, double>>& data, const double x_val);
 
+	//! \brief Uses MPI to calculate the average probability histogram from separate histograms coming from different processors.
+	//! \details Each processor calls this function and sends an input histogram. Each input histogram must have the same starting bin and bin size.  
+	//! Upon function return, processor 0 receives the average probabiliy histogram and all of the other processors receive an empty probability histogram.
+	//! \param input_hist is the input histogram data from the processor calling the function.
+	//! \return A pair vector that is the average probability histogram of all input histograms from each processor, when called on processor 0.
+	//! \return An empty vector when called on other processors.
+	std::vector<std::pair<double, double>> MPI_calculateProbHistAvg(const std::vector<std::pair<double, int>>& input_hist);
+
 	//! \brief Uses MPI to calculate the element-wise average vector from separate vectors coming from different processors.
 	//! \details Each processor calls this function and sends an input vector.  Upon function return, processor 0 
 	//! receives the average vector and all of the other processors receive an empty vector.
@@ -134,7 +157,7 @@ namespace Utils {
 	//! \return An empty vector when called on other processors.
 	std::vector<double> MPI_calculateVectorAvg(const std::vector<double>& input_vector);
 
-	//! \brief Uses MPI to calculate the element-wise sum vector from separate vectors coming from different processors.
+	//! \brief Uses MPI to calculate the element-wise sum vector from separate equally sized vectors coming from different processors.
 	//! \details Each processor calls this function and sends an input vector.  Upon function return, processor 0 
 	//! receives the sum vector and all of the other processors receive an empty vector.
 	//! \param input_vector is the input data from the processor calling the function.

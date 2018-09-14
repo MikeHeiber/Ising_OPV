@@ -69,7 +69,6 @@ void Morphology::addSiteType(const char site_type) {
 	Correlation_data.resize(Correlation_data.size() + 1);
 	Tortuosity_data.resize(Tortuosity_data.size() + 1);
 	InterfacialHistogram_data.resize(InterfacialHistogram_data.size() + 1);
-	TortuosityHistogram_data.resize(TortuosityHistogram_data.size() + 1);
 	Domain_anisotropy_updated.push_back(false);
 	Domain_sizes.push_back(-1);
 	Domain_anisotropies.push_back(-1);
@@ -508,7 +507,7 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 		// The correlation function calculation is called with an increasing cutoff distance until successful.
 		while (!domain_size_updated[n]) {
 			if (2 * cutoff_distance > lattice.getLength() || 2 * cutoff_distance > lattice.getWidth() || (lattice.isZPeriodic() && 2 * cutoff_distance > lattice.getHeight())) {
-				cout << ID << ": Correlation calculation cutoff radius is now too large to continue accurately calculating the correlation function for site type " << (int)Site_types[n] << "." << endl;
+				cout << ID << ": Correlation calculation cutoff radius of " << cutoff_distance << " is now too large to continue accurately calculating the correlation function for site type " << (int)Site_types[n] << "." << endl;
 				break;
 			}
 			if (Site_type_counts[n] > 100) {
@@ -955,10 +954,7 @@ void Morphology::calculateInterfacialDistanceHistogram() {
 	}
 	// Path data is rounded to the nearest integer lattice unit
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		auto hist_data = calculateProbabilityHist(segmented_path_data[n], 1);
-		for (int i = 0; i < (int)hist_data.size(); i++) {
-			InterfacialHistogram_data[n].push_back(hist_data[i].second);
-		}
+		InterfacialHistogram_data[n] = calculateHist(segmented_path_data[n], 1);
 	}
 }
 
@@ -1327,7 +1323,6 @@ bool Morphology::calculatePathDistances_ReducedMemory(vector<float>& path_distan
 }
 
 bool Morphology::calculateTortuosity(const char site_type, const bool enable_reduced_memory) {
-	int bin;
 	bool success;
 	bool electrode_num;
 	if (site_type == (char)1) {
@@ -1357,31 +1352,7 @@ bool Morphology::calculateTortuosity(const char site_type, const bool enable_red
 		cout << ID << ": Error calculating path distances!" << endl;
 		return false;
 	}
-	// Construct tortuosity histograms from the path data
-	// Tortuosity values are rounded to the nearest 0.02, resulting in bins centered at 1, 1.02, 1.04, etc.
-	TortuosityHistogram_data[site_type_index].assign(1, 0);
-	int counts = 0;
-	for (int i = 0; i < (int)path_distances.size(); i++) {
-		if (lattice.getSiteType(i) == site_type && path_distances[i] > 0) {
-			if (!electrode_num) {
-				bin = round_int(50 * (path_distances[i] / (lattice.getSiteCoords(i).z + 1)) - 49);
-			}
-			else {
-				bin = round_int(50 * (path_distances[i] / (lattice.getHeight() - lattice.getSiteCoords(i).z)) - 49);
-			}
-			while (bin >= (int)TortuosityHistogram_data[site_type_index].size()) {
-				TortuosityHistogram_data[site_type_index].push_back(0.0);
-			}
-			TortuosityHistogram_data[site_type_index][bin] += 1.0;
-			counts++;
-
-		}
-	}
-	for (int i = 0; i < (int)TortuosityHistogram_data[site_type_index].size(); i++) {
-		TortuosityHistogram_data[site_type_index][i] /= (double)counts;
-	}
-	// In addition to the overall tortuosity histograms from all sites, the end-to-end tortuosity distribution is collected.
-	// the end-to-end describes the distribution of tortuosities for the all pathways from the top surface to the bottom surface of the lattice.
+	// The end-to-end tortuosity describes the tortuosities for the all pathways from the top surface to the bottom surface of the lattice.
 	int index;
 	Tortuosity_data[site_type_index].assign(lattice.getLength()*lattice.getWidth(), -1);
 	for (int x = 0; x < lattice.getLength(); x++) {
@@ -1781,7 +1752,7 @@ int Morphology::getID() const {
 	return ID;
 }
 
-vector<double> Morphology::getInterfacialDistanceHistogram(char site_type) const {
+vector < pair<double, int>> Morphology::getInterfacialDistanceHistogram(char site_type) const {
 	return InterfacialHistogram_data[getSiteTypeIndex(site_type)];
 }
 
@@ -1851,10 +1822,6 @@ vector<double> Morphology::getTortuosityData(char site_type) const {
 		}
 	}
 	return output_data;
-}
-
-vector<double> Morphology::getTortuosityHistogram(char site_type) const {
-	return TortuosityHistogram_data[getSiteTypeIndex(site_type)];
 }
 
 double Morphology::getUnitSize() const {
@@ -2188,8 +2155,8 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 	int j;
 	string line;
 	bool isV4 = false;
-	Lattice_Params params;
-	params.Unit_size = 1.0;
+	Lattice_Params lattice_params;
+	lattice_params.Unit_size = 1.0;
 	// Check if file is in compressed format or not
 	getline(infile, line);
 	bool is_file_compressed = !(line.find("uncompressed") != string::npos);
@@ -2202,26 +2169,26 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 		// get next line
 		getline(infile, line);
 	}
-	params.Length = atoi(line.c_str());
+	lattice_params.Length = atoi(line.c_str());
 	getline(infile, line);
-	params.Width = atoi(line.c_str());
+	lattice_params.Width = atoi(line.c_str());
 	getline(infile, line);
-	params.Height = atoi(line.c_str());
+	lattice_params.Height = atoi(line.c_str());
 	if (isV4) {
 		getline(infile, line);
-		params.Enable_periodic_x = (bool)atoi(line.c_str());
+		lattice_params.Enable_periodic_x = (bool)atoi(line.c_str());
 		getline(infile, line);
-		params.Enable_periodic_y = (bool)atoi(line.c_str());
+		lattice_params.Enable_periodic_y = (bool)atoi(line.c_str());
 		getline(infile, line);
-		params.Enable_periodic_z = (bool)atoi(line.c_str());
+		lattice_params.Enable_periodic_z = (bool)atoi(line.c_str());
 	}
 	else {
-		params.Enable_periodic_x = true;
-		params.Enable_periodic_y = true;
+		lattice_params.Enable_periodic_x = true;
+		lattice_params.Enable_periodic_y = true;
 		// Assume z-direction periodic boundary is disabled for an imported morphology
-		params.Enable_periodic_z = false;
+		lattice_params.Enable_periodic_z = false;
 	}
-	lattice.init(params);
+	lattice.init(lattice_params);
 	if (isV4) {
 		getline(infile, line);
 		int num_types = atoi(line.c_str());
@@ -2626,12 +2593,17 @@ void Morphology::shrinkLattice(int rescale_factor) {
 		cout << "Error! All lattice dimensions are not divisible by the rescale factor." << endl;
 		return;
 	}
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
+	}
 	// Construct the smaller lattice 
 	Lattice lattice_rescale = lattice;
 	lattice_rescale.resize(lattice.getLength() / rescale_factor, lattice.getWidth() / rescale_factor, lattice.getHeight() / rescale_factor);
 	// Assign site types to the new lattice based on the existing lattice
 	int type1_count;
 	bool alternate = true;
+	char target_site_type;
 	for (int x = 0; x < lattice_rescale.getLength(); x++) {
 		for (int y = 0; y < lattice_rescale.getWidth(); y++) {
 			for (int z = 0; z < lattice_rescale.getHeight(); z++) {
@@ -2646,20 +2618,22 @@ void Morphology::shrinkLattice(int rescale_factor) {
 					}
 				}
 				if (2 * type1_count > (rescale_factor*rescale_factor*rescale_factor)) {
-					lattice_rescale.setSiteType(x, y, z, (char)1);
+					target_site_type = (char)1;
 				}
 				else if (2 * type1_count < (rescale_factor*rescale_factor*rescale_factor)) {
-					lattice_rescale.setSiteType(x, y, z, (char)2);
+					target_site_type = (char)2;
 				}
 				else {
 					if (alternate) {
-						lattice_rescale.setSiteType(x, y, z, (char)1);
+						target_site_type = (char)1;
 					}
 					else {
-						lattice_rescale.setSiteType(x, y, z, (char)2);
+						target_site_type = (char)2;
 					}
 					alternate = !alternate;
 				}
+				lattice_rescale.setSiteType(x, y, z, target_site_type);
+				Site_type_counts[getSiteTypeIndex(target_site_type)]++;
 			}
 		}
 	}
@@ -2670,6 +2644,10 @@ void Morphology::shrinkLattice(int rescale_factor) {
 }
 
 void Morphology::stretchLattice(int rescale_factor) {
+	// Clear existing Site_type_counts data
+	for (int n = 0; n < (int)Site_types.size(); n++) {
+		Site_type_counts[n] = 0;
+	}
 	// Construct the larger lattice
 	Lattice lattice_rescale = lattice;
 	lattice_rescale.resize(lattice.getLength()*rescale_factor, lattice.getWidth()*rescale_factor, lattice.getHeight()*rescale_factor);
@@ -2681,6 +2659,7 @@ void Morphology::stretchLattice(int rescale_factor) {
 					for (int j = rescale_factor * y; j < rescale_factor*y + rescale_factor; j++) {
 						for (int k = rescale_factor * z; k < rescale_factor*z + rescale_factor; k++) {
 							lattice_rescale.setSiteType(i, j, k, lattice.getSiteType(x, y, z));
+							Site_type_counts[getSiteTypeIndex(lattice.getSiteType(x, y, z))]++;
 						}
 					}
 				}
@@ -2689,6 +2668,8 @@ void Morphology::stretchLattice(int rescale_factor) {
 	}
 	// Update the lattice
 	lattice = lattice_rescale;
+	// The stretch process can change the mix fraction, so the Mix_fraction property is updated.
+	calculateMixFractions();
 }
 
 double Morphology::rand01() {

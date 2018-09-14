@@ -9,13 +9,59 @@ namespace Utils {
 
 	using namespace std;
 
-	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& data) {
-		auto result = data;
-		result[0].second = 0;
-		for (int i = 1; i < (int)data.size(); i++) {
-			result[i].second = result[i - 1].second + ((data[i - 1].second + data[i].second) / 2.0)*(data[i].first - data[i - 1].first);
+	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& hist) {
+		auto result = hist;
+		for (int i = 1; i < (int)hist.size(); i++) {
+			result[i].second = result[i - 1].second + hist[i].second;
 		}
 		return result;
+	}
+
+	std::vector<std::pair<double, int>> calculateHist(const std::vector<int>& data, int bin_size) {
+		// Check for valid input data
+		if ((int)data.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
+			vector<pair<double, int>> null_output = { { 0.0,0 } };
+			return null_output;
+		}
+		// Determine the starting bin position
+		int min_val = *min_element(data.begin(), data.end());
+		int max_val = *max_element(data.begin(), data.end());
+		// Determine number of bins
+		int num_bins = (int)ceil((double)(max_val - min_val + 1) / (double)bin_size);
+		// Calculate bins
+		vector<pair<double, int>> hist(num_bins, make_pair(0.0, 0));
+		for (int i = 0; i < num_bins; i++) {
+			hist[i].first = min_val + 0.5*(bin_size - 1) + (bin_size - 1) * i;
+		}
+		// Calculate histogram
+		int index;
+		for (int i = 0; i < (int)data.size(); i++) {
+			index = (data[i] - min_val) / bin_size;
+			hist[index].second++;
+		}
+		return hist;
+	}
+
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<std::pair<double, int>> hist) {
+		// Check for valid input data
+		if ((int)hist.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because the input histogram is empty." << endl;
+			vector<pair<double, double>> null_output = { { 0.0,0.0 } };
+			return null_output;
+		}
+		// Add up the total counts in the histogram
+		int total_counts = 0;
+		for (const auto item : hist) {
+			total_counts += item.second;
+		}
+		// Normalized histogram to get probability histogram
+		vector<pair<double, double>> prob_hist(hist.size(), make_pair(0.0, 0.0));
+		for (int i = 0; i < (int)hist.size(); i++) {
+			prob_hist[i].first = hist[i].first;
+			prob_hist[i].second = (double)hist[i].second / (double)(total_counts);
+		}
+		return prob_hist;
 	}
 
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<int>& data, int bin_size) {
@@ -42,14 +88,11 @@ namespace Utils {
 			index = (data[i] - min_val) / bin_size;
 			counts[index]++;
 		}
-		// Calculate total area
-		double area = 0.0;
-		for (int i = 0; i < num_bins; i++) {
-			area += counts[i] * bin_size;
-		}
+		// total counts
+		int total_counts = accumulate(counts.begin(), counts.end(), 0);
 		// Normalized histogram to get probability
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].second = counts[i] / area;
+			hist[i].second = (double)counts[i] / (double)(total_counts);
 		}
 		return hist;
 	}
@@ -122,14 +165,11 @@ namespace Utils {
 			index = (int)floor((data[i] - min_val) / bin_size);
 			counts[index]++;
 		}
-		// Calculate total area
-		double area = 0.0;
-		for (int i = 0; i < num_bins; i++) {
-			area += counts[i] * bin_size;
-		}
+		// total counts
+		int total_counts = accumulate(counts.begin(), counts.end(), 0);
 		// Normalized histogram to get probability
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].second = counts[i] / area;
+			hist[i].second = (double)counts[i] / (double)(total_counts);
 		}
 		return hist;
 	}
@@ -168,6 +208,80 @@ namespace Utils {
 		}
 		cout << "Warning! The input x-value lies outside the range of the input data set." << endl;
 		return NAN;
+	}
+
+	std::vector<std::pair<double, double>> MPI_calculateProbHistAvg(const std::vector<std::pair<double, int>>& input_hist) {
+		if ((int)input_hist.size() < 2) {
+			throw invalid_argument("Unable to calculate the average probability histogram because the input histogram must have more than one bin.");
+		}
+		int procid;
+		int nproc;
+		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
+		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+		// Determine the smallest bin and largest bin
+		//double min_bin = 0;
+		//double max_bin = 0;
+		//double *min_bins = NULL;
+		//double *max_bins = NULL;
+		//if (procid == 0) {
+		//	min_bins = new double[nproc];
+		//	max_bins = new double[nproc];
+		//}
+		//min_bin = input_hist[0].first;
+		//max_bin = input_hist.back().first;
+		//MPI_Gather(&min_bin, 1, MPI_DOUBLE, min_bins, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		//MPI_Gather(&max_bin, 1, MPI_DOUBLE, max_bins, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		//double smallest_bin = min_bins[0];
+		//for (int i = 1; i < nproc; i++) {
+		//	if (min_bins[i] < smallest_bin) {
+		//		smallest_bin = min_bins[i];
+		//	}
+		//}
+		//double largest_bin = max_bins[0];
+		//for (int i = 1; i < nproc; i++) {
+		//	if (max_bins[i] > largest_bin) {
+		//		largest_bin = max_bins[i];
+		//	}
+		//}
+		// Determine the bin size
+		double bin_size = input_hist[1].first - input_hist[0].first;
+		// Gather the histogram sizes
+		int data_size = 0;
+		int *data_sizes = NULL;
+		if (procid == 0) {
+			data_sizes = new int[nproc];
+		}
+		data_size = (int)input_hist.size();
+		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Determine the largest hist size
+		int max_data_size = 0;
+		if (procid == 0) {
+			for (int i = 0; i < nproc; i++) {
+				if (data_sizes[i] > max_data_size) {
+					max_data_size = data_sizes[i];
+				}
+			}
+		}
+		MPI_Bcast(&max_data_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Separate out the counts data from the histograms
+		vector<int> counts(input_hist.size());
+		for (int i = 0; i < (int)input_hist.size(); i++) {
+			counts[i] = input_hist[i].second;
+		}
+		// Add zeroes padding to the end of the counts vector if needed so that all counts vectors are the same size
+		counts.insert(counts.end(), max_data_size - counts.size(), 0);
+		// Add up the counts from all processors
+		auto counts_sum = MPI_calculateVectorSum(counts);
+		// Create output probablilty histogram
+		vector<pair<double, double>> prob_hist;
+		if (procid == 0) {
+			int total_counts = accumulate(counts_sum.begin(), counts_sum.end(), 0);
+			for (int i = 0; i < max_data_size; i++) {
+				prob_hist.push_back(make_pair(input_hist[0].first + bin_size * i, (double)counts_sum[i] / (double)total_counts));
+			}
+		}
+		delete[] data_sizes;
+		return prob_hist;
 	}
 
 	std::vector<double> MPI_calculateVectorAvg(const std::vector<double>& input_vector) {

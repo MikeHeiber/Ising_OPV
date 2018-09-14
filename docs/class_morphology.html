@@ -187,9 +187,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a60d5a51d134664c2a8fa14173bd4d750"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a60d5a51d134664c2a8fa14173bd4d750">getID</a> () const</td></tr>
 <tr class="memdesc:a60d5a51d134664c2a8fa14173bd4d750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the ID number of the <a class="el" href="class_morphology.html" title="This class contains a lattice representation of a materials blend with the ability to simulate phase ...">Morphology</a> object.  <a href="#a60d5a51d134664c2a8fa14173bd4d750">More...</a><br /></td></tr>
 <tr class="separator:a60d5a51d134664c2a8fa14173bd4d750"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27e58642b35a1368b4edc87369e1fc46"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a27e58642b35a1368b4edc87369e1fc46">getInterfacialDistanceHistogram</a> (const char site_type) const</td></tr>
-<tr class="memdesc:a27e58642b35a1368b4edc87369e1fc46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the interfacial distance probability histogram data for the specified site type.  <a href="#a27e58642b35a1368b4edc87369e1fc46">More...</a><br /></td></tr>
-<tr class="separator:a27e58642b35a1368b4edc87369e1fc46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8987f31a0a948aadaadbf705b50c04ce"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; double, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a8987f31a0a948aadaadbf705b50c04ce">getInterfacialDistanceHistogram</a> (const char site_type) const</td></tr>
+<tr class="memdesc:a8987f31a0a948aadaadbf705b50c04ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the interfacial distance probability histogram data for the specified site type.  <a href="#a8987f31a0a948aadaadbf705b50c04ce">More...</a><br /></td></tr>
+<tr class="separator:a8987f31a0a948aadaadbf705b50c04ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba4cca69dab7b355b49f34ad51dc71fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aba4cca69dab7b355b49f34ad51dc71fc">getIslandVolumeFraction</a> (const char site_type) const</td></tr>
 <tr class="memdesc:aba4cca69dab7b355b49f34ad51dc71fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the island volume for the specified site type.  <a href="#aba4cca69dab7b355b49f34ad51dc71fc">More...</a><br /></td></tr>
 <tr class="separator:aba4cca69dab7b355b49f34ad51dc71fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,9 +202,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a25e44bd12a814f83a93e46f0d6c28362"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a25e44bd12a814f83a93e46f0d6c28362">getTortuosityData</a> (const char site_type) const</td></tr>
 <tr class="memdesc:a25e44bd12a814f83a93e46f0d6c28362"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the end-to-end tortuosity data for the specified site type.  <a href="#a25e44bd12a814f83a93e46f0d6c28362">More...</a><br /></td></tr>
 <tr class="separator:a25e44bd12a814f83a93e46f0d6c28362"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#a00737bb81b0fbe7f2511fe73fcb62c50">getTortuosityHistogram</a> (const char site_type) const</td></tr>
-<tr class="memdesc:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type.  <a href="#a00737bb81b0fbe7f2511fe73fcb62c50">More...</a><br /></td></tr>
-<tr class="separator:a00737bb81b0fbe7f2511fe73fcb62c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac27576c0f5331a9e8de755fcce65faa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_morphology.html#aac27576c0f5331a9e8de755fcce65faa">getUnitSize</a> () const</td></tr>
 <tr class="memdesc:aac27576c0f5331a9e8de755fcce65faa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the lattice unit size in units of nm.  <a href="#aac27576c0f5331a9e8de755fcce65faa">More...</a><br /></td></tr>
 <tr class="separator:aac27576c0f5331a9e8de755fcce65faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1030,14 +1027,14 @@ the domain size calculated from the correlation function data. </dd></dl>
 
 </div>
 </div>
-<a id="a27e58642b35a1368b4edc87369e1fc46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27e58642b35a1368b4edc87369e1fc46">&#9670;&nbsp;</a></span>getInterfacialDistanceHistogram()</h2>
+<a id="a8987f31a0a948aadaadbf705b50c04ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8987f31a0a948aadaadbf705b50c04ce">&#9670;&nbsp;</a></span>getInterfacialDistanceHistogram()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">vector&lt; double &gt; Morphology::getInterfacialDistanceHistogram </td>
+          <td class="memname">vector&lt; pair&lt; double, int &gt; &gt; Morphology::getInterfacialDistanceHistogram </td>
           <td>(</td>
           <td class="paramtype">const char&#160;</td>
           <td class="paramname"><em>site_type</em></td><td>)</td>
@@ -1153,33 +1150,6 @@ the volumetric blend ratio of the specified site type. </dd></dl>
 
 <p>Returns a vector containing the end-to-end tortuosity data for the specified site type. </p>
 <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>a copy of the data vector. </dd></dl>
-
-</div>
-</div>
-<a id="a00737bb81b0fbe7f2511fe73fcb62c50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00737bb81b0fbe7f2511fe73fcb62c50">&#9670;&nbsp;</a></span>getTortuosityHistogram()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">vector&lt; double &gt; Morphology::getTortuosityHistogram </td>
-          <td>(</td>
-          <td class="paramtype">const char&#160;</td>
-          <td class="paramname"><em>site_type</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a vector containing the overall tortuosity histogram data for all sites with the specified site type. </p>
-<p>Tortuosity values are rounded to the nearest 0.02, resulting in bins centered at 1, 1.02, 1.04, etc. So bin values are equal to the vector index i + 0.02 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">site_type</td><td>specifies for which site type the data should be retrieved. </td></tr>
   </table>
