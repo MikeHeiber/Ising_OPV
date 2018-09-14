@@ -16,6 +16,7 @@
 #include <functional>
 #include <numeric>
 #include <sstream>
+#include <stdexcept>
 
 //! \brief This struct contains all of the input parameters needed by the Morphology class to perform the correlation calculation.
 //! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.

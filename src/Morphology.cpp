@@ -66,9 +66,11 @@ void Morphology::addSiteType(const char site_type) {
 	Site_types.push_back(site_type);
 	Site_type_counts.push_back(0);
 	Mix_fractions.push_back(-1);
-	Correlation_data.resize(Correlation_data.size() + 1);
-	Tortuosity_data.resize(Tortuosity_data.size() + 1);
-	InterfacialHistogram_data.resize(InterfacialHistogram_data.size() + 1);
+	vector<double> default_data(1, 0.0);
+	Correlation_data.push_back(default_data);
+	Tortuosity_data.push_back(default_data);
+	vector<pair<double,int>> default_pairs(1, make_pair(0.0,0));
+	InterfacialHistogram_data.push_back(default_pairs);
 	Domain_anisotropy_updated.push_back(false);
 	Domain_sizes.push_back(-1);
 	Domain_anisotropies.push_back(-1);
@@ -1474,21 +1476,17 @@ void Morphology::createRandomMorphology(const vector<double>& mix_fractions) {
 	for (int n = 0; n < (int)mix_fractions.size(); n++) {
 		addSiteType((char)(n + 1));
 	}
-	if (mix_fractions.size() != Site_types.size()) {
-		cout << ID << ": Error creating random morphology: size of mix_fractions vector must be equal to the size of the Site_types vector." << endl;
-		return;
-	}
 	double sum = 0;
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		if (mix_fractions[n] < 0) {
 			cout << ID << ": Error creating random morphology: All mix fractions must be greater than or equal to zero." << endl;
-			return;
+			throw invalid_argument("Error creating random morphology: All mix fractions must be greater than or equal to zero.");
 		}
 		sum += mix_fractions[n];
 	}
-	if ((sum - 1.0) > 1e-6) {
+	if (fabs(sum - 1.0) > 1e-6) {
 		cout << ID << ": Error creating random morphology: Sum of all mix fractions must be equal to one." << endl;
-		return;
+		throw invalid_argument("Error creating random morphology: Sum of all mix fractions must be equal to one.");
 	}
 	vector<char> type_entries;
 	// Calculate the number of sites of each type based on the mix fractions
@@ -1811,7 +1809,7 @@ int Morphology::getSiteTypeIndex(const char site_type) const {
 		}
 	}
 	cout << ID << ": Error! Site type " << (int)site_type << " was not found in the Site_types vector." << endl;
-	return -1;
+	throw invalid_argument("Error! Input site type was not found in the Site_types vector.");
 }
 
 vector<double> Morphology::getTortuosityData(char site_type) const {
@@ -2587,11 +2585,11 @@ void Morphology::shrinkLattice(int rescale_factor) {
 	// Error handling
 	if (rescale_factor == 0) {
 		cout << "Error! Lattice cannot be shrunken by a rescale factor of zero." << endl;
-		return;
+		throw invalid_argument("Error! Lattice cannot be shrunken by a rescale factor of zero.");
 	}
 	if (lattice.getLength() % rescale_factor != 0 || lattice.getWidth() % rescale_factor != 0 || lattice.getHeight() % rescale_factor != 0) {
 		cout << "Error! All lattice dimensions are not divisible by the rescale factor." << endl;
-		return;
+		throw invalid_argument("Error! All lattice dimensions are not divisible by the rescale factor.");
 	}
 	// Clear existing Site_type_counts data
 	for (int n = 0; n < (int)Site_types.size(); n++) {
@@ -2644,6 +2642,10 @@ void Morphology::shrinkLattice(int rescale_factor) {
 }
 
 void Morphology::stretchLattice(int rescale_factor) {
+	if (rescale_factor == 0) {
+		cout << "Error! Lattice cannot be stretched by a rescale factor of zero." << endl;
+		throw invalid_argument("Error! Lattice cannot be streched by a rescale factor of zero.");
+	}
 	// Clear existing Site_type_counts data
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		Site_type_counts[n] = 0;

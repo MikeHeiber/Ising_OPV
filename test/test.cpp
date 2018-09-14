@@ -42,11 +42,11 @@ namespace UtilsTests {
 		// Check prob size
 		EXPECT_EQ(5, (int)prob.size());
 		// Check prob values
-		EXPECT_DOUBLE_EQ(3.0/11.0, prob[0].second);
-		EXPECT_DOUBLE_EQ(2.0/11.0, prob[1].second);
-		EXPECT_DOUBLE_EQ(3.0/11.0, prob[2].second);
-		EXPECT_DOUBLE_EQ(1.0/11.0, prob[3].second);
-		EXPECT_DOUBLE_EQ(2.0/11.0, prob[4].second);
+		EXPECT_DOUBLE_EQ(3.0 / 11.0, prob[0].second);
+		EXPECT_DOUBLE_EQ(2.0 / 11.0, prob[1].second);
+		EXPECT_DOUBLE_EQ(3.0 / 11.0, prob[2].second);
+		EXPECT_DOUBLE_EQ(1.0 / 11.0, prob[3].second);
+		EXPECT_DOUBLE_EQ(2.0 / 11.0, prob[4].second);
 		// Check that the prob hist sums to 1
 		auto cum_hist = calculateCumulativeHist(prob);
 		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
@@ -478,6 +478,13 @@ namespace MorphologyTests {
 		// Check that the mix fractions were implemented properly
 		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.001);
 		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.001);
+		// Check correlation data before it has been calculated
+		auto data1 = morph.getCorrelationData((char)1);
+		auto data2 = morph.getCorrelationData((char)2);
+		EXPECT_DOUBLE_EQ(0.0, data1[0]);
+		EXPECT_DOUBLE_EQ(0.0, data2[0]);
+		// Check correlation data request for invalid site type
+		EXPECT_THROW(morph.getCorrelationData((char)3), invalid_argument);
 		// Calculate the inital domain size values
 		CorrelationCalc_Params params;
 		params.N_sampling_max = 100000;
@@ -488,6 +495,8 @@ namespace MorphologyTests {
 		morph.calculateCorrelationDistances(params);
 		double domain_size1 = morph.getDomainSize((char)1);
 		double domain_size2 = morph.getDomainSize((char)2);
+		// Check domain size request for invalid site type
+		EXPECT_THROW(morph.getDomainSize((char)3), invalid_argument);
 		// Check that random blend domain size is less than 2
 		EXPECT_LT(domain_size1, 2.0);
 		EXPECT_LT(domain_size2, 2.0);
@@ -496,6 +505,18 @@ namespace MorphologyTests {
 		// Check that the random blend is isotropic
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
+		// Check anisotropy request for invalid site type
+		EXPECT_THROW(morph.getDomainAnisotropy((char)3), invalid_argument);
+		// Try creating random morphology with invalid mix_fractions vectors
+		mix_fractions[0] = -0.5;
+		mix_fractions[1] = -0.5;
+		EXPECT_THROW(morph.createRandomMorphology(mix_fractions), invalid_argument);
+		mix_fractions[0] = 0.5;
+		mix_fractions[1] = 0.2;
+		EXPECT_THROW(morph.createRandomMorphology(mix_fractions), invalid_argument);
+		mix_fractions[0] = 0.5;
+		mix_fractions[1] = 0.7;
+		EXPECT_THROW(morph.createRandomMorphology(mix_fractions), invalid_argument);
 	}
 
 	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {
@@ -665,12 +686,28 @@ namespace MorphologyTests {
 		// Check the approximate magnitude of the domain size
 		EXPECT_NEAR(6.0, domain_size1_i, 0.5);
 		EXPECT_NEAR(6.0, domain_size2_i, 0.5);
-		// Calculate domain size using the mix fraction method
-		params.Enable_e_method = false;
-		params.Enable_mix_frac_method = true;
+		// Try the extended correlation calculation
+		params.Enable_extended_correlation_calc = true;
+		params.Extended_correlation_cutoff_distance = 5;
 		morph.calculateCorrelationDistances(params);
 		double domain_size1_f = morph.getDomainSize((char)1);
 		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check the length of the correlation data
+		auto data1 = morph.getCorrelationData((char)1);
+		auto data2 = morph.getCorrelationData((char)2);
+		EXPECT_EQ(11, data1.size());
+		EXPECT_EQ(11, data2.size());
+		// Check that the domain size is the same
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.01);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.5);
+		// Calculate domain size using the regular mix fraction method
+		params.Enable_e_method = false;
+		params.Enable_mix_frac_method = true;
+		params.Enable_extended_correlation_calc = false;
+		params.Extended_correlation_cutoff_distance = 3;
+		morph.calculateCorrelationDistances(params);
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
 		// Check the approximate magnitude of the domain size
 		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
 		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
@@ -684,6 +721,8 @@ namespace MorphologyTests {
 		// Calculate the tortuosity
 		morph.calculateTortuosity((char)1, false);
 		morph.calculateTortuosity((char)2, false);
+		// Check tortuosity calculation of invalid site type
+		EXPECT_FALSE(morph.calculateTortuosity((char)3, false));
 		// Check the tortuosity
 		double tortuosity1 = vector_avg(morph.getTortuosityData((char)1));
 		double tortuosity2 = vector_avg(morph.getTortuosityData((char)2));
@@ -693,8 +732,8 @@ namespace MorphologyTests {
 		morph.calculateTortuosity((char)1, true);
 		morph.calculateTortuosity((char)2, true);
 		// Check that both tortuosity methods give the same answer
-		auto data1 = morph.getTortuosityData((char)1);
-		auto data2 = morph.getTortuosityData((char)2);
+		data1 = morph.getTortuosityData((char)1);
+		data2 = morph.getTortuosityData((char)2);
 		EXPECT_DOUBLE_EQ(tortuosity1, vector_avg(data1));
 		EXPECT_DOUBLE_EQ(tortuosity2, vector_avg(data2));
 		// Calculate the depth dependent characteristics
@@ -730,9 +769,6 @@ namespace MorphologyTests {
 		// Check that the probability histograms add up to 1
 		EXPECT_DOUBLE_EQ(1.0, cum_hist1.back().second);
 		EXPECT_DOUBLE_EQ(1.0, cum_hist2.back().second);
-		// Check that the size of the histograms are related to the domain size
-		EXPECT_NEAR(6.0 / 2.0, hist1.size(), 1);
-		EXPECT_NEAR(6.0 / 2.0, hist2.size(), 1);
 	}
 
 	TEST_F(MorphologyTest, SmoothingAndResizeTests) {
@@ -774,6 +810,10 @@ namespace MorphologyTests {
 		EXPECT_LT(morph.getIslandVolumeFraction((char)2), 0.001);
 		// Stretch the lattice
 		morph.stretchLattice(2);
+		// Check the new dimensions
+		EXPECT_EQ(100, morph.getLength());
+		EXPECT_EQ(100, morph.getWidth());
+		EXPECT_EQ(100, morph.getHeight());
 		// Calculate domain size of new morphology
 		morph.calculateCorrelationDistances(params);
 		// Check the approximate magnitude of the new domain size relative to the original
@@ -781,11 +821,22 @@ namespace MorphologyTests {
 		EXPECT_NEAR(2 * domain_size2_f, morph.getDomainSize((char)2), 0.5);
 		// Shrink the lattice
 		morph.shrinkLattice(2);
+		// Check the new dimensions
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(50, morph.getWidth());
+		EXPECT_EQ(50, morph.getHeight());
 		// Calculate domain size of new morphology
 		morph.calculateCorrelationDistances(params);
 		// Check the approximate magnitude of the new domain size relative to the original
 		EXPECT_NEAR(domain_size1_f, morph.getDomainSize((char)1), 0.5);
 		EXPECT_NEAR(domain_size2_f, morph.getDomainSize((char)2), 0.5);
+		// Check behavior when trying to stretch and shrink with invalid rescale factors
+		EXPECT_THROW(morph.stretchLattice(0), invalid_argument);
+		EXPECT_THROW(morph.stretchLattice(0), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(0), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(0), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(3), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(3), invalid_argument);
 	}
 
 	TEST_F(MorphologyTest, InterfacialMixingTests) {
