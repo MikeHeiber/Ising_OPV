@@ -208,7 +208,7 @@ long int Lattice::getNumSites() const {
 
 Coords Lattice::getSiteCoords(long int site_index) const {
 	if (site_index >= getNumSites()) {
-		throw std::out_of_range("The input site_index does not produce coordinates within the lattice.");
+		throw out_of_range("The input site_index does not produce coordinates within the lattice.");
 	}
 	else {
 		Coords coords;
@@ -239,7 +239,7 @@ char Lattice::getSiteType(const long int site_index) const {
 		return sites[site_index].type;
 	}
 	else {
-		throw std::out_of_range("The input site_index is not in range of the sites vector.");
+		throw out_of_range("The input site_index is not in range of the sites vector.");
 	}
 }
 

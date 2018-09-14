@@ -16,6 +16,7 @@
 #include <numeric>
 #include <random>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
