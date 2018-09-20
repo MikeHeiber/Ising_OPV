@@ -122,13 +122,6 @@ namespace Utils {
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_size, const int num_bins);
 
-	//! \brief Extracts a boolean value from a string containing "true" or "false".
-	//! \param input is the input string.
-	//! \param error_status is an input boolean that is used to indicate an error with the import process.
-	//! \return true if the input string is "true".
-	//! \return flase if the input string is "flase".
-	bool importBooleanParam(const std::string& input, bool& error_status);
-
 	//! \brief Numerically integrates a vector of x-y data using the trapezoid rule.
 	//! \warning The function assumes that the data is sorted by the x values.
 	//! \param data is the data vector containing x-y data pairs.
@@ -143,7 +136,7 @@ namespace Utils {
 	double interpolateData(const std::vector<std::pair<double, double>>& data, const double x_val);
 
 	//! \brief Uses MPI to calculate the average probability histogram from separate histograms coming from different processors.
-	//! \details Each processor calls this function and sends an input histogram. Each input histogram must have the same starting bin and bin size.  
+	//! \details Each processor calls this function and sends an input histogram. Each input histogram must have the same bin size.  
 	//! Upon function return, processor 0 receives the average probabiliy histogram and all of the other processors receive an empty probability histogram.
 	//! \param input_hist is the input histogram data from the processor calling the function.
 	//! \return A pair vector that is the average probability histogram of all input histograms from each processor, when called on processor 0.
@@ -174,10 +167,18 @@ namespace Utils {
 	//! \return An empty vector when called on other processors.
 	std::vector<int> MPI_calculateVectorSum(const std::vector<int>& input_vector);
 
-	//! \brief Uses MPI to gather values from separate processors to build one vector containing all of the data.
+	//! \brief Uses MPI to gather integer values from separate processors to build one vector containing all of the data.
 	//! \details Each processor calls this function and sends an input value.  Upon function return, processor 0
 	//! receives the data vector and all of the other processors receive an empty vector.
-	//! \param input_val is the input data value from the processor calling the function.
+	//! \param input_val is the input integer data value from the processor calling the function.
+	//! \return A vector that is a collection of the values from each processor, when called on processor 0.
+	//! \return An empty vector when called on other processors.
+	std::vector<int> MPI_gatherValues(const int input_val);
+
+	//! \brief Uses MPI to gather double values from separate processors to build one vector containing all of the data.
+	//! \details Each processor calls this function and sends an input value.  Upon function return, processor 0
+	//! receives the data vector and all of the other processors receive an empty vector.
+	//! \param input_val is the input double data value from the processor calling the function.
 	//! \return A vector that is a collection of the values from each processor, when called on processor 0.
 	//! \return An empty vector when called on other processors.
 	std::vector<double> MPI_gatherValues(const double input_val);
@@ -207,6 +208,13 @@ namespace Utils {
 	//! \param num is the input double value.
 	//! \returns an integer value that is the rounded value.
 	int round_int(const double num);
+
+	//! \brief Extracts a boolean value from a string containing "true" or "false".
+	//! Throws an invalid_argument exception if the input string is not "true" or "false".
+	//! \param input is the input string.
+	//! \return true if the input string is "true".
+	//! \return flase if the input string is "flase".
+	bool str2bool(const std::string& input);
 
 	// Template functions
 

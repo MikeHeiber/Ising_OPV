@@ -207,6 +207,9 @@ long int Lattice::getNumSites() const {
 }
 
 Coords Lattice::getSiteCoords(long int site_index) const {
+	if (site_index < 0) {
+		throw invalid_argument("The input site_index cannot be negative.");
+	}
 	if (site_index >= getNumSites()) {
 		throw out_of_range("The input site_index does not produce coordinates within the lattice.");
 	}

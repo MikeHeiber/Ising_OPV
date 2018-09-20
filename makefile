@@ -11,7 +11,7 @@ ifeq ($(lastword $(subst /, ,$(CXX))),pgc++)
 endif
 
 COMPILER = mpicxx
-OBJS = src/Morphology.o src/Lattice.o src/Utils.o tinyxml2/tinyxml2.o
+OBJS = src/Morphology.o src/Lattice.o src/Parameters.o src/Utils.o tinyxml2/tinyxml2.o
 
 all : Ising_OPV.exe
 ifndef FLAGS
@@ -21,15 +21,18 @@ endif
 Ising_OPV.exe : src/main.o $(OBJS)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
-src/main.o : src/main.cpp src/Morphology.h src/Lattice.h src/Utils.h
+src/main.o : src/main.cpp src/Morphology.h src/Lattice.h src/Parameters.h src/Utils.h
 	$(COMPILER) $(FLAGS) -c $< -o $@
 	
-src/Morphology.o : src/Morphology.cpp src/Morphology.h src/Lattice.h src/Utils.h
+src/Morphology.o : src/Morphology.cpp src/Morphology.h src/Lattice.h src/Parameters.h src/Utils.h
 	$(COMPILER) $(FLAGS) -c $< -o $@
 
 src/Lattice.o : src/Lattice.cpp src/Lattice.h src/Utils.h
 	$(COMPILER) $(FLAGS) -c $< -o $@
-	
+
+src/Parameters.o : src/Parameters.cpp src/Parameters.h src/Utils.h
+	$(COMPILER) $(FLAGS) -c $< -o $@	
+
 src/Utils.o : src/Utils.cpp src/Utils.h
 	$(COMPILER) $(FLAGS) -c $< -o $@
 	

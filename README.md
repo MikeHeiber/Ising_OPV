@@ -114,7 +114,8 @@ Ising_OPV will create several output files:
 - depth_dependent_data_#.txt -- This text file will be created for each morphology when the depth dependent calculation is enabled and will contain depth dependent blend composition and domain size data for each site type in the lattice.
 - depth_dependent_data_avg.txt -- This text file will be created for each morphology when the depth dependent calculation is enabled and will contain average depth dependent blend composition and domain size data for each site type and depth dependent interfacial volume fraction data for the whole morphology set.
 - interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type averaged over all morphologies in the set.
-- morphology_#_compressed.txt -- This text file will be created for each morphology generated in the est and stores the data for that morphology.
+- morphology_#_compressed.txt -- This text file will be created for each morphology generated in the set and stores the data for that morphology.
+- morphology_#_cross_section.txt -- This text file will be created for each morphology generated in the set when enabled and will contain uncompressed data for a cross sectional image through the x=Length/2 plane.
 -  tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contains the end-to-end tortuosity histogram data for each domain type averaged over all morphologies in the set.
 
 #### Data Analysis
@@ -152,6 +153,6 @@ Thank you to Klaus Kister for contributing to the development of the updated dom
 
 Thank you to Prof. Thuc-Quyen Nguyen at the University of California, Santa Barbara  for providing access to computing resources that supported development of v3.x. The development of v3.x used the Extreme Science and Engineering Discovery Environment (XSEDE), which is supported by National Science Foundation grant number ACI-1053575.
 
-Thank you to Prof. Vladimir Dyakonov at the University of Würzburg and Prof. Carsten Deibel at Chemitz University of Technology for providing access to computing resources that supported development of v2.0.
+Thank you to Prof. Vladimir Dyakonov at the University of Würzburg and Prof. Carsten Deibel at Chemnitz University of Technology for providing access to computing resources that supported development of v2.0.
 
 Thank you to Prof. Ali Dhinojwala and Prof. Mesfin Tsige at The University of Akron for providing access to computing resources that supported development of v1.0.

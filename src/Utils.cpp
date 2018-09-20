@@ -20,19 +20,27 @@ namespace Utils {
 	std::vector<std::pair<double, int>> calculateHist(const std::vector<int>& data, int bin_size) {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
-			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
-			vector<pair<double, int>> null_output = { { 0.0,0 } };
-			return null_output;
+			cout << "Error! Cannot calculate histogram because data vector is empty." << endl;
+			throw invalid_argument("Error! Cannot calculate histogram because the input data vector is empty.");
+		}
+		if (bin_size < 1) {
+			cout << "Error! Cannot calculate histogram because bin size is less than 1." << endl;
+			throw invalid_argument("Error! Cannot calculate histogram because bin size is less than 1.");
 		}
 		// Determine the starting bin position
 		int min_val = *min_element(data.begin(), data.end());
 		int max_val = *max_element(data.begin(), data.end());
 		// Determine number of bins
-		int num_bins = (int)ceil((double)(max_val - min_val + 1) / (double)bin_size);
+		int num_bins = (int)((double)(max_val - min_val + 1) / (double)bin_size);
 		// Calculate bins
 		vector<pair<double, int>> hist(num_bins, make_pair(0.0, 0));
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].first = min_val + 0.5*(bin_size - 1) + (bin_size - 1) * i;
+			if (bin_size == 1) {
+				hist[i].first = min_val + bin_size * i;
+			}
+			else {
+				hist[i].first = min_val + 0.5*(bin_size - 1) + bin_size * i;
+			}
 		}
 		// Calculate histogram
 		int index;
@@ -47,8 +55,7 @@ namespace Utils {
 		// Check for valid input data
 		if ((int)hist.size() == 0) {
 			cout << "Error! Cannot calculate probability histogram because the input histogram is empty." << endl;
-			vector<pair<double, double>> null_output = { { 0.0,0.0 } };
-			return null_output;
+			throw invalid_argument("Error! Cannot calculate probability histogram because the input histogram is empty.");
 		}
 		// Add up the total counts in the histogram
 		int total_counts = 0;
@@ -67,15 +74,14 @@ namespace Utils {
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<int>& data, int bin_size) {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
-			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
-			vector<pair<double, double>> null_output = { { 0.0,0.0 } };
-			return null_output;
+			cout << "Error! Cannot calculate probability histogram because the input data vector is empty." << endl;
+			throw invalid_argument("Error! Cannot calculate probability histogram because the input data vector is empty.");
 		}
 		// Determine the starting bin position
 		int min_val = *min_element(data.begin(), data.end());
 		int max_val = *max_element(data.begin(), data.end());
 		// Determine number of bins
-		int num_bins = (int)ceil((double)(max_val - min_val) / (double)bin_size);
+		int num_bins = (int)((double)(max_val - min_val + 1) / (double)bin_size);
 		// Calculate bins
 		vector<pair<double, double>> hist(num_bins, make_pair(0.0, 0.0));
 		for (int i = 0; i < num_bins; i++) {
@@ -100,9 +106,8 @@ namespace Utils {
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, int num_bins) {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
-			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
-			std::vector<std::pair<double, double>> null_output = { { 0.0,0.0 } };
-			return null_output;
+			cout << "Error! Cannot calculate probability histogram because the input data vector is empty." << endl;
+			throw invalid_argument("Error! Cannot calculate probability histogram because the input data vector is empty.");
 		}
 		// Determine data range
 		double min_val = *min_element(data.begin(), data.end());
@@ -122,9 +127,8 @@ namespace Utils {
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, double bin_size) {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
-			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
-			std::vector<std::pair<double, double>> null_output = { { 0.0,0.0 } };
-			return null_output;
+			cout << "Error! Cannot calculate probability histogram because the input data vector is empty." << endl;
+			throw invalid_argument("Error! Cannot calculate probability histogram because the input data vector is empty.");
 		}
 		// Determine data range
 		double min_val = *min_element(data.begin(), data.end());
@@ -145,9 +149,8 @@ namespace Utils {
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_size, const int num_bins) {
 		// Check for valid input data
 		if ((int)data.size() == 0) {
-			cout << "Error! Cannot calculate probability histogram because data vector is empty." << endl;
-			vector<pair<double, double>> null_output = { { 0.0,0.0 } };
-			return null_output;
+			cout << "Error! Cannot calculate probability histogram because the input data vector is empty." << endl;
+			throw invalid_argument("Error! Cannot calculate probability histogram because the input data vector is empty.");
 		}
 		// Determine the starting bin position
 		double min_val = *min_element(data.begin(), data.end());
@@ -172,21 +175,6 @@ namespace Utils {
 			hist[i].second = (double)counts[i] / (double)(total_counts);
 		}
 		return hist;
-	}
-
-	bool importBooleanParam(const std::string& input, bool& error_status) {
-		string str = removeWhitespace(input);
-		if (str.compare("true") == 0) {
-			return true;
-		}
-		else if (str.compare("false") == 0) {
-			return false;
-		}
-		else {
-			cout << "Error importing boolean parameter." << endl;
-			error_status = true;
-			return false;
-		}
 	}
 
 	double integrateData(const std::vector<std::pair<double, double>>& data) {
@@ -218,79 +206,74 @@ namespace Utils {
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-		// Determine the smallest bin and largest bin
-		//double min_bin = 0;
-		//double max_bin = 0;
-		//double *min_bins = NULL;
-		//double *max_bins = NULL;
-		//if (procid == 0) {
-		//	min_bins = new double[nproc];
-		//	max_bins = new double[nproc];
-		//}
-		//min_bin = input_hist[0].first;
-		//max_bin = input_hist.back().first;
-		//MPI_Gather(&min_bin, 1, MPI_DOUBLE, min_bins, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		//MPI_Gather(&max_bin, 1, MPI_DOUBLE, max_bins, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		//double smallest_bin = min_bins[0];
-		//for (int i = 1; i < nproc; i++) {
-		//	if (min_bins[i] < smallest_bin) {
-		//		smallest_bin = min_bins[i];
-		//	}
-		//}
-		//double largest_bin = max_bins[0];
-		//for (int i = 1; i < nproc; i++) {
-		//	if (max_bins[i] > largest_bin) {
-		//		largest_bin = max_bins[i];
-		//	}
-		//}
 		// Determine the bin size
 		double bin_size = input_hist[1].first - input_hist[0].first;
-		// Gather the histogram sizes
-		int data_size = 0;
-		int *data_sizes = NULL;
-		if (procid == 0) {
-			data_sizes = new int[nproc];
+		// Determine the smallest bin and largest bin
+		double min_bin = input_hist[0].first;
+		double max_bin = input_hist.back().first;
+		// Gather all of the min and max bins from each proc into vectors
+		vector<double> min_bins;
+		vector<double> max_bins;
+		try {
+			min_bins = MPI_gatherValues(min_bin);
 		}
-		data_size = (int)input_hist.size();
-		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		// Determine the largest hist size
-		int max_data_size = 0;
-		if (procid == 0) {
-			for (int i = 0; i < nproc; i++) {
-				if (data_sizes[i] > max_data_size) {
-					max_data_size = data_sizes[i];
-				}
-			}
+		catch (bad_alloc& ba) {
+			cout << procid << ": bad_alloc caught: " << ba.what() << endl;
+			cout << procid << ": Error gathering histogram starting bin information." << endl;
 		}
-		MPI_Bcast(&max_data_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		// Separate out the counts data from the histograms
-		vector<int> counts(input_hist.size());
+		try {
+			max_bins = MPI_gatherValues(max_bin);
+		}
+		catch (bad_alloc& ba) {
+			cout << procid << ": bad_alloc caught: " << ba.what() << endl;
+			cout << procid << ": Error gathering histogram ending bin information." << endl;
+		}
+		// Determine the overall smallest and largest bin in the set
+		double smallest_bin;
+		double largest_bin;
+		if (procid == 0) {
+			smallest_bin = *min_element(min_bins.begin(), min_bins.end());
+			largest_bin = *max_element(max_bins.begin(), max_bins.end());
+		}
+		// Broadcast the smallest and largest bins to all procs
+		MPI_Bcast(&smallest_bin, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&largest_bin, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		int final_size = (int)ceil((largest_bin - smallest_bin) / bin_size) + 1;
+		// Create counts vector with the same size as the final prob hist
+		vector<int> counts(final_size);
+		// Separate out the counts data from the input histograms into appropriate bins
 		for (int i = 0; i < (int)input_hist.size(); i++) {
-			counts[i] = input_hist[i].second;
+			int bin_index = (input_hist[i].first - smallest_bin) / bin_size;
+			counts[bin_index] = input_hist[i].second;
 		}
-		// Add zeroes padding to the end of the counts vector if needed so that all counts vectors are the same size
-		counts.insert(counts.end(), max_data_size - counts.size(), 0);
 		// Add up the counts from all processors
-		auto counts_sum = MPI_calculateVectorSum(counts);
+		vector<int> counts_sum;
+		try {
+			counts_sum = MPI_calculateVectorSum(counts);
+		}
+		catch (bad_alloc& ba) {
+			cout << procid << ": bad_alloc caught: " << ba.what() << endl;
+			cout << procid << ": Error gathering counts for total histogram." << endl;
+		}
 		// Create output probablilty histogram
 		vector<pair<double, double>> prob_hist;
 		if (procid == 0) {
+			prob_hist.reserve(final_size);
 			int total_counts = accumulate(counts_sum.begin(), counts_sum.end(), 0);
-			for (int i = 0; i < max_data_size; i++) {
-				prob_hist.push_back(make_pair(input_hist[0].first + bin_size * i, (double)counts_sum[i] / (double)total_counts));
+			for (int i = 0; i < final_size; i++) {
+				prob_hist.push_back(make_pair(smallest_bin + bin_size * i, (double)counts_sum[i] / (double)total_counts));
 			}
 		}
-		delete[] data_sizes;
 		return prob_hist;
 	}
 
 	std::vector<double> MPI_calculateVectorAvg(const std::vector<double>& input_vector) {
 		int data_size = 0;
 		int data_count = 0;
-		double *data = NULL;
-		double *data_all = NULL;
-		int *data_sizes = NULL;
-		int *data_displacement = NULL;
+		double* data = NULL;
+		double* data_all = NULL;
+		int* data_sizes = NULL;
+		int* data_displacement = NULL;
 		int max_data_size = 0;
 		double average = 0;
 		int procid;
@@ -332,7 +315,7 @@ namespace Utils {
 						average += data_all[data_displacement[j] + i];
 					}
 				}
-				average = average / nproc;
+				average = average / (double)nproc;
 				output_vector.push_back(average);
 			}
 		}
@@ -345,8 +328,8 @@ namespace Utils {
 
 	std::vector<double> MPI_calculateVectorSum(const std::vector<double>& input_vector) {
 		int data_size = 0;
-		double *data = NULL;
-		double *sum = NULL;
+		double* data = NULL;
+		double* sum = NULL;
 		vector<double> output_vector;
 		int procid;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
@@ -369,8 +352,8 @@ namespace Utils {
 
 	std::vector<int> MPI_calculateVectorSum(const std::vector<int>& input_vector) {
 		int data_size = 0;
-		int *data = NULL;
-		int *sum = NULL;
+		int* data = NULL;
+		int* sum = NULL;
 		vector<int> output_vector;
 		int procid;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
@@ -391,14 +374,34 @@ namespace Utils {
 		return output_vector;
 	}
 
-	std::vector<double> MPI_gatherValues(double input_val) {
-		double *data = NULL;
-		vector<double> output_vector;
+	std::vector<int> MPI_gatherValues(int input_val) {
 		int procid;
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+		int* data = NULL;
+		data = new int[nproc];
+		vector<int> output_vector;
+		output_vector.reserve(nproc);
+		MPI_Gather(&input_val, 1, MPI_INT, data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		if (procid == 0) {
+			for (int i = 0; i < nproc; i++) {
+				output_vector.push_back(data[i]);
+			}
+		}
+		delete[] data;
+		return output_vector;
+	}
+
+	std::vector<double> MPI_gatherValues(double input_val) {
+		int procid;
+		int nproc;
+		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
+		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+		double* data = NULL;
 		data = new double[nproc];
+		vector<double> output_vector;
+		output_vector.reserve(nproc);
 		MPI_Gather(&input_val, 1, MPI_DOUBLE, data, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 		if (procid == 0) {
 			for (int i = 0; i < nproc; i++) {
@@ -412,10 +415,10 @@ namespace Utils {
 	std::vector<double> MPI_gatherVectors(const std::vector<double>& input_vector) {
 		int data_size = 0;
 		int data_count = 0;
-		double *data = NULL;
-		double *data_all = NULL;
-		int *data_sizes = NULL;
-		int *data_displacement = NULL;
+		double* data = NULL;
+		double* data_all = NULL;
+		int* data_sizes = NULL;
+		int* data_displacement = NULL;
 		vector<double> output_vector;
 		int procid;
 		int nproc;
@@ -457,10 +460,10 @@ namespace Utils {
 	std::vector<int> MPI_gatherVectors(const std::vector<int>& input_vector) {
 		int data_size = 0;
 		int data_count = 0;
-		int *data = NULL;
-		int *data_all = NULL;
-		int *data_sizes = NULL;
-		int *data_displacement = NULL;
+		int* data = NULL;
+		int* data_all = NULL;
+		int* data_sizes = NULL;
+		int* data_displacement = NULL;
 		vector<int> output_vector;
 		int procid;
 		int nproc;
@@ -509,6 +512,19 @@ namespace Utils {
 
 	int round_int(const double num) {
 		return (num > 0.0) ? (int)(num + 0.5) : (int)(num - 0.5);
+	}
+
+	bool str2bool(const std::string& input) {
+		string str = removeWhitespace(input);
+		if (str.compare("true") == 0) {
+			return true;
+		}
+		else if (str.compare("false") == 0) {
+			return false;
+		}
+		else {
+			throw invalid_argument("Error! Input string is not true or false.");
+		}
 	}
 
 }

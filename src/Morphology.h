@@ -7,6 +7,7 @@
 #define MORPHOLOGY_H
 
 #include "Lattice.h"
+#include "Parameters.h"
 #include "Utils.h"
 #include "tinyxml2/tinyxml2.h"
 #include <algorithm>
@@ -17,44 +18,6 @@
 #include <numeric>
 #include <sstream>
 #include <stdexcept>
-
-//! \brief This struct contains all of the input parameters needed by the Morphology class to perform the correlation calculation.
-//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
-//! \author Michael C. Heiber
-//! \date 2014-2018
-struct CorrelationCalc_Params {
-	//! Specifies the maximum number of starting sites to use for the correlation function calculation.
-	int N_sampling_max;
-	//! Choose whether the domain size is determined from where the correlation function crosses the mix fraction.
-	bool Enable_mix_frac_method;
-	//! Choose whether the domain size is determined from where the correlation function decays to 1/e.
-	bool Enable_e_method;
-	//! Choose whether to extended the distance of the correlation function to a specified radius.
-	bool Enable_extended_correlation_calc;
-	//! Specifies the cutoff distance to use when extending the correlation function calculation.
-	int Extended_correlation_cutoff_distance;
-};
-
-//! \brief This struct contains all of the input parameters needed by the Morphology class to import a tomogram.
-//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
-//! \author Michael C. Heiber
-//! \date 2014-2018
-struct TomogramImport_Params {
-	//! Specifies the final unit size (resolution) of the output morphology dataset.
-	double Desired_unit_size;
-	//! Choose whether to enable the image brightness cutoff threshold-based interpretation of the tomography data.
-	bool Enable_cutoff_analysis;
-	//! Specifies the pixel brightness range to assign to a distinct mixed third phase.
-	int Mixed_greyscale_width;
-	//! Specifies the volume fraction of the mixed third phase.
-	double Mixed_conc;
-	//! Choose whether to enable a probability-based analysis of pixel brightness for interpreting the tomography data. 
-	bool Enable_probability_analysis;
-	//! Specifies the probability scaling exponent use by the probability-based pixel brightness analysis method.
-	double Probability_scaling_exponent;
-	//! Specify the number of equal size cuboids to extract from the tomogram.
-	int N_extracted_segments;
-};
 
 //! \brief This class contains a lattice representation of a materials blend with the ability to simulate phase separation and perform a variety of structural analyses.
 //! \details The class makes use of the Lattice class to store the morphology data, and phase separation simulations are implemented using an Ising-based method.
@@ -122,33 +85,28 @@ public:
 	//! \brief This constructor creates a Morphology object with a 3D lattice with a size defined by the input dimensions (length, width, height).
 	//! \details Two-dimensional periodic boundaries in the x- and y- directions are implemented by default, but periodic boundaries in the z-direction can also be enabled upon construction.
 	//! Morphology objects are also tagged with an integer identification number.
-	//! \param length is the x-dimension size of the lattice.
-	//! \param width is the y-dimension size of the lattice.
-	//! \param height is the z-dimension size of the lattice.
-	//! \param enable_periodic_z is a boolean parameter that specifies whether or not periodic boundaries are enabled in the z-direction.
+	//! \param params is the Parameters object that contains all parameters needed by the Morphology class.
 	//! \param id is the input integer ID number that will be assigned to the Morphology object.
-	Morphology(const int length, const int width, const int height, const bool enable_periodic_z, const int id);
+	Morphology(const Parameters& params, const int id);
 
 	//! \brief This constructor creates a Morphology object with a 3D lattice defined by the input Lattice object.
 	//! \param input_lattice is the input Lattice object that will be used to create the Morphology.
+	//! \param params is the Parameters object that contains all parameters needed by the Morphology class.
 	//! \param id is the input integer ID number that will be assigned to the Morphology object.
-	Morphology(const Lattice& input_lattice, const int id);
+	Morphology(const Lattice& input_lattice, const Parameters& params, const int id);
 
 	//! \brief This is the default virtual destructor.
 	virtual ~Morphology();
 
 	//! \brief Calculates the domain size anisotropy of each phase 
-	//! \param N_sampling_max defines the maximum number of sites that will be sampled from the lattice when the lattice has more sites than N_sampling_max.
-	void calculateAnisotropies(const int N_sampling_max);
+	void calculateAnisotropies();
 
 	//! \brief Calculates the correlation length data and the domain size using the input parameter options.
-	//! \param parameters is the input data structure that contains all of the parameters needed by the correlation function calculation algorithm.
-	void calculateCorrelationDistances(const CorrelationCalc_Params& parameters);
+	void calculateCorrelationDistances();
 
 	//! \brief Calculates the lattice depth dependent (z-direction) characteristics of the morphology.
 	//! \details Calculates the depth dependent composition, interfacial volume fraction, and domain size.
-	//! \param correlation_params is the input data structure that contains all of the parameters needed by the correlation function calculation algorithm.
-	void calculateDepthDependentData(const CorrelationCalc_Params& correlation_params);
+	void calculateDepthDependentData();
 
 	//! \brief Calculates the interfacial area in units of lattice units squared.
 	double calculateInterfacialAreaVolumeRatio() const;
@@ -180,9 +138,9 @@ public:
 	//! \param mix_fractions is a vector that specifies the blend ratio of each site type.
 	void createRandomMorphology(const std::vector<double>& mix_fractions);
 
-	//! \brief Enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart.
-	//! \details By default third-neighbor interactions are disabled, so this function must be called to enable this option.
-	void enableThirdNeighborInteraction();
+	// //! \brief Enables interactions between third-neighbor sites that are a distance of sqrt(3) lattice units apart.
+	// //! \details By default third-neighbor interactions are disabled, so this function must be called to enable this option.
+	//void enableThirdNeighborInteraction();
 
 	//! \brief Executes the Ising site swapping processes with the specified parameters for a given mumber of iterations.
 	//! \details This function uses the bond formation algorithm to determine the energy change in the system that results from swapping two neighboring sites.
@@ -285,9 +243,8 @@ public:
 	//! \brief imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters
 	//! \param info_filename is the name of the xml metadata file
 	//! \param data_filename is the name of the raw morphology data file
-	//! \param params is the TomogramImportParams data structure that contains the additional information needed to handle the tomogram data
 	//! \returns a vector of Morphology objects that consists of a series of subsections of the original tomogram data
-	std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename, const TomogramImport_Params& params);
+	std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename);
 
 	//! \brief Imports the Ising_OPV morphology text file given by the specified input filestream.
 	//! \param infile is the already open input filestream pointing to an Ising_OPV morphology file.
@@ -315,13 +272,17 @@ public:
 	//! \param enable_export_compressed is a boolean option that allows users to choose whether the output morphology file uses the compressed format or not.
 	void outputMorphologyFile(std::string version, std::ofstream& outfile, const bool enable_export_compressed) const;
 
-	//! \brief Outputs a cross-section of the morphology at the x=0 plane to the specified output filestream.
+	//! \brief Outputs a cross-section of the morphology at the x=Length/2 plane to the specified output filestream.
 	//! \param outfile is the already open output filestream.
 	void outputMorphologyCrossSection(std::ofstream& outfile) const;
 
 	//! \brief Outputs the areal end-to-end tortuosity map data to the specified output filestream.
 	//! \param outfile is the already open output filestream.
 	void outputTortuosityMaps(std::ofstream& outfile) const;
+
+	//! \brief Sets the parameters of the Morphology class using the input Parameters object.
+	//! \param params is the Parameters object that contains all parameters needed by the Morphology class.
+	void setParameters(const Parameters& params);
 
 	//! \brief Shrinks the existing lattice by a fraction of 1 over the integer rescale_factor value.
 	//! \details Each of the original lattice dimensions must be divisible by the rescale factor.
@@ -336,9 +297,9 @@ protected:
 private:
 	// Member variables
 	int ID = 0;
-	std::vector<double> Mix_fractions; // Volume fraction of each component to total
-	bool Enable_third_neighbor_interaction = false;
+	Parameters Params;
 	Lattice lattice;
+	std::vector<double> Mix_fractions; // Volume fraction of each component to total
 	std::vector<char> Site_types;
 	std::vector<int> Site_type_counts;
 	std::vector<std::vector<double>> Correlation_data;
@@ -386,7 +347,7 @@ private:
 	//  When the total number of sites is greater than N_sampling_max, N_sampling_max sites are randomly selected and saved for performing a correlation function calculation by sampling.
 	//  When the total number of sites is less than N_sampling_max, all sites will be used as starting points for the correlation function calculation.
 	//  If the function returns false and the function is re-called with a larger cutoff_distance, the correlation function is not recalculated for close distances and only fills in the missing data for larger distances.
-	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params);
+	double calculateCorrelationDistance(const std::vector<long int>& correlation_sites, std::vector<double>& correlation_data, const double mix_fraction, const int cutoff_distance);
 
 	//  This function calculates the fraction of nearby sites the site at (x,y,z) that are not the same type.
 	//  The radius that determines which sites are included as nearby sites is determined by the rescale factor parameter.

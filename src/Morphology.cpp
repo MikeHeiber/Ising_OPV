@@ -18,25 +18,24 @@ Morphology::Morphology(const int id) {
 	gen.seed((int)time(0)*(id + 1));
 }
 
-Morphology::Morphology(const int length, const int width, const int height, const bool enable_periodic_z, const int id) {
+Morphology::Morphology(const Parameters& params, const int id) {
 	ID = id;
-	Lattice_Params params;
-	params.Enable_periodic_x = true;
-	params.Enable_periodic_y = true;
-	params.Enable_periodic_z = enable_periodic_z;
-	params.Length = length;
-	params.Width = width;
-	params.Height = height;
-	params.Unit_size = 1.0;
-	Enable_third_neighbor_interaction = false;
-	lattice.init(params);
+	Params = params;
+	Lattice_Params lattice_params;
+	lattice_params.Enable_periodic_x = true;
+	lattice_params.Enable_periodic_y = true;
+	lattice_params.Enable_periodic_z = params.Enable_periodic_z;
+	lattice_params.Length = params.Length;
+	lattice_params.Width = params.Width;
+	lattice_params.Height = params.Height;
+	lattice_params.Unit_size = 1.0;
+	lattice.init(lattice_params);
 	gen.seed((int)time(0)*(id + 1));
 }
 
-Morphology::Morphology(const Lattice& input_lattice, const int id) {
+Morphology::Morphology(const Lattice& input_lattice, const Parameters& params, const int id) {
 	ID = id;
 	lattice = input_lattice;
-	Enable_third_neighbor_interaction = false;
 	gen.seed((int)time(0)*(id + 1));
 	for (int i = 0; i < (int)lattice.getNumSites(); i++) {
 		bool type_found = false;
@@ -69,7 +68,7 @@ void Morphology::addSiteType(const char site_type) {
 	vector<double> default_data(1, 0.0);
 	Correlation_data.push_back(default_data);
 	Tortuosity_data.push_back(default_data);
-	vector<pair<double,int>> default_pairs(1, make_pair(0.0,0));
+	vector<pair<double, int>> default_pairs(1, make_pair(0.0, 0));
 	InterfacialHistogram_data.push_back(default_pairs);
 	Domain_anisotropy_updated.push_back(false);
 	Domain_sizes.push_back(-1);
@@ -173,7 +172,7 @@ double Morphology::calculateAdditionalEnergyChange(const long int site_index_mai
 	return -additional_interaction * ((count1_f - count1_i) + (count2_f - count2_i));
 }
 
-void Morphology::calculateAnisotropies(const int N_sampling_max) {
+void Morphology::calculateAnisotropies() {
 	cout << ID << ": Calculating the domain anisotropy..." << endl;
 	// Select sites for correlation function calculation.
 	// Site indices for each selected site are stored in the correlation_sites_data vector.
@@ -181,14 +180,14 @@ void Morphology::calculateAnisotropies(const int N_sampling_max) {
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		if ((int)correlation_sites_data[n].size() == 0) {
 			// Only N_sampling_max sites are randomly selected
-			getSiteSampling(correlation_sites_data[n], Site_types[n], N_sampling_max);
+			getSiteSampling(correlation_sites_data[n], Site_types[n], Params.N_sampling_max);
 		}
 	}
 	Domain_anisotropy_updated.assign(Site_types.size(), false);
 	bool success = false;
 	int cutoff_distance = 3;
 	while (!success) {
-		if (2 * cutoff_distance > lattice.getLength() && 2 * cutoff_distance > lattice.getWidth() && 2 * cutoff_distance > lattice.getHeight()) {
+		if (2 * cutoff_distance > lattice.getLength() || 2 * cutoff_distance > lattice.getWidth() || 2 * cutoff_distance > lattice.getHeight()) {
 			success = false;
 			break;
 		}
@@ -360,7 +359,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 	return true;
 }
 
-double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const double mix_fraction, const int cutoff_distance, const CorrelationCalc_Params& params) {
+double Morphology::calculateCorrelationDistance(const vector<long int>& correlation_sites, vector<double>& correlation_data, const double mix_fraction, const int cutoff_distance) {
 	vector<int> site_count, total_count;
 	double distance;
 	int bin;
@@ -442,7 +441,7 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 		correlation_data[n] *= norm;
 	}
 	// Find the bounds of where the pair-pair correlation function first crosses over the Mix_fraction
-	if (params.Enable_mix_frac_method) {
+	if (Params.Enable_mix_frac_method) {
 		for (int n = 2; n < (int)correlation_data.size(); n++) {
 			if (correlation_data[n] < 0) {
 				d1 = (double)(n - 1) * 0.5;
@@ -459,7 +458,7 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 		}
 	}
 	// Find the bounds of where the pair-pair correlation function first reaches within 1/e of the Mix_fraction
-	if (params.Enable_e_method) {
+	if (Params.Enable_e_method) {
 		for (int n = 2; n < (int)correlation_data.size(); n++) {
 			if (correlation_data[n] < (1.0 / exp(1.0))) {
 				d1 = (double)(n - 1) * 0.5;
@@ -475,14 +474,14 @@ double Morphology::calculateCorrelationDistance(const vector<long int>& correlat
 	return -1;
 }
 
-void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& params) {
-	if (params.Enable_extended_correlation_calc) {
-		cout << ID << ": Calculating the domain size using the extended pair-pair correlation function using a cutoff radius of " << params.Extended_correlation_cutoff_distance << "..." << endl;
+void Morphology::calculateCorrelationDistances() {
+	if (Params.Enable_extended_correlation_calc) {
+		cout << ID << ": Calculating the domain size using the extended pair-pair correlation function using a cutoff radius of " << Params.Extended_correlation_cutoff_distance << "..." << endl;
 	}
-	if (params.Enable_mix_frac_method) {
+	if (Params.Enable_mix_frac_method) {
 		cout << ID << ": Calculating the domain size from the pair-pair correlation function using the mix fraction method..." << endl;
 	}
-	else if (params.Enable_e_method) {
+	else if (Params.Enable_e_method) {
 		cout << ID << ": Calculating the domain size from the pair-pair correlation function using the 1/e method..." << endl;
 	}
 	vector<vector<long int>> correlation_sites_data(Site_types.size());
@@ -490,7 +489,7 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 		// Select sites for correlation function calculation.
 		// Site indices for each selected site are stored in the Correlation_sites vector.
 		if ((int)correlation_sites_data[n].size() == 0) {
-			getSiteSampling(correlation_sites_data[n], Site_types[n], params.N_sampling_max);
+			getSiteSampling(correlation_sites_data[n], Site_types[n], Params.N_sampling_max);
 		}
 		// Clear the current Correlation_data
 		Correlation_data[n].clear();
@@ -499,8 +498,8 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 	int cutoff_distance;
 	double domain_size;
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		if (params.Enable_extended_correlation_calc) {
-			cutoff_distance = params.Extended_correlation_cutoff_distance;
+		if (Params.Enable_extended_correlation_calc) {
+			cutoff_distance = Params.Extended_correlation_cutoff_distance;
 		}
 		else {
 			cutoff_distance = 3;
@@ -514,7 +513,7 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 			}
 			if (Site_type_counts[n] > 100) {
 				cout << ID << ": Performing sampling domain size calculation with " << (int)correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff radius of " << cutoff_distance << "..." << endl;
-				domain_size = calculateCorrelationDistance(correlation_sites_data[n], Correlation_data[n], Mix_fractions[n], cutoff_distance, params);
+				domain_size = calculateCorrelationDistance(correlation_sites_data[n], Correlation_data[n], Mix_fractions[n], cutoff_distance);
 			}
 			if (domain_size > 0) {
 				domain_size_updated[n] = true;
@@ -528,13 +527,15 @@ void Morphology::calculateCorrelationDistances(const CorrelationCalc_Params& par
 	}
 }
 
-void Morphology::calculateDepthDependentData(const CorrelationCalc_Params& correlation_calc_params) {
-	CorrelationCalc_Params correlation_params = correlation_calc_params;
-	correlation_params.Enable_extended_correlation_calc = false;
-	if (correlation_params.Enable_mix_frac_method) {
+void Morphology::calculateDepthDependentData() {
+	// Save current status of extended correlation calculation option
+	bool Enable_extended_correlation_calc_old = Params.Enable_extended_correlation_calc;
+	// Temporarily disable extended correlation calculation
+	Params.Enable_extended_correlation_calc = false;
+	if (Params.Enable_mix_frac_method) {
 		cout << ID << ": Calculating the depth dependent domain size from the pair-pair correlation function using the mix fraction method..." << endl;
 	}
-	else if (correlation_params.Enable_e_method) {
+	else if (Params.Enable_e_method) {
 		cout << ID << ": Calculating the depth dependent domain size from the pair-pair correlation function using the 1/e method..." << endl;
 	}
 	vector<vector<long int>> correlation_sites_data(Site_types.size());
@@ -577,7 +578,7 @@ void Morphology::calculateDepthDependentData(const CorrelationCalc_Params& corre
 		correlation_sites_data.assign(Site_types.size(), vector<long int>(0));
 		for (int n = 0; n < (int)Site_types.size(); n++) {
 			if ((int)correlation_sites_data[n].size() == 0) {
-				getSiteSamplingZ(correlation_sites_data[n], Site_types[n], correlation_params.N_sampling_max, z);
+				getSiteSamplingZ(correlation_sites_data[n], Site_types[n], Params.N_sampling_max, z);
 			}
 		}
 		// Calculate depth dependent domain size
@@ -613,7 +614,7 @@ void Morphology::calculateDepthDependentData(const CorrelationCalc_Params& corre
 				mix_fraction_local = (double)site_count / (double)counts_total;
 				if (Site_type_counts[n] > 10) {
 					//cout << ID << ": Performing sampling domain size calculation with " << (int)correlation_sites_data[n].size() << " sites for site type " << (int)Site_types[n] << " with a cutoff radius of " << cutoff_distance << "..." << endl;
-					domain_size = calculateCorrelationDistance(correlation_sites_data[n], correlation_data, mix_fraction_local, cutoff_distance, correlation_params);
+					domain_size = calculateCorrelationDistance(correlation_sites_data[n], correlation_data, mix_fraction_local, cutoff_distance);
 				}
 				if (domain_size > 0) {
 					Depth_domain_size_data[n][z] = domain_size;
@@ -626,6 +627,8 @@ void Morphology::calculateDepthDependentData(const CorrelationCalc_Params& corre
 		}
 		// Calculate depth dependent anisotropy
 	}
+	// Reset extended correlation calculation option to original value
+	Params.Enable_extended_correlation_calc = Enable_extended_correlation_calc_old;
 }
 
 double Morphology::calculateDissimilarFraction(const Coords& coords, const int rescale_factor) const {
@@ -659,7 +662,12 @@ double Morphology::calculateEnergyChangeSimple(const long int site_index1, const
 	// Used with bond formation algorithm
 	static const double one_over_sqrt2 = 1 / sqrt(2);
 	static const double one_over_sqrt3 = 1 / sqrt(3);
-	char sum1_1_delta, sum2_1_delta, sum3_1_delta, sum1_2_delta, sum2_2_delta, sum3_2_delta;
+	char sum1_1_delta;
+	char sum2_1_delta;
+	//char sum3_1_delta;
+	char sum1_2_delta;
+	char sum2_2_delta;
+	//char sum3_2_delta;
 	double sum_1_delta, sum_2_delta;
 	char site1_type = lattice.getSiteType(site_index1);
 	// Calculate change around site 1
@@ -686,17 +694,17 @@ double Morphology::calculateEnergyChangeSimple(const long int site_index1, const
 	// Calculate change
 	sum1_1_delta = sum1_1f - sum1_1i;
 	sum2_1_delta = sum2_1f - sum2_1i;
-	sum3_1_delta = sum3_1f - sum3_1i;
+	//sum3_1_delta = sum3_1f - sum3_1i;
 	sum1_2_delta = sum1_2f - sum1_2i;
 	sum2_2_delta = sum2_2f - sum2_2i;
-	sum3_2_delta = sum3_2f - sum3_2i;
+	//sum3_2_delta = sum3_2f - sum3_2i;
 	sum_1_delta = -(double)sum1_1_delta - (double)sum2_1_delta*one_over_sqrt2;
 	sum_2_delta = -(double)sum1_2_delta - (double)sum2_2_delta*one_over_sqrt2;
 	// By default interactions with the third-nearest neighbors are not included, but when enabled they are added here
-	if (Enable_third_neighbor_interaction) {
-		sum_1_delta -= (double)sum3_1_delta*one_over_sqrt3;
-		sum_2_delta -= (double)sum3_2_delta*one_over_sqrt3;
-	}
+	//if (Params.Enable_third_neighbor_interaction) {
+	//	sum_1_delta -= (double)sum3_1_delta*one_over_sqrt3;
+	//	sum_2_delta -= (double)sum3_2_delta*one_over_sqrt3;
+	//}
 	if (site1_type == 1) {
 		return interaction_energy1 * sum_1_delta + interaction_energy2 * sum_2_delta;
 	}
@@ -1390,9 +1398,9 @@ bool Morphology::calculateTortuosity(const char site_type, const bool enable_red
 	return true;
 }
 
-void Morphology::enableThirdNeighborInteraction() {
-	Enable_third_neighbor_interaction = true;
-}
+//void Morphology::enableThirdNeighborInteraction() {
+//	Enable_third_neighbor_interaction = true;
+//}
 
 void Morphology::createBilayerMorphology() {
 	addSiteType((char)1);
@@ -1716,7 +1724,7 @@ void Morphology::executeSmoothing(const double smoothing_threshold, const int re
 }
 
 vector<double> Morphology::getCorrelationData(const char site_type) const {
-	if (Correlation_data[getSiteTypeIndex(site_type)][0] < 0) {
+	if (Correlation_data[getSiteTypeIndex(site_type)][0] == 0) {
 		cout << ID << ": Error getting correlation data: Correlation data has not been calculated." << endl;
 	}
 	return Correlation_data[getSiteTypeIndex(site_type)];
@@ -1830,7 +1838,7 @@ int Morphology::getWidth() const {
 	return lattice.getWidth();
 }
 
-vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename, const TomogramImport_Params& import_params) {
+vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename) {
 	vector<Morphology> morphologies;
 	// Input file checking
 	if ((int)info_filename.length() > 4 && info_filename.substr(info_filename.length() - 4, 4).compare(".xml") != 0) {
@@ -1842,7 +1850,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		return morphologies;
 	}
 	// Parameter checking
-	switch (import_params.N_extracted_segments) {
+	switch (Params.N_extracted_segments) {
 	case 1:
 		break;
 	case 4:
@@ -1872,7 +1880,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 	case 196:
 		break;
 	default:
-		cout << "Error! Invalid value for N_extracted_segments parameter. Value must be 1, 4, 9, 16, 25, 36, 49, 64, 89, or 100 but " << import_params.N_extracted_segments << " was entered." << endl;
+		cout << "Error! Invalid value for N_extracted_segments parameter. Value must be 1, 4, 9, 16, 25, 36, 49, 64, 89, or 100 but " << Params.N_extracted_segments << " was entered." << endl;
 		return morphologies;
 	}
 	// Parse xml info file
@@ -1959,10 +1967,10 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 			return morphologies;
 		}
 		// Determine final lattice dimensions based on desired unit size
-		lattice_params.Length = (int)floor(lattice_params.Length*(lattice_params.Unit_size / import_params.Desired_unit_size));
-		lattice_params.Width = (int)floor(lattice_params.Width*(lattice_params.Unit_size / import_params.Desired_unit_size));
-		lattice_params.Height = (int)floor(lattice_params.Height*(lattice_params.Unit_size / import_params.Desired_unit_size));
-		lattice_params.Unit_size = import_params.Desired_unit_size;
+		lattice_params.Length = (int)floor(lattice_params.Length*(lattice_params.Unit_size / Params.Desired_unit_size));
+		lattice_params.Width = (int)floor(lattice_params.Width*(lattice_params.Unit_size / Params.Desired_unit_size));
+		lattice_params.Height = (int)floor(lattice_params.Height*(lattice_params.Unit_size / Params.Desired_unit_size));
+		lattice_params.Unit_size = Params.Desired_unit_size;
 		lattice.init(lattice_params);
 		int index = 0;
 		vector<float> data_vec_new(data_vec.size());
@@ -2040,7 +2048,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		//vector<double>().swap(test_vec);
 		// 
 		// Interpret data vector using probability analysis method
-		if (import_params.Enable_probability_analysis) {
+		if (Params.Enable_probability_analysis) {
 			float avg = (float)vector_avg(data_vec_final);
 			float min_val = *min_element(data_vec_final.begin(), data_vec_final.end());
 			float max_val = *max_element(data_vec_final.begin(), data_vec_final.end());
@@ -2049,14 +2057,14 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 			max_val -= avg;
 			for (int i = 0; i < (int)data_vec_final.size(); i++) {
 				if (data_vec_final[i] > 0) {
-					data_vec_final[i] = pow(abs(data_vec_final[i]), (float)import_params.Probability_scaling_exponent);
+					data_vec_final[i] = pow(abs(data_vec_final[i]), (float)Params.Probability_scaling_exponent);
 				}
 				else {
-					data_vec_final[i] = -pow(abs(data_vec_final[i]), (float)import_params.Probability_scaling_exponent);
+					data_vec_final[i] = -pow(abs(data_vec_final[i]), (float)Params.Probability_scaling_exponent);
 				}
 			}
-			min_val = -pow(abs(min_val), (float)import_params.Probability_scaling_exponent);
-			max_val = pow(max_val, (float)import_params.Probability_scaling_exponent);
+			min_val = -pow(abs(min_val), (float)Params.Probability_scaling_exponent);
+			max_val = pow(max_val, (float)Params.Probability_scaling_exponent);
 			for (int i = 0; i < (int)data_vec_final.size(); i++) {
 				data_vec_final[i] = (data_vec_final[i] - min_val) / (max_val - min_val);
 			}
@@ -2075,12 +2083,12 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 				}
 			}
 		}
-		if (import_params.Enable_cutoff_analysis) {
+		if (Params.Enable_cutoff_analysis) {
 			vector<float> temp_vec = data_vec_final;
 			sort(temp_vec.begin(), temp_vec.end());
 			float cutoff = temp_vec[round_int(Mix_fractions[1] * (temp_vec.size() - 1))];
 			vector<float>().swap(temp_vec);
-			int mix_bin = import_params.Mixed_greyscale_width;
+			int mix_bin = Params.Mixed_greyscale_width;
 			//addSiteType((char)3);
 			for (int x = 0; x < lattice.getLength(); x++) {
 				for (int y = 0; y < lattice.getWidth(); y++) {
@@ -2111,8 +2119,8 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 		}
 		// Generate morphology set
 		cout << ID << ": Creating morphology set from tomogram data." << endl;
-		if (import_params.N_extracted_segments > 1) {
-			int dim = round_int(sqrt(import_params.N_extracted_segments));
+		if (Params.N_extracted_segments > 1) {
+			int dim = round_int(sqrt(Params.N_extracted_segments));
 			int new_length = lattice.getLength() / dim;
 			// make dimension even
 			if (new_length % 2 != 0) {
@@ -2129,7 +2137,7 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 			for (int x = 0; x < dim; x++) {
 				for (int y = 0; y < dim; y++) {
 					sublattice = lattice.extractSublattice(x*size + offset_x, size, y*size + offset_y, size, 0, lattice.getHeight());
-					morphologies.push_back(Morphology(sublattice, x * dim + y));
+					morphologies.push_back(Morphology(sublattice, Params, x * dim + y));
 					morphologies[x * dim + y].calculateMixFractions();
 				}
 			}
@@ -2145,121 +2153,103 @@ vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_f
 }
 
 bool Morphology::importMorphologyFile(ifstream& infile) {
-	string var;
-	int x = 0;
-	int y = 0;
-	int z = 0;
-	char type = (char)0;
-	int j;
 	string line;
-	bool isV4 = false;
+	bool is_file_compressed;
 	Lattice_Params lattice_params;
 	lattice_params.Unit_size = 1.0;
-	// Check if file is in compressed format or not
-	getline(infile, line);
-	bool is_file_compressed = !(line.find("uncompressed") != string::npos);
-	if (line.substr(0, 9).compare("Ising_OPV") == 0) {
+	// Check status of input filestream
+	if (!infile.good()) {
+		cout << ID << ": Error importing morphology file. Input filestream is not in a good state." << endl;
+		return false;
+	}
+	// Load file lines into string vector
+	vector<string> file_data;
+	while (getline(infile, line)) {
+		file_data.push_back(line);
+	}
+	// Analyze file header line
+	if (file_data[0].substr(0, 9).compare("Ising_OPV") == 0) {
 		// check if morphology is from Ising_OPV v4
-		if (line.substr(10, 2).compare("v4") == 0) {
-			isV4 = true;
+		if (file_data[0].substr(10, 2).compare("v4") != 0) {
+			cout << ID << ": Error importing morphology file. Only morphology files generated by Ising_OPV v4.x are supported." << endl;
+			return false;
 		}
-		// skip first line
-		// get next line
-		getline(infile, line);
-	}
-	lattice_params.Length = atoi(line.c_str());
-	getline(infile, line);
-	lattice_params.Width = atoi(line.c_str());
-	getline(infile, line);
-	lattice_params.Height = atoi(line.c_str());
-	if (isV4) {
-		getline(infile, line);
-		lattice_params.Enable_periodic_x = (bool)atoi(line.c_str());
-		getline(infile, line);
-		lattice_params.Enable_periodic_y = (bool)atoi(line.c_str());
-		getline(infile, line);
-		lattice_params.Enable_periodic_z = (bool)atoi(line.c_str());
+		// Check if file is in compressed format or not
+		is_file_compressed = (file_data[0].find("compressed") != string::npos);
 	}
 	else {
-		lattice_params.Enable_periodic_x = true;
-		lattice_params.Enable_periodic_y = true;
-		// Assume z-direction periodic boundary is disabled for an imported morphology
-		lattice_params.Enable_periodic_z = false;
+		cout << ID << ": Error importing morphology file. Incorrect file format. Only morphology files generated by Ising_OPV v4.x are supported." << endl;
+		return false;
 	}
+	// Get lattice dimensions
+	cout << file_data[1] << endl;
+	lattice_params.Length = stoi(file_data[1]);
+	cout << file_data[2] << endl;
+	lattice_params.Width = stoi(file_data[2]);
+	cout << file_data[3] << endl;
+	lattice_params.Height = stoi(file_data[3]);
+	// Get lattice periodicity options
+	cout << file_data[4] << endl;
+	lattice_params.Enable_periodic_x = (bool)stoi(file_data[4]);
+	cout << file_data[5] << endl;
+	lattice_params.Enable_periodic_y = (bool)stoi(file_data[5]);
+	cout << file_data[6] << endl;
+	lattice_params.Enable_periodic_z = (bool)stoi(file_data[6]);
+	// Create the lattice
 	lattice.init(lattice_params);
-	if (isV4) {
-		getline(infile, line);
-		int num_types = atoi(line.c_str());
-		for (int n = 0; n < num_types; n++) {
-			addSiteType((char)(n + 1));
-		}
-		for (int n = 0; n < num_types; n++) {
-			getline(infile, line);
-			Domain_sizes[n] = atof(line.c_str());
-		}
-		for (int n = 0; n < num_types; n++) {
-			getline(infile, line);
-			Mix_fractions[n] = atof(line.c_str());
-		}
+	// Get number of site types
+	cout << file_data[7] << endl;
+	int num_types = atoi(file_data[7].c_str());
+	for (int n = 0; n < num_types; n++) {
+		addSiteType((char)(n + 1));
 	}
-	else {
-		addSiteType((char)1);
-		addSiteType((char)2);
-		getline(infile, line);
-		Domain_sizes[0] = atof(line.c_str());
-		getline(infile, line);
-		Domain_sizes[1] = atof(line.c_str());
-		getline(infile, line);
-		Mix_fractions[0] = atof(line.c_str());
-		Mix_fractions[1] = 1 - Mix_fractions[0];
+	// Get domain size for each site type
+	for (int n = 0; n < num_types; n++) {
+		Domain_sizes[n] = stod(file_data[8 + n]);
+	}
+	// Get mix fraction for each site type
+	for (int n = 0; n < num_types; n++) {
+		Mix_fractions[n] = stod(file_data[8 + num_types + n]);
 	}
 	// Clear existing Site_type_counts data
 	for (int n = 0; n < (int)Site_types.size(); n++) {
 		Site_type_counts[n] = 0;
 	}
 	if (!is_file_compressed) {
-		while ((infile).good()) {
-			getline(infile, line);
-			stringstream linestream(line);
-			j = 1;
-			while (linestream.good()) {
-				getline(linestream, var, ',');
-				switch (j) {
-				case 1:
-					x = atoi(var.c_str());
-					break;
-				case 2:
-					y = atoi(var.c_str());
-					break;
-				case 3:
-					z = atoi(var.c_str());
-					break;
-				case 4:
-					type = (char)atoi(var.c_str());
-					break;
-				default:
-					break;
-				}
-				j++;
+		for (int i = 8 + 2 * num_types; i < (int)file_data.size(); i++) {
+			stringstream linestream(file_data[i]);
+			string item;
+			vector<int> values;
+			values.reserve(4);
+			while (getline(linestream, item, ',')) {
+				cout << "item = " << item << endl;
+				values.push_back(stoi(item));
 			}
-			lattice.setSiteType(x, y, z, type);
-			Site_type_counts[getSiteTypeIndex(type)]++;
+			lattice.setSiteType(values[0], values[1], values[2], (char)values[3]);
+			Site_type_counts[getSiteTypeIndex((char)values[3])]++;
+		}
+		// Check that all sites were assigned a type
+		if (lattice.getNumSites() != accumulate(Site_type_counts.begin(), Site_type_counts.end(), 0)) {
+			cout << ID << ": Error importing morphology file. All sites were not assigned to a valid site type." << endl;
+			return false;
 		}
 	}
 	else {
 		int site_count = 0;
+		int line_count = 8 + 2 * num_types;
+		char type;
 		for (int x = 0; x < lattice.getLength(); x++) {
 			for (int y = 0; y < lattice.getWidth(); y++) {
 				for (int z = 0; z < lattice.getHeight(); z++) {
 					if (site_count == 0) {
-						getline(infile, line);
-						stringstream linestream(line);
+						stringstream linestream(file_data[line_count]);
 						if (!linestream.good()) {
-							cout << "Error parsing file.  End of file reached before expected." << endl;
+							cout << ID << ": Error parsing input morphology file. End of file reached before expected." << endl;
 							return false;
 						}
-						type = (char)atoi((line.substr(0, 1)).c_str());
-						site_count = atoi((line.substr(1, line.length() - 1)).c_str());
+						type = (char)stoi(line.substr(0, 1));
+						site_count = stoi(line.substr(1, line.length() - 1));
+						line_count++;
 					}
 					lattice.setSiteType(x, y, z, type);
 					Site_type_counts[getSiteTypeIndex(type)]++;
@@ -2678,6 +2668,10 @@ double Morphology::rand01() {
 	return generate_canonical<double, std::numeric_limits<double>::digits>(gen);
 }
 
+void Morphology::setParameters(const Parameters& params) {
+	Params = params;
+}
+
 void Morphology::updateNeighborCounts(long int site_index1, long int site_index2) {
 	char site_type1 = lattice.getSiteType(site_index1);
 	char site_type2 = lattice.getSiteType(site_index2);
@@ -2728,28 +2722,28 @@ void Morphology::updateNeighborCounts(long int site_index1, long int site_index2
 			}
 		}
 	}
-	if (Enable_third_neighbor_interaction) {
-		for (int i = 0; i < 8; i++) {
-			neighbor_index = Neighbor_info[site_index1].third_indices[i];
-			if (neighbor_index >= 0 && neighbor_index != site_index2) {
-				if (lattice.getSiteType(neighbor_index) == site_type1) {
-					Neighbor_counts[neighbor_index].sum3++;
-				}
-				else {
-					Neighbor_counts[neighbor_index].sum3--;
-				}
-			}
-		}
-		for (int i = 0; i < 8; i++) {
-			neighbor_index = Neighbor_info[site_index2].third_indices[i];
-			if (neighbor_index >= 0 && neighbor_index != site_index1) {
-				if (lattice.getSiteType(neighbor_index) == site_type2) {
-					Neighbor_counts[neighbor_index].sum3++;
-				}
-				else {
-					Neighbor_counts[neighbor_index].sum3--;
-				}
-			}
-		}
-	}
+	//if (Enable_third_neighbor_interaction) {
+	//	for (int i = 0; i < 8; i++) {
+	//		neighbor_index = Neighbor_info[site_index1].third_indices[i];
+	//		if (neighbor_index >= 0 && neighbor_index != site_index2) {
+	//			if (lattice.getSiteType(neighbor_index) == site_type1) {
+	//				Neighbor_counts[neighbor_index].sum3++;
+	//			}
+	//			else {
+	//				Neighbor_counts[neighbor_index].sum3--;
+	//			}
+	//		}
+	//	}
+	//	for (int i = 0; i < 8; i++) {
+	//		neighbor_index = Neighbor_info[site_index2].third_indices[i];
+	//		if (neighbor_index >= 0 && neighbor_index != site_index1) {
+	//			if (lattice.getSiteType(neighbor_index) == site_type2) {
+	//				Neighbor_counts[neighbor_index].sum3++;
+	//			}
+	//			else {
+	//				Neighbor_counts[neighbor_index].sum3--;
+	//			}
+	//		}
+	//	}
+	//}
 }

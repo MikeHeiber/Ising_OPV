@@ -4,6 +4,7 @@
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
 
 #include "Morphology.h"
+#include "Parameters.h"
 #include "Utils.h"
 #include <iostream>
 #include <fstream>
@@ -13,65 +14,9 @@
 using namespace std;
 using namespace Utils;
 
-struct Input_Params {
-	// General
-	int Length; // x-direction size of the lattice
-	int Width; // y-direction size of the lattice
-	int Height; // z-direction size of the lattice
-	bool Enable_periodic_z; // z-direction periodic boundary option
-	double Mix_fraction; // volume fraction of donor
-	double Interaction_energy1; // energetic favorability for type1-type1 interactions over type1-type2 interactions
-	double Interaction_energy2; // energetic favorability for type2-type2 interactions over type1-type2 interactions
-	int MC_steps; // number of MC steps to be executed (determines number of Ising swapping iterations)
-	// Export Morphology Options
-	bool Enable_export_compressed_files; // choose whether the output morphology data file is in compressed format or not
-	bool Enable_export_cross_section; // choose whether to output data for an uncompressed cross section (x=0 plane) of the morphology
-	// Smoothing Options
-	bool Enable_smoothing; // choose whether to perform domain smoothing or not
-	double Smoothing_threshold;  // specify the degree of smoothing
-	// Rescale Options
-	bool Enable_rescale; // choose whether to perform lattice rescaling or not
-	int Rescale_factor; // specify the rescale factor to be used (must be an integer greater than 1)
-	bool Enable_shrink; // chose whether to shrink the lattice instead of expand it
-	// Interfacial Mixing Options
-	bool Enable_interfacial_mixing; // choose whether to perform interfacial mixing or not
-	double Interface_width;  // specify the interfacial width
-	double Interface_conc; // specify the mixing concentration in the interfacial region
-	// Analysis Options
-	bool Enable_analysis_only;  // choose whether to only perform analysis on an imported morphology or not
-	bool Enable_correlation_calc; // choose whether to perform the domain size calculation using the pair-pair correlation method or not
-	int N_sampling_max; // specify the maximum number of sites to be sampled for calculating the correlation function
-	bool Enable_mix_frac_method; // choose whether to use the mix fraction method for determining the domain size or not
-	bool Enable_e_method; // choose whether to use the 1/e method for determining the domain size or not
-	bool Enable_extended_correlation_calc; // choose whether to extend the correlation function calculation to the specified cutoff distance or not
-	int Extended_correlation_cutoff_distance; // specify the maximum cutoff distnace for the extended correlation function calculation
-	bool Enable_interfacial_distance_calc; // choose whether to calculate the interfacial distance histograms or not
-	bool Enable_tortuosity_calc; // choose whether to calculate the tortuosity end-to-end histograms and island volume fraction or not
-	bool Enable_reduced_memory_tortuosity_calc; // choose whether to enable a tortuosity calculation method that takes longer, but uses less memory or not
-	bool Enable_depth_dependent_calc; // choose whether to enable calculation and output of film depth dependent morphology characteristics or not
-	bool Enable_areal_maps_calc; // choose whether to enable calculation and output of areal mappings of morphology characteristics or not
-	// Other Options
-	bool Enable_checkerboard_start; //choose whether to start from a alternating checkerboard-like configuration instead of a random blend (creates 0.5 mix fraction) or not
-	bool Enable_growth_pref;
-	int Growth_direction;
-	double Additional_interaction;
-	// Tomogram Import Options
-	double Desired_unit_size;
-	bool Enable_cutoff_analysis;
-	int Mixed_greyscale_width;
-	double Mixed_conc;
-	bool Enable_probability_analysis;
-	double Probability_scaling_exponent;
-	int N_extracted_segments;
-	int N_variants;
-};
-
-bool importParameters(ifstream& parameterfile, Input_Params& params, CorrelationCalc_Params& correlation_params);
-
 int main(int argc, char * argv[]) {
 	// Input parameters
-	Input_Params parameters;
-	CorrelationCalc_Params correlation_params;
+	Parameters parameters;
 	// Internal parameters
 	string version = "v4.0-rc1";
 	bool Enable_import_morphology = false;
@@ -157,7 +102,7 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 	parameter_file.open((argv[1]), ifstream::in);
-	success = importParameters(parameter_file, parameters, correlation_params);
+	success = parameters.importParameters(parameter_file);
 	parameter_file.close();
 	if (success) {
 		cout << procid << ": Parameter file found and loaded successfully." << endl;
@@ -181,7 +126,7 @@ int main(int argc, char * argv[]) {
 	// Wait until all processors have loaded the parameters.
 	MPI_Barrier(MPI_COMM_WORLD);
 	// Create morphology data structure.
-	Morphology morph(parameters.Length, parameters.Width, parameters.Height, parameters.Enable_periodic_z, procid);
+	Morphology morph(parameters, procid);
 	// Import morphology if enabled.
 	// Import tomogram file in binary format
 	if (Enable_import_tomogram) {
@@ -194,25 +139,17 @@ int main(int argc, char * argv[]) {
 			// Create initial lattice based on filename to load the tomogram data into
 			Morphology morph_tomo(procid);
 			// Collect tomogram import options
-			TomogramImport_Params import_params;
-			import_params.Desired_unit_size = parameters.Desired_unit_size;
-			import_params.Enable_cutoff_analysis = parameters.Enable_cutoff_analysis;
-			import_params.Mixed_greyscale_width = parameters.Mixed_greyscale_width;
-			import_params.Mixed_conc = parameters.Mixed_conc;
-			import_params.Enable_probability_analysis = parameters.Enable_probability_analysis;
-			import_params.Probability_scaling_exponent = parameters.Probability_scaling_exponent;
-			import_params.N_extracted_segments = parameters.N_extracted_segments;
 			cout << procid << ": Loading and analyzing tomogram data." << endl;
 			tomo_info_filename = string(argv[3]);
 			tomo_data_filename = string(argv[4]);
-			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename, import_params);
+			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename);
 			// Check that a set of morphologies has been produced
 			if (morphology_set.size() == 0) {
 				cout << procid << ": Error! Morphology set could not be generated from the input tomogram." << endl;
 				return 0;
 			}
 			for (int i = 1; i < parameters.N_variants; i++) {
-				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename, import_params);
+				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename);
 				morphology_set.insert(morphology_set.end(), morphology_set2.begin(), morphology_set2.end());
 			}
 			// Output morphology set to separate files
@@ -268,10 +205,13 @@ int main(int argc, char * argv[]) {
 			cout << procid << ": Opening morphology file failed! Program will exit now!" << endl;
 			return 0;
 		}
-
 		cout << procid << ": Importing morphology from file..." << flush;
 		// Import the morphology from the given data file.
-		morph.importMorphologyFile(morphology_input_file);
+		success = morph.importMorphologyFile(morphology_input_file);
+		if (!success) {
+			cout << procid << ": Importing morphology file failed! Program will exit now!" << endl;
+			return 0;
+		}
 		morphology_input_file.close();
 		cout << procid << ": Morphology import complete!" << endl;
 	}
@@ -342,14 +282,14 @@ int main(int argc, char * argv[]) {
 	}
 	// Calculate domain size if enabled.
 	if (parameters.Enable_correlation_calc) {
-		morph.calculateCorrelationDistances(correlation_params);
+		morph.calculateCorrelationDistances();
 		filename = "correlation_data_" + to_string(procid) + ".txt";
 		correlation_file.open(filename);
 		morph.outputCorrelationData(correlation_file);
 		correlation_file.close();
 		domain_size1 = morph.getDomainSize((char)1);
 		domain_size2 = morph.getDomainSize((char)2);
-		morph.calculateAnisotropies(parameters.N_sampling_max);
+		morph.calculateAnisotropies();
 		domain_anisotropy1 = morph.getDomainAnisotropy((char)1);
 		domain_anisotropy2 = morph.getDomainAnisotropy((char)2);
 	}
@@ -391,7 +331,7 @@ int main(int argc, char * argv[]) {
 	}
 	if (parameters.Enable_depth_dependent_calc) {
 		cout << procid << ": Calculating the depth dependent composition and domain size..." << endl;
-		morph.calculateDepthDependentData(correlation_params);
+		morph.calculateDepthDependentData();
 		filename = "depth_dependent_data_" + to_string(procid) + ".txt";
 		depthdata_file.open(filename);
 		morph.outputDepthDependentData(depthdata_file);
@@ -674,221 +614,4 @@ int main(int argc, char * argv[]) {
 	MPI_Finalize();
 	// The morphology object is automatically deconstructed upon return.
 	return 0;
-}
-
-//  This function imports the parameters from an input parameter text file into the Input_Parameters data structure.
-bool importParameters(ifstream& parameterfile, Input_Params& params, CorrelationCalc_Params& correlation_params) {
-	string line;
-	string var;
-	size_t pos;
-	bool error_status = false;
-	vector<string> stringvars;
-	// Read input file line by line.
-	while (parameterfile.good()) {
-		getline(parameterfile, line);
-		// Skip lines designated as section breaks and section headers.
-		if ((line.substr(0, 2)).compare("--") != 0 && (line.substr(0, 2)).compare("##") != 0) {
-			// Strip off trailing comments from each line.
-			pos = line.find("/", 0);
-			var = line.substr(0, pos - 1);
-			// Add parameter value strings to a vector.
-			stringvars.push_back(var);
-		}
-	}
-	int i = 0;
-	// Convert strings into the correct data type and assign them to their corresponding parameter variable.
-	// General Parameters
-	params.Length = atoi(stringvars[i].c_str());
-	i++;
-	params.Width = atoi(stringvars[i].c_str());
-	i++;
-	params.Height = atoi(stringvars[i].c_str());
-	i++;
-	//enable_z_periodic_boundary
-	params.Enable_periodic_z = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting z-direction periodic boundary conditions!" << endl;
-		return false;
-	}
-	i++;
-	params.Mix_fraction = atof(stringvars[i].c_str());
-	i++;
-	params.Interaction_energy1 = atof(stringvars[i].c_str());
-	i++;
-	params.Interaction_energy2 = atof(stringvars[i].c_str());
-	i++;
-	params.MC_steps = atoi(stringvars[i].c_str());
-	i++;
-	//enable_export_compressed_files
-	params.Enable_export_compressed_files = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting export options" << endl;
-		return false;
-	}
-	i++;
-	//enable_export_cross_section
-	params.Enable_export_cross_section = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting export cross-section options" << endl;
-		return false;
-	}
-	i++;
-	//enable_smoothing
-	params.Enable_smoothing = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting morphology smoothing options" << endl;
-		return false;
-	}
-	i++;
-	params.Smoothing_threshold = atof(stringvars[i].c_str());
-	i++;
-	//enable_rescale
-	params.Enable_rescale = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting morphology rescale options" << endl;
-		return false;
-	}
-	i++;
-	params.Rescale_factor = atoi(stringvars[i].c_str());
-	i++;
-	params.Enable_shrink = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting morphology shrink options" << endl;
-		return false;
-	}
-	i++;
-	//enable_interfacial_mixing
-	params.Enable_interfacial_mixing = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting interfacial mixing options" << endl;
-		return false;
-	}
-	i++;
-	params.Interface_width = atof(stringvars[i].c_str());
-	i++;
-	params.Interface_conc = atof(stringvars[i].c_str());
-	i++;
-	//enable_analysis_only
-	params.Enable_analysis_only = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting analysis options" << endl;
-		return false;
-	}
-	i++;
-	//enable_correlation_calc
-	params.Enable_correlation_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting correlation calculation options" << endl;
-		return false;
-	}
-	i++;
-	params.N_sampling_max = atoi(stringvars[i].c_str());
-	i++;
-	//enable_mix_frac_method
-	params.Enable_mix_frac_method = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting correlation calculation domain size determination method options" << endl;
-		return false;
-	}
-	i++;
-	//enable_e_method
-	params.Enable_e_method = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting correlation calculation domain size determination method  options" << endl;
-		return false;
-	}
-	i++;
-	//enable_extended_correlation_calc
-	params.Enable_extended_correlation_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting extended correlation calculation options" << endl;
-		return false;
-	}
-	i++;
-	params.Extended_correlation_cutoff_distance = atoi(stringvars[i].c_str());
-	i++;
-	//enable_interfacial_distance_calc
-	params.Enable_interfacial_distance_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting interfacial distance calculation options" << endl;
-		return false;
-	}
-	i++;
-	//enable_tortuosity_calc
-	params.Enable_tortuosity_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting tortuosity calculation options" << endl;
-		return false;
-	}
-	i++;
-	//enable_reduced_memory_tortuosity_calc
-	params.Enable_reduced_memory_tortuosity_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting reduced memory tortuosity calculation options" << endl;
-		return false;
-	}
-	i++;
-	//enable_depth_dependent_cal
-	params.Enable_depth_dependent_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting areal mapping calculation options" << endl;
-		return false;
-	}
-	i++;
-	//enable_areal_maps_cal
-	params.Enable_areal_maps_calc = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting depth dependent calculation options" << endl;
-		return false;
-	}
-	i++;
-	//enable_checkerboard_start
-	params.Enable_checkerboard_start = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting checkerboard starting condition" << endl;
-		return false;
-	}
-	i++;
-	//enable_growth_pref
-	params.Enable_growth_pref = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting growth preference conditions" << endl;
-		return false;
-	}
-	i++;
-	params.Growth_direction = atoi(stringvars[i].c_str());
-	i++;
-	params.Additional_interaction = atof(stringvars[i].c_str());
-	i++;
-	// Tomogram Import Options
-	params.Desired_unit_size = atof(stringvars[i].c_str());
-	i++;
-	params.Enable_cutoff_analysis = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting tomogram import conditions" << endl;
-		return false;
-	}
-	i++;
-	params.Mixed_greyscale_width = atoi(stringvars[i].c_str());
-	i++;
-	params.Mixed_conc = atof(stringvars[i].c_str());
-	i++;
-	params.Enable_probability_analysis = importBooleanParam(stringvars[i], error_status);
-	if (error_status) {
-		cout << "Error setting tomogram import conditions" << endl;
-		return false;
-	}
-	i++;
-	params.Probability_scaling_exponent = atof(stringvars[i].c_str());
-	i++;
-	params.N_extracted_segments = atoi(stringvars[i].c_str());
-	i++;
-	params.N_variants = atoi(stringvars[i].c_str());
-	i++;
-	correlation_params.N_sampling_max = params.N_sampling_max;
-	correlation_params.Enable_mix_frac_method = params.Enable_mix_frac_method;
-	correlation_params.Enable_e_method = params.Enable_e_method;
-	correlation_params.Enable_extended_correlation_calc = params.Enable_extended_correlation_calc;
-	correlation_params.Extended_correlation_cutoff_distance = params.Extended_correlation_cutoff_distance;
-	return true;
 }
