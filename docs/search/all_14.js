@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['z',['z',['../struct_coords.html#a96d176173dbd5d97e7af63e1b5c0f7e1',1,'Coords']]]
+  ['_7emorphology',['~Morphology',['../class_morphology.html#a2d54b17cf9ee68c0ce8fe979bfe28384',1,'Morphology']]]
 ];

@@ -35,6 +35,7 @@ Morphology::Morphology(const Parameters& params, const int id) {
 
 Morphology::Morphology(const Lattice& input_lattice, const Parameters& params, const int id) {
 	ID = id;
+	Params = params;
 	lattice = input_lattice;
 	gen.seed((int)time(0)*(id + 1));
 	for (int i = 0; i < (int)lattice.getNumSites(); i++) {
@@ -233,7 +234,7 @@ bool Morphology::calculateAnisotropy(const vector<long int>& correlation_sites, 
 	// Check that correlation sites vector is not empty
 	if (!(correlation_sites.size() > 0)) {
 		cout << ID << ": Error! Vector of site tags to be used in the anisotropy calculation is empty." << endl;
-		return false;
+		throw invalid_argument("Error! Vector of site tags to be used in the anisotropy calculation is empty.");
 	}
 	for (int m = 0; m < (int)correlation_sites.size(); m++) {
 		if (lattice.getSiteType(correlation_sites[m]) != site_type) {
@@ -661,7 +662,7 @@ double Morphology::calculateDissimilarFraction(const Coords& coords, const int r
 double Morphology::calculateEnergyChangeSimple(const long int site_index1, const long int site_index2, const double interaction_energy1, const double interaction_energy2) {
 	// Used with bond formation algorithm
 	static const double one_over_sqrt2 = 1 / sqrt(2);
-	static const double one_over_sqrt3 = 1 / sqrt(3);
+	//static const double one_over_sqrt3 = 1 / sqrt(3);
 	char sum1_1_delta;
 	char sum2_1_delta;
 	//char sum3_1_delta;
@@ -2237,7 +2238,7 @@ bool Morphology::importMorphologyFile(ifstream& infile) {
 	else {
 		int site_count = 0;
 		int line_count = 8 + 2 * num_types;
-		char type;
+		char type = 0;
 		for (int x = 0; x < lattice.getLength(); x++) {
 			for (int y = 0; y < lattice.getWidth(); y++) {
 				for (int z = 0; z < lattice.getHeight(); z++) {
@@ -2400,12 +2401,9 @@ bool Morphology::isNearInterface(const Coords& coords, const double distance) co
 
 void Morphology::outputCompositionMaps(ofstream& outfile) const {
 	vector<int> counts(Site_types.size(), 0);
-	//outfile << "X-Position,Y-Position";
+	outfile << "X-Position,Y-Position";
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		if (n > 0) {
-			outfile << ",";
-		}
-		outfile << "Composition" << (int)Site_types[n];
+		outfile << ",Composition" << (int)Site_types[n];
 	}
 	outfile << endl;
 	for (int x = 0; x < lattice.getLength(); x++) {
@@ -2414,12 +2412,9 @@ void Morphology::outputCompositionMaps(ofstream& outfile) const {
 			for (int z = 0; z < lattice.getHeight(); z++) {
 				counts[getSiteTypeIndex(lattice.getSiteType(x, y, z))]++;
 			}
-			//outfile << x << "," << y;
+			outfile << x << "," << y;
 			for (int n = 0; n < (int)Site_types.size(); n++) {
-				if (n > 0) {
-					outfile << ",";
-				}
-				outfile << (double)counts[n] / (double)lattice.getHeight();
+				outfile << "," << (double)counts[n] / (double)lattice.getHeight();
 			}
 			outfile << endl;
 		}
@@ -2482,6 +2477,7 @@ void Morphology::outputDepthDependentData(ofstream& outfile) const {
 }
 
 void Morphology::outputMorphologyCrossSection(ofstream& outfile) const {
+	outfile << "X-Position,Y-Position,Z-Position,Site_type" << endl;
 	int x = lattice.getLength() / 2;
 	//for (int x = 0; x < lattice.getLength(); x++) {
 	for (int y = 0; y < lattice.getWidth(); y++) {
@@ -2548,23 +2544,17 @@ void Morphology::outputMorphologyFile(string version, ofstream& outfile, bool en
 
 void Morphology::outputTortuosityMaps(ofstream& outfile) const {
 	int index;
-	//outfile << "X-Position,Y-Position";
+	outfile << "X-Position,Y-Position";
 	for (int n = 0; n < (int)Site_types.size(); n++) {
-		if (n > 0) {
-			outfile << ",";
-		}
-		outfile << "Tortuosity" << (int)Site_types[n];
+		outfile << ",Tortuosity" << (int)Site_types[n];
 	}
 	outfile << endl;
 	for (int x = 0; x < lattice.getLength(); x++) {
 		for (int y = 0; y < lattice.getWidth(); y++) {
 			index = lattice.getWidth()*x + y;
-			//outfile << x << "," << y;
+			outfile << x << "," << y;
 			for (int n = 0; n < (int)Site_types.size(); n++) {
-				if (n > 0) {
-					outfile << ",";
-				}
-				outfile << Tortuosity_data[n][index];
+				outfile << "," << Tortuosity_data[n][index];
 			}
 			outfile << endl;
 		}

@@ -188,10 +188,10 @@ public:
 	//! \return The vector index for the sites vector that is associated with the site located at the input coordinates.
 	long int getSiteIndex(const int x, const int y, const int z) const;
 
-	//! \brief Gets the vector iterator for the site corresponding to the input coordinates.
-	//! \param coords is the Coords struct that represents the input coordinates.
-	//! \return The vector iterator for the sites vector that is associated with the site located at the input coordinates.
-	std::vector<Lattice::Site>::iterator getSiteIt(const Coords& coords);
+	// //! \brief Gets the vector iterator for the site corresponding to the input coordinates.
+	// //! \param coords is the Coords struct that represents the input coordinates.
+	// //! \return The vector iterator for the sites vector that is associated with the site located at the input coordinates.
+	// std::vector<Lattice::Site>::iterator getSiteIt(const Coords& coords);
 
 	//! \brief Gets the type of the site wtih the specified site index
 	//! \param site_index is the site index.

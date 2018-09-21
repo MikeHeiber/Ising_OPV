@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['calculateanisotropies',['calculateAnisotropies',['../class_morphology.html#ade7823e9d940f64f2a2a8e0e8d42feda',1,'Morphology']]],
-  ['calculatecorrelationdistances',['calculateCorrelationDistances',['../class_morphology.html#a068a9bfe83b2fc6d5db049484667bff4',1,'Morphology']]],
+  ['calculateanisotropies',['calculateAnisotropies',['../class_morphology.html#af1028786f9d272c36934baad133ccab3',1,'Morphology']]],
+  ['calculatecorrelationdistances',['calculateCorrelationDistances',['../class_morphology.html#a1207a83ff92dd50441fea6a6b831d742',1,'Morphology']]],
   ['calculatecumulativehist',['calculateCumulativeHist',['../namespace_utils.html#aeeafbd56205953143f1a18306da06884',1,'Utils']]],
-  ['calculatedepthdependentdata',['calculateDepthDependentData',['../class_morphology.html#ad407cc95b032af3ca1fd3dce825700ce',1,'Morphology']]],
+  ['calculatedepthdependentdata',['calculateDepthDependentData',['../class_morphology.html#a1c71dbe574286c6b4a558943dacac61c',1,'Morphology']]],
   ['calculatedestinationcoords',['calculateDestinationCoords',['../class_lattice.html#aa6b80d6264bfc23ae5fea39abd2557d5',1,'Lattice']]],
   ['calculatedx',['calculateDX',['../class_lattice.html#a08adb2f412af409d3ec241e60e687c1a',1,'Lattice::calculateDX(const int x, const int i) const'],['../class_lattice.html#ad89c5473dd37339ede9fb3d0c3db4300',1,'Lattice::calculateDX(const Coords &amp;coords_initial, const Coords &amp;coords_dest) const']]],
   ['calculatedy',['calculateDY',['../class_lattice.html#acdeca889f7df11fe299f8b7941198c83',1,'Lattice::calculateDY(const int y, const int j) const'],['../class_lattice.html#a4e8b3577701ec0cefce595f6956b22e3',1,'Lattice::calculateDY(const Coords &amp;coords_initial, const Coords &amp;coords_dest) const']]],
@@ -18,7 +18,6 @@ var searchData=
   ['calculatetortuosity',['calculateTortuosity',['../class_morphology.html#a6759d842269ad3c1681a8fd8f6bcef9d',1,'Morphology']]],
   ['checkmovevalidity',['checkMoveValidity',['../class_lattice.html#ad0592298c4b92e9e84a768b95cd6d0f0',1,'Lattice']]],
   ['coords',['Coords',['../struct_coords.html',1,'']]],
-  ['correlationcalc_5fparams',['CorrelationCalc_Params',['../struct_correlation_calc___params.html',1,'']]],
   ['createbilayermorphology',['createBilayerMorphology',['../class_morphology.html#a9373bb06bff0149fcd866272fd2db590',1,'Morphology']]],
   ['createcheckerboardmorphology',['createCheckerboardMorphology',['../class_morphology.html#ae4e6534fd06b5b9d93e9908247f3c6f2',1,'Morphology']]],
   ['createrandommorphology',['createRandomMorphology',['../class_morphology.html#aeadb44cbafeaeed463f19ffbc3f6077e',1,'Morphology']]]

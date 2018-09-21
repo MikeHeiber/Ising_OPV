@@ -224,6 +224,12 @@ Coords Lattice::getSiteCoords(long int site_index) const {
 }
 
 long int Lattice::getSiteIndex(const Coords& coords) const {
+	if (coords.x < 0 || coords.y < 0 || coords.z < 0) {
+		throw invalid_argument("The input coordinates cannot contain a negative x, y, or z position.");
+	}
+	if (coords.x >= Length || coords.y >= Width || coords.z >= Height) {
+		throw out_of_range("The input coordinates do not lie within the lattice.");
+	}
 	return (long int)coords.x*(long int)Width*(long int)Height + (long int)coords.y*(long int)Height + (long int)coords.z;
 }
 
@@ -231,19 +237,23 @@ long int Lattice::getSiteIndex(const int x, const int y, const int z) const {
 	return (long int)x*(long int)Width*(long int)Height + (long int)y*(long int)Height + (long int)z;
 }
 
-vector<Lattice::Site>::iterator Lattice::getSiteIt(const Coords& coords) {
-	auto site_it = sites.begin();
-	advance(site_it, getSiteIndex(coords));
-	return site_it;
-}
+//vector<Lattice::Site>::iterator Lattice::getSiteIt(const Coords& coords) {
+//	auto site_it = sites.begin();
+//	advance(site_it, getSiteIndex(coords));
+//	return site_it;
+//}
 
 char Lattice::getSiteType(const long int site_index) const {
-	if (site_index < getNumSites()) {
-		return sites[site_index].type;
+	if (site_index < 0) {
+		throw invalid_argument("The input site_index cannot be negative.");
 	}
-	else {
+	if (site_index >= getNumSites()) {
 		throw out_of_range("The input site_index is not in range of the sites vector.");
 	}
+	else {
+		return sites[site_index].type;
+	}
+	
 }
 
 char Lattice::getSiteType(const Coords& coords) const {

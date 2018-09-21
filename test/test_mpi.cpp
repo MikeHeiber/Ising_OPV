@@ -51,6 +51,9 @@ namespace MPI_Tests {
 			EXPECT_DOUBLE_EQ(2.0 / 12.0, prob[4].second);
 			EXPECT_DOUBLE_EQ(1.0 / 12.0, prob[5].second);
 		}
+		// Check behavior when the histogram is empty
+		hist.clear();
+		EXPECT_THROW(MPI_calculateProbHistAvg(hist), invalid_argument);
 	}
 
 	TEST_F(MPI_Test, CalculateVectorAvgTests) {
@@ -95,14 +98,44 @@ namespace MPI_Tests {
 	}
 
 	TEST_F(MPI_Test, GatherValuesTests) {
-		// Collect procid from each proc
-		auto data_all = MPI_gatherValues((double)procid);
+		// Collect procid from each proc integers
+		auto data_all = MPI_gatherValues(procid);
 		if (procid == 0) {
 			// Check size of data vector
 			EXPECT_EQ(nproc, (int)data_all.size());
 			// check values of data vector
 			for (int i = 0; i < (int)data_all.size(); i++) {
-				EXPECT_DOUBLE_EQ((double)i, data_all[i]);
+				EXPECT_EQ(i, data_all[i]);
+			}
+		}
+		// Check behavior of negative ints
+		data_all = MPI_gatherValues(-procid);
+		if (procid == 0) {
+			// Check size of data vector
+			EXPECT_EQ(nproc, (int)data_all.size());
+			// check values of data vector
+			for (int i = 0; i < (int)data_all.size(); i++) {
+				EXPECT_EQ(-i, data_all[i]);
+			}
+		}
+		// Collect procid from each proc as doubles
+		auto data_all2 = MPI_gatherValues((double)procid);
+		if (procid == 0) {
+			// Check size of data vector
+			EXPECT_EQ(nproc, (int)data_all2.size());
+			// check values of data vector
+			for (int i = 0; i < (int)data_all2.size(); i++) {
+				EXPECT_DOUBLE_EQ((double)i, data_all2[i]);
+			}
+		}
+		// Check behavior of negative doubles
+		data_all2 = MPI_gatherValues((double)-procid);
+		if (procid == 0) {
+			// Check size of data vector
+			EXPECT_EQ(nproc, (int)data_all2.size());
+			// check values of data vector
+			for (int i = 0; i < (int)data_all2.size(); i++) {
+				EXPECT_DOUBLE_EQ((double)-i, data_all2[i]);
 			}
 		}
 	}

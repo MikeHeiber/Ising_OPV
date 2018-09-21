@@ -19,7 +19,6 @@ var searchData=
   ['getnumsites',['getNumSites',['../class_lattice.html#a4be17e9123f7737387991a9d1a8b87b3',1,'Lattice']]],
   ['getsitecoords',['getSiteCoords',['../class_lattice.html#a84118896ce967c8f84554375b19c7334',1,'Lattice']]],
   ['getsiteindex',['getSiteIndex',['../class_lattice.html#a60431f6504a253d47acb0b02f524571c',1,'Lattice::getSiteIndex(const Coords &amp;coords) const'],['../class_lattice.html#ae9c341e7d35c3077e1a86737c6bb73fd',1,'Lattice::getSiteIndex(const int x, const int y, const int z) const']]],
-  ['getsiteit',['getSiteIt',['../class_lattice.html#a2bf73ce210cd896f92099498a347f966',1,'Lattice']]],
   ['getsitetype',['getSiteType',['../class_lattice.html#a7d2db4b81db95baa30a841d4354c621a',1,'Lattice::getSiteType(const long int site_index) const'],['../class_lattice.html#a8637f75a4930631dbd11cc64e56b4fbc',1,'Lattice::getSiteType(const Coords &amp;coords) const'],['../class_lattice.html#a3f68c6011aea6c7ae5c25141b87ddbfd',1,'Lattice::getSiteType(const int x, const int y, const int z) const']]],
   ['gettortuositydata',['getTortuosityData',['../class_morphology.html#a25e44bd12a814f83a93e46f0d6c28362',1,'Morphology']]],
   ['getunitsize',['getUnitSize',['../class_lattice.html#ac6963a6b2b4b8d96d3417f6e9c2a509d',1,'Lattice::getUnitSize()'],['../class_morphology.html#aac27576c0f5331a9e8de755fcce65faa',1,'Morphology::getUnitSize()']]],

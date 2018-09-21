@@ -442,7 +442,7 @@ namespace LatticeTests {
 		EXPECT_EQ(12, lattice.calculateLatticeDistanceSquared(coords_i, coords_f));
 	}
 
-	TEST_F(LatticeTest, GetSiteCoordsTests) {
+	TEST_F(LatticeTest, GetSiteTests) {
 		Coords coords1, coords2;
 		int index;
 		for (int i = 0; i < 100; i++) {
@@ -456,6 +456,19 @@ namespace LatticeTests {
 		// Check request for coords given a site index that not in the lattice
 		EXPECT_THROW(lattice.getSiteCoords(-1), invalid_argument);
 		EXPECT_THROW(lattice.getSiteCoords(lattice.getLength()*lattice.getWidth()*lattice.getHeight()), out_of_range);
+		// Check behavior of getSiteType
+		coords1.setXYZ(10, 10, 10);
+		// Check default site type
+		EXPECT_EQ((char)0, lattice.getSiteType(coords1));
+		EXPECT_EQ((char)0, lattice.getSiteType(0));
+		// Check behavior of invalid site index
+		EXPECT_THROW(lattice.getSiteType(-1), invalid_argument);
+		EXPECT_THROW(lattice.getSiteType(50 * 50 * 50), out_of_range);
+		// Check behavior of invalid coords
+		coords1.setXYZ(-1, -1, -1);
+		EXPECT_THROW(lattice.getSiteType(coords1), invalid_argument);
+		coords1.setXYZ(50, 50, 50);
+		EXPECT_THROW(lattice.getSiteType(coords1), out_of_range);
 	}
 
 }
@@ -509,6 +522,8 @@ namespace MorphologyTests {
 		EXPECT_EQ(40, morph.getHeight());
 		// Check that the lattice has the correct unit size
 		EXPECT_DOUBLE_EQ(1.5, morph.getUnitSize());
+		// Check that the params are set properly
+
 	}
 
 	TEST(MorphologyTests, RandomMorphologyTests) {
@@ -770,7 +785,7 @@ namespace MorphologyTests {
 		EXPECT_NEAR(0.5, morph_start->getMixFraction((char)2), 0.001);
 	}
 
-	TEST_F(MorphologyTest, IsotropicAnalysisTests) {
+	TEST_F(MorphologyTest, DomainSizeTests) {
 		Morphology morph = *morph_start;
 		double domain_size1_i = morph.getDomainSize((char)1);
 		double domain_size2_i = morph.getDomainSize((char)2);
@@ -818,24 +833,6 @@ namespace MorphologyTests {
 		// Check that the phase separated blend is isotropic
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
 		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
-		// Calculate the tortuosity
-		morph.calculateTortuosity((char)1, false);
-		morph.calculateTortuosity((char)2, false);
-		// Check tortuosity calculation of invalid site type
-		EXPECT_FALSE(morph.calculateTortuosity((char)3, false));
-		// Check the tortuosity
-		double tortuosity1 = vector_avg(morph.getTortuosityData((char)1));
-		double tortuosity2 = vector_avg(morph.getTortuosityData((char)2));
-		EXPECT_NEAR(1.1, tortuosity1, 0.025);
-		EXPECT_NEAR(1.1, tortuosity2, 0.025);
-		// Calculate the tortuosity using the reduced memory option
-		morph.calculateTortuosity((char)1, true);
-		morph.calculateTortuosity((char)2, true);
-		// Check that both tortuosity methods give the same answer
-		data1 = morph.getTortuosityData((char)1);
-		data2 = morph.getTortuosityData((char)2);
-		EXPECT_DOUBLE_EQ(tortuosity1, vector_avg(data1));
-		EXPECT_DOUBLE_EQ(tortuosity2, vector_avg(data2));
 		// Calculate the depth dependent characteristics
 		morph.calculateDepthDependentData();
 		data1 = morph.getDepthDomainSizeData((char)1);
@@ -860,15 +857,64 @@ namespace MorphologyTests {
 		for (auto item : data) {
 			EXPECT_NEAR(iv_frac_i, item, 0.1);
 		}
-		// Calculate the interfacial distance histogram
-		morph.calculateInterfacialDistanceHistogram();
-		auto hist1 = morph.getInterfacialDistanceHistogram((char)1);
-		auto hist2 = morph.getInterfacialDistanceHistogram((char)2);
-		auto cum_hist1 = calculateCumulativeHist(calculateProbabilityHist(hist1));
-		auto cum_hist2 = calculateCumulativeHist(calculateProbabilityHist(hist2));
-		// Check that the probability histograms add up to 1
-		EXPECT_DOUBLE_EQ(1.0, cum_hist1.back().second);
-		EXPECT_DOUBLE_EQ(1.0, cum_hist2.back().second);
+		string line;
+		// Output correlation data
+		ofstream outfile2("correlation_data.txt");
+		morph.outputCorrelationData(outfile2);
+		outfile2.close();
+		// Check that output looks valid
+		ifstream infile2("correlation_data.txt");
+		getline(infile2, line);
+		// Check first column names line
+		EXPECT_EQ("Distance (nm),Correlation1,Correlation2", line);
+		// Check first data line
+		getline(infile2, line);
+		EXPECT_EQ("0,1,1", line);
+		infile2.close();
+		// Output depth dependent data
+		ofstream outfile3("depth_data.txt");
+		morph.outputDepthDependentData(outfile3);
+		outfile3.close();
+		// Check that output looks valid
+		ifstream infile3("depth_data.txt");
+		// Check first column names line
+		getline(infile3, line);
+		EXPECT_EQ("Z-Position,Type1_composition,Type2_composition,Type1_domain_size,Type2_domain_size,IV_fraction", line);
+	}
+
+	TEST_F(MorphologyTest, TortuosityTests) {
+		Morphology morph = *morph_start;
+		// Calculate the tortuosity
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		// Check tortuosity calculation of invalid site type
+		EXPECT_FALSE(morph.calculateTortuosity((char)3, false));
+		// Check the tortuosity
+		double tortuosity1 = vector_avg(morph.getTortuosityData((char)1));
+		double tortuosity2 = vector_avg(morph.getTortuosityData((char)2));
+		EXPECT_NEAR(1.1, tortuosity1, 0.025);
+		EXPECT_NEAR(1.1, tortuosity2, 0.025);
+		// Calculate the tortuosity using the reduced memory option
+		morph.calculateTortuosity((char)1, true);
+		morph.calculateTortuosity((char)2, true);
+		// Check that both tortuosity methods give the same answer
+		auto data1 = morph.getTortuosityData((char)1);
+		auto data2 = morph.getTortuosityData((char)2);
+		EXPECT_DOUBLE_EQ(tortuosity1, vector_avg(data1));
+		EXPECT_DOUBLE_EQ(tortuosity2, vector_avg(data2));
+		// Output tortuosity maps
+		ofstream outfile("tortuosity_maps.txt");
+		morph.outputTortuosityMaps(outfile);
+		outfile.close();
+		// Check that output looks valid
+		ifstream infile("tortuosity_maps.txt");
+		string line;
+		// Check first column names line
+		getline(infile, line);
+		EXPECT_EQ("X-Position,Y-Position,Tortuosity1,Tortuosity2", line);
+		// Check first data line
+		getline(infile, line);
+		EXPECT_TRUE(line.find("0,0,") != string::npos);
 	}
 
 	TEST_F(MorphologyTest, SmoothingAndResizeTests) {
@@ -939,8 +985,17 @@ namespace MorphologyTests {
 		EXPECT_THROW(morph.shrinkLattice(3), invalid_argument);
 	}
 
-	TEST_F(MorphologyTest, InterfacialMixingTests) {
+	TEST_F(MorphologyTest, InterfacialTests) {
 		Morphology morph = *morph_start;
+		// Calculate the interfacial distance histogram
+		morph.calculateInterfacialDistanceHistogram();
+		auto hist1 = morph.getInterfacialDistanceHistogram((char)1);
+		auto hist2 = morph.getInterfacialDistanceHistogram((char)2);
+		auto cum_hist1 = calculateCumulativeHist(calculateProbabilityHist(hist1));
+		auto cum_hist2 = calculateCumulativeHist(calculateProbabilityHist(hist2));
+		// Check that the probability histograms add up to 1
+		EXPECT_DOUBLE_EQ(1.0, cum_hist1.back().second);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist2.back().second);
 		// Get initial domain sizes
 		double domain_size1_i = morph.getDomainSize((char)1);
 		double domain_size2_i = morph.getDomainSize((char)2);
@@ -1081,6 +1136,38 @@ namespace MorphologyTests {
 		//EXPECT_FALSE(morph.importMorphologyFile(infile));
 		//infile.close();
 		//infile.clear();
+	}
+
+	TEST_F(MorphologyTest, OtherOutputTests) {
+		Morphology morph = *morph_start;
+		string line;
+		// Output composition maps
+		ofstream outfile1("composition_maps.txt");
+		morph.outputCompositionMaps(outfile1);
+		outfile1.close();
+		// Check that output looks valid
+		ifstream infile1("composition_maps.txt");
+		// Check first column names line
+		getline(infile1, line);
+		EXPECT_EQ("X-Position,Y-Position,Composition1,Composition2", line);
+		// Check first data line
+		getline(infile1, line);
+		EXPECT_TRUE(line.find("0,0,") != string::npos);
+		infile1.close();
+		// Output morphology cross-section
+		ofstream outfile2("morphology_cross.txt");
+		morph.outputMorphologyCrossSection(outfile2);
+		outfile2.close();
+		// Check that output looks valid
+		ifstream infile2("morphology_cross.txt");
+		// Check first column names line
+		getline(infile2, line);
+		EXPECT_EQ("X-Position,Y-Position,Z-Position,Site_type", line);
+		// Check first data line
+		getline(infile2, line);
+		EXPECT_TRUE(line.find(to_string(morph.getLength() / 2) + ",0,0,") != string::npos);
+		infile2.close();
+
 	}
 }
 

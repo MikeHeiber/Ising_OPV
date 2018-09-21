@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['calculateanisotropies',['calculateAnisotropies',['../class_morphology.html#ade7823e9d940f64f2a2a8e0e8d42feda',1,'Morphology']]],
-  ['calculatecorrelationdistances',['calculateCorrelationDistances',['../class_morphology.html#a068a9bfe83b2fc6d5db049484667bff4',1,'Morphology']]],
+  ['calculateanisotropies',['calculateAnisotropies',['../class_morphology.html#af1028786f9d272c36934baad133ccab3',1,'Morphology']]],
+  ['calculatecorrelationdistances',['calculateCorrelationDistances',['../class_morphology.html#a1207a83ff92dd50441fea6a6b831d742',1,'Morphology']]],
   ['calculatecumulativehist',['calculateCumulativeHist',['../namespace_utils.html#aeeafbd56205953143f1a18306da06884',1,'Utils']]],
-  ['calculatedepthdependentdata',['calculateDepthDependentData',['../class_morphology.html#ad407cc95b032af3ca1fd3dce825700ce',1,'Morphology']]],
+  ['calculatedepthdependentdata',['calculateDepthDependentData',['../class_morphology.html#a1c71dbe574286c6b4a558943dacac61c',1,'Morphology']]],
   ['calculatedestinationcoords',['calculateDestinationCoords',['../class_lattice.html#aa6b80d6264bfc23ae5fea39abd2557d5',1,'Lattice']]],
   ['calculatedx',['calculateDX',['../class_lattice.html#a08adb2f412af409d3ec241e60e687c1a',1,'Lattice::calculateDX(const int x, const int i) const'],['../class_lattice.html#ad89c5473dd37339ede9fb3d0c3db4300',1,'Lattice::calculateDX(const Coords &amp;coords_initial, const Coords &amp;coords_dest) const']]],
   ['calculatedy',['calculateDY',['../class_lattice.html#acdeca889f7df11fe299f8b7941198c83',1,'Lattice::calculateDY(const int y, const int j) const'],['../class_lattice.html#a4e8b3577701ec0cefce595f6956b22e3',1,'Lattice::calculateDY(const Coords &amp;coords_initial, const Coords &amp;coords_dest) const']]],

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['additional_5finteraction',['Additional_interaction',['../struct_input___params.html#aeec30325a300fcdca0f87c78917df489',1,'Input_Params']]]
+  ['additional_5finteraction',['Additional_interaction',['../class_parameters.html#a11c9e88faa7793fdd547c07421e1751b',1,'Parameters']]]
 ];

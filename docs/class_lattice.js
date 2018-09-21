@@ -21,7 +21,6 @@ var class_lattice =
     [ "getSiteCoords", "class_lattice.html#a84118896ce967c8f84554375b19c7334", null ],
     [ "getSiteIndex", "class_lattice.html#a60431f6504a253d47acb0b02f524571c", null ],
     [ "getSiteIndex", "class_lattice.html#ae9c341e7d35c3077e1a86737c6bb73fd", null ],
-    [ "getSiteIt", "class_lattice.html#a2bf73ce210cd896f92099498a347f966", null ],
     [ "getSiteType", "class_lattice.html#a7d2db4b81db95baa30a841d4354c621a", null ],
     [ "getSiteType", "class_lattice.html#a8637f75a4930631dbd11cc64e56b4fbc", null ],
     [ "getSiteType", "class_lattice.html#a3f68c6011aea6c7ae5c25141b87ddbfd", null ],

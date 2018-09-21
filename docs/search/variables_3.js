@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['growth_5fdirection',['Growth_direction',['../struct_input___params.html#a3d5dfb17e825564eedd5f1c9624eafbf',1,'Input_Params']]]
+  ['growth_5fdirection',['Growth_direction',['../class_parameters.html#af197dea6a6cc714a04ef9e2d14f5eb6f',1,'Parameters']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['smoothing_5fthreshold',['Smoothing_threshold',['../struct_input___params.html#ac1f8037bd5aacf7bdb39d1fd979990d5',1,'Input_Params']]]
+  ['smoothing_5fthreshold',['Smoothing_threshold',['../class_parameters.html#a8a0e8f76994c9e085528e909df940d09',1,'Parameters']]]
 ];

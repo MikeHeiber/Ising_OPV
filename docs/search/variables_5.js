@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['interaction_5fenergy1',['Interaction_energy1',['../struct_input___params.html#ac5fb3d67ef960d12c01840c637cd1ced',1,'Input_Params']]],
-  ['interaction_5fenergy2',['Interaction_energy2',['../struct_input___params.html#aa33065563878624538f98621c3add7ba',1,'Input_Params']]],
-  ['interface_5fconc',['Interface_conc',['../struct_input___params.html#a0a7ce7fa81971a06968d05d6044dbfe1',1,'Input_Params']]],
-  ['interface_5fwidth',['Interface_width',['../struct_input___params.html#abf11a38da40cfae6e40ee367aee15f90',1,'Input_Params']]]
+  ['interaction_5fenergy1',['Interaction_energy1',['../class_parameters.html#a803f894c54626ddfe2097a54bf659760',1,'Parameters']]],
+  ['interaction_5fenergy2',['Interaction_energy2',['../class_parameters.html#ac4a768de330078b732306d2da7e1d40c',1,'Parameters']]],
+  ['interface_5fconc',['Interface_conc',['../class_parameters.html#a7e7b8d9e02d2e535a33e7cf1a0ca880c',1,'Parameters']]],
+  ['interface_5fwidth',['Interface_width',['../class_parameters.html#a4469b1acc39446fa799d09d908cd27fb',1,'Parameters']]]
 ];

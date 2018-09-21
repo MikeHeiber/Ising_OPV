@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['morphology',['Morphology',['../class_morphology.html',1,'']]]
+  ['parameters',['Parameters',['../class_parameters.html',1,'']]]
 ];
