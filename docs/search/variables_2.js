@@ -11,6 +11,8 @@ var searchData=
   ['enable_5fexport_5fcross_5fsection',['Enable_export_cross_section',['../class_parameters.html#a5a7bae00cf39143113810641f5710e72',1,'Parameters']]],
   ['enable_5fextended_5fcorrelation_5fcalc',['Enable_extended_correlation_calc',['../class_parameters.html#a4b3c352bb54477e7123b71341dba3a1d',1,'Parameters']]],
   ['enable_5fgrowth_5fpref',['Enable_growth_pref',['../class_parameters.html#aed324145a5043698a7d0b8daf1f1c434',1,'Parameters']]],
+  ['enable_5fimport_5fmorphologies',['Enable_import_morphologies',['../class_parameters.html#aeec69464f802b67a65abadb3dd99897f',1,'Parameters']]],
+  ['enable_5fimport_5ftomogram',['Enable_import_tomogram',['../class_parameters.html#a4e4316ab67acab1c958762b305afa7fd',1,'Parameters']]],
   ['enable_5finterfacial_5fdistance_5fcalc',['Enable_interfacial_distance_calc',['../class_parameters.html#a8a7d1f5f219239a1a7b8d3c2bae56c56',1,'Parameters']]],
   ['enable_5finterfacial_5fmixing',['Enable_interfacial_mixing',['../class_parameters.html#adbce655ef40567a18607f61ad90de71c',1,'Parameters']]],
   ['enable_5fmix_5ffrac_5fmethod',['Enable_mix_frac_method',['../class_parameters.html#a62706ccbc7961d9e8224e6463bef6c38',1,'Parameters']]],

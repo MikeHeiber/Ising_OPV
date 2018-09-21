@@ -12,7 +12,121 @@ Parameters::Parameters() {
 
 }
 
-//  This function imports the parameters from an input parameter text file into the Input_Parameters data structure.
+bool Parameters::checkParameters() {
+	bool Error_found = false;
+	// Check for valid lattice dimensions
+	if (Length <= 0 || Width <= 0 || Height <= 0) {
+		cout << "Parameter error!  The input Length, Width, and Height of the lattice must be greater than zero." << endl;
+		Error_found = true;
+	}
+	// Check the input mix fraction
+	if (Mix_fraction < 0 || Mix_fraction > 1) {
+		cout << "Parameter error! The input Mix_fraction must be between 0 and 1." << endl;
+		Error_found = true;
+	}
+	// Check the input interaction energies
+	if (Interaction_energy1 < 0 || Interaction_energy2 < 0) {
+		cout << "Parameter error! The input Interaction_energy1 and Interaction_energy2 parameters cannot be negative." << endl;
+		Error_found = true;
+	}
+	// Check the input number of Monte Carlo steps
+	if (MC_steps < 0) {
+		cout << "Parameter error! The input MC_steps parameter cannot be negative." << endl;
+		Error_found = true;
+	}
+	// Check the smoothing parameters
+	if (Enable_smoothing && !Smoothing_threshold > 0) {
+		cout << "Parameter error! When performing smoothing, the input Smoothing_threshold must be greater than zero." << endl;
+		Error_found = true;
+	}
+	// Check the lattice resclae parameters
+	if (Enable_rescale && !Rescale_factor > 0) {
+		cout << "Parameter error! When rescaling the lattice, the input Rescale_factor must be greater than zero." << endl;
+		Error_found = true;
+	}
+	if (Enable_rescale && Enable_shrink && (Length % Rescale_factor != 0 || Width % Rescale_factor != 0 || Height % Rescale_factor != 0)) {
+		cout << "Parameter error! When shrinking the lattice, the input Rescale_factor must be an integer multiple of the Length, Width, and Height." << endl;
+		Error_found = true;
+	}
+	// Check the interfacial mixing parameters
+	if (Enable_interfacial_mixing && !Interface_width > 0) {
+		cout << "Parameter error! When performing interfacial mixing, the input Interface_width must be greater than zero." << endl;
+		Error_found = true;
+	}
+	if (Enable_interfacial_mixing && (!Interface_conc > 0 || !Interface_conc < 1)) {
+		cout << "Parameter error! When performing interfacial mixing, the input Interface_conc must be greater than zero and less than 1." << endl;
+		Error_found = true;
+	}
+	// Check the correlation calculation parameters
+	if (Enable_correlation_calc && !N_sampling_max > 0) {
+		cout << "Parameter error! When performing the correlation calculation, the mix fraction method and the 1/e method cannot both be enabled." << endl;
+		Error_found = true;
+	}
+	if (Enable_correlation_calc && Enable_mix_frac_method && Enable_e_method) {
+		cout << "Parameter error! When performing the correlation calculation, the mix fraction method and the 1/e method cannot both be enabled." << endl;
+		Error_found = true;
+	}
+	if (Enable_correlation_calc && !Enable_mix_frac_method && !Enable_e_method) {
+		cout << "Parameter error! When performing the correlation calculation, either the mix fraction method or the 1/e method must be enabled." << endl;
+		Error_found = true;
+	}
+	if (Enable_correlation_calc && Enable_extended_correlation_calc && !Extended_correlation_cutoff_distance > 0) {
+		cout << "Parameter error! When performing the extended correlation calculation, Extended_correlation_cutoff_distance must be greater than zero." << endl;
+		Error_found = true;
+	}
+	// Check the growth preference parameters
+	if (Enable_growth_pref && (!Growth_direction >= 1 || !Growth_direction <= 3)) {
+		cout << "Parameter error! When performing phase separation with a directional growth preference, the input Growth_direction paramter must be 1, 2, or 3." << endl;
+		Error_found = true;
+	}
+	if (Enable_growth_pref && !Additional_interaction > 0 && !Additional_interaction < 0) {
+		cout << "Parameter error! When performing phase separation with a directional growth preference, the input Additional_interaction parameter must not be zero." << endl;
+		Error_found = true;
+	}
+	// Check tomogram import parameters
+	if (Enable_import_tomogram && !Desired_unit_size > 0) {
+		cout << "Parameter error! When importing a tomogram dataset, the input Desired_unit_size must not be zero." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && Enable_cutoff_analysis && Mixed_greyscale_width < 0) {
+		cout << "Parameter error! When importing a tomogram dataset and using the cutoff analysis option, the Mixed_greyscale_width must not be negative." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && Enable_cutoff_analysis && (!Mixed_conc > 0 || !Mixed_conc < 1)) {
+		cout << "Parameter error! When importing a tomogram dataset and using the cutoff analysis option, the Mixed_conc must be greater than zero and less than 1." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && !Enable_cutoff_analysis && !Enable_probability_analysis) {
+		cout << "Parameter error! When importing a tomogram dataset, the cutoff analysis or the probability analysis option must be enabled." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && Enable_cutoff_analysis && Enable_probability_analysis) {
+		cout << "Parameter error! When importing a tomogram dataset, the cutoff analysis and the probability analysis options cannot both be enabled." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && Enable_probability_analysis && Probability_scaling_exponent < 0) {
+		cout << "Parameter error! When importing a tomogram dataset and using the probability analysis option, the Probability_scaling_exponent must not be negative." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && !N_extracted_segments > 0) {
+		cout << "Parameter error! When importing a tomogram dataset, the input N_extracted segments must be greater than zero." << endl;
+		Error_found = true;
+	}
+	if (Enable_import_tomogram && !N_variants > 0) {
+		cout << "Parameter error! When importing a tomogram dataset, the input N_variants segments must be greater than zero." << endl;
+		Error_found = true;
+	}
+	// Check other parameter conflicts
+	if (Enable_analysis_only && !Enable_import_morphologies && !Enable_import_tomogram) {
+		cout << "Parameter error!  The 'analysis only' option can only be used when importing morphologies." << endl;
+		Error_found = true;
+	}
+	if (Error_found) {
+		return false;
+	}
+	return true;
+}
+
 bool Parameters::importParameters(ifstream& parameterfile) {
 	string line;
 	string var;
@@ -56,26 +170,6 @@ bool Parameters::importParameters(ifstream& parameterfile) {
 	Interaction_energy2 = atof(stringvars[i].c_str());
 	i++;
 	MC_steps = atoi(stringvars[i].c_str());
-	i++;
-	//enable_export_compressed_files
-	try {
-		Enable_export_compressed_files = str2bool(stringvars[i]);
-	}
-	catch (invalid_argument& exception) {
-		cout << exception.what() << endl;
-		cout << "Error setting export options" << endl;
-		return false;
-	}
-	i++;
-	//enable_export_cross_section
-	try {
-		Enable_export_cross_section = str2bool(stringvars[i]);
-	}
-	catch (invalid_argument& exception) {
-		cout << exception.what() << endl;
-		cout << "Error setting export cross-section options" << endl;
-		return false;
-	}
 	i++;
 	//enable_smoothing
 	try {
@@ -252,7 +346,51 @@ bool Parameters::importParameters(ifstream& parameterfile) {
 	i++;
 	Additional_interaction = atof(stringvars[i].c_str());
 	i++;
+	// Export Morphology Parameters
+	//Enable_export_compressed_files
+	try {
+		Enable_export_compressed_files = str2bool(stringvars[i]);
+	}
+	catch (invalid_argument& exception) {
+		cout << exception.what() << endl;
+		cout << "Error setting export options" << endl;
+		return false;
+	}
+	i++;
+	//Enable_export_cross_section
+	try {
+		Enable_export_cross_section = str2bool(stringvars[i]);
+	}
+	catch (invalid_argument& exception) {
+		cout << exception.what() << endl;
+		cout << "Error setting export cross-section options" << endl;
+		return false;
+	}
+	i++;
+	// Import Morphology Options
+	//Enable_import_morphologies
+	try {
+		Enable_import_morphologies = str2bool(stringvars[i]);
+	}
+	catch (invalid_argument& exception) {
+		cout << exception.what() << endl;
+		cout << "Error setting morphology import option" << endl;
+		return false;
+	}
+	i++;
 	// Tomogram Import Options
+	//Enable_import_tomogram
+	try {
+		Enable_import_tomogram = str2bool(stringvars[i]);
+	}
+	catch (invalid_argument& exception) {
+		cout << exception.what() << endl;
+		cout << "Error setting tomogram import option" << endl;
+		return false;
+	}
+	i++;
+	Tomogram_name = stringvars[i];
+	i++;
 	Desired_unit_size = atof(stringvars[i].c_str());
 	i++;
 	try {

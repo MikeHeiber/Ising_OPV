@@ -21,7 +21,10 @@ public:
 	//! \warning An empty Parameters object should not be used until initialized.
 	Parameters();
 
-	//bool checkParameters();
+	//! \brief Checks the current values of all parameters to ensure that they are valid.
+	//! \return true if all parameters are valid.
+	//! \return false if any parameter value is invalid.
+	bool checkParameters();
 
 	//! \brief Imports the parameters from the input parameter filestream
 	//! \param parameterfile is an open input filestream that points to the beginning of a correctly formatted parameter file.
@@ -38,9 +41,6 @@ public:
 	double Interaction_energy1 = 0.0; // energetic favorability for type1-type1 interactions over type1-type2 interactions
 	double Interaction_energy2 = 0.0; // energetic favorability for type2-type2 interactions over type1-type2 interactions
 	int MC_steps = 0; // number of MC steps to be executed (determines number of Ising swapping iterations)
-	// Export Morphology Options
-	bool Enable_export_compressed_files = true; // choose whether the output morphology data file is in compressed format or not
-	bool Enable_export_cross_section = false; // choose whether to output data for an uncompressed cross section (x=0 plane) of the morphology
 	// Smoothing Options
 	bool Enable_smoothing = false; // choose whether to perform domain smoothing or not
 	double Smoothing_threshold = 0.0;  // specify the degree of smoothing
@@ -70,7 +70,13 @@ public:
 	bool Enable_growth_pref = false;
 	int Growth_direction = 0;
 	double Additional_interaction = 0.0;
-	// Tomogram Import Options
+	// Export Morphology Options
+	bool Enable_export_compressed_files = true; // choose whether the output morphology data file is in compressed format or not
+	bool Enable_export_cross_section = false; // choose whether to output data for an uncompressed cross section (x=0 plane) of the morphology
+	// Import Morphology Options
+	bool Enable_import_morphologies = false;
+	bool Enable_import_tomogram = false;
+	std::string Tomogram_name = "";
 	//! Specifies the final unit size (resolution) of the output morphology dataset.
 	double Desired_unit_size = 0.0;
 	//! Choose whether to enable the image brightness cutoff threshold-based interpretation of the tomography data.

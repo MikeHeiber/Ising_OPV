@@ -106,6 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af4d94ee360ac0157d9065f78797fe9a1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#af4d94ee360ac0157d9065f78797fe9a1">Parameters</a> ()</td></tr>
 <tr class="memdesc:af4d94ee360ac0157d9065f78797fe9a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor that creates an empty <a class="el" href="class_parameters.html" title="This class contains the parameters used by Ising_OPV and functions to import parameter files...">Parameters</a> object.  <a href="#af4d94ee360ac0157d9065f78797fe9a1">More...</a><br /></td></tr>
 <tr class="separator:af4d94ee360ac0157d9065f78797fe9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3f854d49f647d3f82d2fbdcbac5d0e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a5c3f854d49f647d3f82d2fbdcbac5d0e">checkParameters</a> ()</td></tr>
+<tr class="memdesc:a5c3f854d49f647d3f82d2fbdcbac5d0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks the current values of all parameters to ensure that they are valid.  <a href="#a5c3f854d49f647d3f82d2fbdcbac5d0e">More...</a><br /></td></tr>
+<tr class="separator:a5c3f854d49f647d3f82d2fbdcbac5d0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad43bc6a4b859536b5003c42f17923ee3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#ad43bc6a4b859536b5003c42f17923ee3">importParameters</a> (std::ifstream &amp;parameterfile)</td></tr>
 <tr class="memdesc:ad43bc6a4b859536b5003c42f17923ee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Imports the parameters from the input parameter filestream.  <a href="#ad43bc6a4b859536b5003c42f17923ee3">More...</a><br /></td></tr>
 <tr class="separator:ad43bc6a4b859536b5003c42f17923ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,10 +131,6 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ac4a768de330078b732306d2da7e1d40c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b90614569ed055f9f20742340411143"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a0b90614569ed055f9f20742340411143">MC_steps</a> = 0</td></tr>
 <tr class="separator:a0b90614569ed055f9f20742340411143"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45d59684fb7f0fe388e5df64fba1a26e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a45d59684fb7f0fe388e5df64fba1a26e">Enable_export_compressed_files</a> = true</td></tr>
-<tr class="separator:a45d59684fb7f0fe388e5df64fba1a26e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a7bae00cf39143113810641f5710e72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a5a7bae00cf39143113810641f5710e72">Enable_export_cross_section</a> = false</td></tr>
-<tr class="separator:a5a7bae00cf39143113810641f5710e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88d95fea88ffdfbecd30d811e3d01553"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a88d95fea88ffdfbecd30d811e3d01553">Enable_smoothing</a> = false</td></tr>
 <tr class="separator:a88d95fea88ffdfbecd30d811e3d01553"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a0e8f76994c9e085528e909df940d09"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a8a0e8f76994c9e085528e909df940d09">Smoothing_threshold</a> = 0.0</td></tr>
@@ -180,6 +179,16 @@ Public Attributes</h2></td></tr>
 <tr class="separator:af197dea6a6cc714a04ef9e2d14f5eb6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11c9e88faa7793fdd547c07421e1751b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a11c9e88faa7793fdd547c07421e1751b">Additional_interaction</a> = 0.0</td></tr>
 <tr class="separator:a11c9e88faa7793fdd547c07421e1751b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45d59684fb7f0fe388e5df64fba1a26e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a45d59684fb7f0fe388e5df64fba1a26e">Enable_export_compressed_files</a> = true</td></tr>
+<tr class="separator:a45d59684fb7f0fe388e5df64fba1a26e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a7bae00cf39143113810641f5710e72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a5a7bae00cf39143113810641f5710e72">Enable_export_cross_section</a> = false</td></tr>
+<tr class="separator:a5a7bae00cf39143113810641f5710e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeec69464f802b67a65abadb3dd99897f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#aeec69464f802b67a65abadb3dd99897f">Enable_import_morphologies</a> = false</td></tr>
+<tr class="separator:aeec69464f802b67a65abadb3dd99897f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e4316ab67acab1c958762b305afa7fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a4e4316ab67acab1c958762b305afa7fd">Enable_import_tomogram</a> = false</td></tr>
+<tr class="separator:a4e4316ab67acab1c958762b305afa7fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6936048a953d17eab047762e9e5cb6d1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#a6936048a953d17eab047762e9e5cb6d1">Tomogram_name</a> = &quot;&quot;</td></tr>
+<tr class="separator:a6936048a953d17eab047762e9e5cb6d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae67157853bf2ef4c1302befd41767bee"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_parameters.html#ae67157853bf2ef4c1302befd41767bee">Desired_unit_size</a> = 0.0</td></tr>
 <tr class="memdesc:ae67157853bf2ef4c1302befd41767bee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies the final unit size (resolution) of the output morphology dataset.  <a href="#ae67157853bf2ef4c1302befd41767bee">More...</a><br /></td></tr>
 <tr class="separator:ae67157853bf2ef4c1302befd41767bee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -232,6 +241,28 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5c3f854d49f647d3f82d2fbdcbac5d0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c3f854d49f647d3f82d2fbdcbac5d0e">&#9670;&nbsp;</a></span>checkParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Parameters::checkParameters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks the current values of all parameters to ensure that they are valid. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if all parameters are valid. </dd>
+<dd>
+false if any parameter value is invalid. </dd></dl>
+
+</div>
+</div>
 <a id="ad43bc6a4b859536b5003c42f17923ee3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad43bc6a4b859536b5003c42f17923ee3">&#9670;&nbsp;</a></span>importParameters()</h2>
 
@@ -442,6 +473,34 @@ false if there are any errors during parameter import. </dd></dl>
       <table class="memname">
         <tr>
           <td class="memname">bool Parameters::Enable_growth_pref = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeec69464f802b67a65abadb3dd99897f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeec69464f802b67a65abadb3dd99897f">&#9670;&nbsp;</a></span>Enable_import_morphologies</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Parameters::Enable_import_morphologies = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4e4316ab67acab1c958762b305afa7fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e4316ab67acab1c958762b305afa7fd">&#9670;&nbsp;</a></span>Enable_import_tomogram</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Parameters::Enable_import_tomogram = false</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -846,6 +905,20 @@ false if there are any errors during parameter import. </dd></dl>
       <table class="memname">
         <tr>
           <td class="memname">double Parameters::Smoothing_threshold = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6936048a953d17eab047762e9e5cb6d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6936048a953d17eab047762e9e5cb6d1">&#9670;&nbsp;</a></span>Tomogram_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Parameters::Tomogram_name = &quot;&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">

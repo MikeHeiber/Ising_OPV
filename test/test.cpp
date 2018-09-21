@@ -134,7 +134,7 @@ namespace UtilsTests {
 		data.clear();
 		// Check that empty double data vectors throw an exception
 		EXPECT_THROW(calculateProbabilityHist(data, 10.0), invalid_argument);
-		EXPECT_THROW(calculateProbabilityHist(data, 5); , invalid_argument);
+		EXPECT_THROW(calculateProbabilityHist(data, 5);, invalid_argument);
 		EXPECT_THROW(calculateProbabilityHist(data, 1.0, 5), invalid_argument);
 		// Check behavior on a test dataset
 		data = { 0.0, 1.0, 2.0, 3.0, 4.0 };
@@ -471,6 +471,38 @@ namespace LatticeTests {
 		EXPECT_THROW(lattice.getSiteType(coords1), out_of_range);
 	}
 
+	TEST_F(LatticeTest, ExtractSublatticeTests) {
+		// Extract a smaller lattice
+		Lattice lattice_new = lattice.extractSublattice(0, 20, 0, 20, 0, 20);
+		// Check new lattice dimensions
+		EXPECT_EQ(20, lattice_new.getLength());
+		EXPECT_EQ(20, lattice_new.getWidth());
+		EXPECT_EQ(20, lattice_new.getHeight());
+		// Extract a smaller lattice
+		lattice_new = lattice.extractSublattice(9, 40, 19, 30, 0, 30);
+		// Check new lattice dimensions
+		EXPECT_EQ(40, lattice_new.getLength());
+		EXPECT_EQ(30, lattice_new.getWidth());
+		EXPECT_EQ(30, lattice_new.getHeight());
+		// Check that invalid input throws the correct excpetions
+		// Check negative inputs
+		EXPECT_THROW(lattice.extractSublattice(-1, 20, 0, 20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, -1, 20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, 0, 20, -1, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, -20, 0, 20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, 0, -20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, 0, 20, 0, -20), invalid_argument);
+		// Check out of range inputs
+		// sublattice size extends beyond lattice
+		EXPECT_THROW(lattice.extractSublattice(20, 50, 20, 20, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 20, 50, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 20, 20, 20, 50), out_of_range);
+		// starting coordinates start outside the lattice
+		EXPECT_THROW(lattice.extractSublattice(50, 20, 20, 20, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 50, 20, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 20, 20, 50, 20), out_of_range);
+	}
+
 }
 
 namespace MorphologyTests {
@@ -675,19 +707,19 @@ namespace MorphologyTests {
 		// Test anisotropic morphologies on lattices that are too narrow
 		params.Length = 10;
 		params.Width = 10;
-		params.Height = 30;
+		params.Height = 25;
 		morph = Morphology(params, 0);
 		morph.createRandomMorphology(mix_fractions);
 		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
-		morph.executeIsingSwapping(400, 0.4, 0.4, true, 3, -0.1);
+		morph.executeIsingSwapping(500, 0.4, 0.4, true, 3, -0.1);
 		// Check calculation of anisotropy with narrow lattice
 		morph.calculateAnisotropies();
 		// Calculation should have an error and result in default value of -1
 		EXPECT_DOUBLE_EQ(-1.0, morph.getDomainAnisotropy((char)1));
 		EXPECT_DOUBLE_EQ(-1.0, morph.getDomainAnisotropy((char)2));
 		// Test anisotropic morphologies on lattices that are too thin
-		params.Length = 30;
-		params.Width = 30;
+		params.Length = 25;
+		params.Width = 25;
 		params.Height = 10;
 		params.Enable_periodic_z = true;
 		morph = Morphology(params, 0);
@@ -1038,104 +1070,98 @@ namespace MorphologyTests {
 
 	TEST_F(MorphologyTest, ExportImportTests) {
 		//// Create a local copy of the Morphology object
-		//Morphology morph = *morph_start;
-		//// Get the mix fractions of the original morphology
-		//double mix_fraction1 = morph.getMixFraction((char)1);
-		//double mix_fraction2 = morph.getMixFraction((char)2);
-		//// Get the domain size of the initial morphology
-		//double domain_size1 = morph.getDomainSize((char)1);
-		//double domain_size2 = morph.getDomainSize((char)2);
-		//// output original morphology in compressed format
-		//ofstream outfile1("morphology_file1.txt", ofstream::out | ofstream::trunc);
-		//morph.outputMorphologyFile("v4.0", outfile1, true);
-		//outfile1.close();
-		//// Import compressed morphology file
-		//cout << "Importing compressed morphology file." << endl;
-		//ifstream infile1("morphology_file1.txt", ifstream::in);
-		//EXPECT_TRUE(morph.importMorphologyFile(infile1));
-		//infile1.close();
-		//// Check dimensions of imported morphology
-		//EXPECT_EQ(50, morph.getLength());
-		//EXPECT_EQ(50, morph.getWidth());
-		//EXPECT_EQ(50, morph.getHeight());
-		//// Check that the mix fractions remained the same
-		//EXPECT_NEAR(mix_fraction1, morph.getMixFraction((char)1), 0.001);
-		//EXPECT_NEAR(mix_fraction2, morph.getMixFraction((char)2), 0.001);
-		//// Calculate domain size of imported morphology
-		//morph.calculateCorrelationDistances(params);
-		//// Check that domain size of original and imported morphologies are the same
-		//EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
-		//EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
-		//// output original morphology in uncompressed format
-		//ofstream outfile2("morphology_file2.txt", ofstream::out | ofstream::trunc);
-		//morph.outputMorphologyFile("v4.0", outfile2, false);
-		//outfile2.close();
-		//// Import uncompressed morphology file
-		//cout << "Importing uncompressed morphology file." << endl;
-		//ifstream infile2("morphology_file2.txt", ifstream::in);
-		//EXPECT_TRUE(morph.importMorphologyFile(infile2));
-		//infile2.close();
-		//// Check dimensions of imported morphology
-		//EXPECT_EQ(50, morph.getLength());
-		//EXPECT_EQ(50, morph.getWidth());
-		//EXPECT_EQ(50, morph.getHeight());
-		//// Check that the mix fractions remained the same
-		//EXPECT_NEAR(mix_fraction1, morph.getMixFraction((char)1), 0.001);
-		//EXPECT_NEAR(mix_fraction2, morph.getMixFraction((char)2), 0.001);
-		//// Calculate domain size of imported morphology
-		//morph.calculateCorrelationDistances(params);
-		//// Check that domain size of original and imported morphologies are the same
-		//EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
-		//EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
-		//// Test attempt to load a corrupted compressed morphology file with missing data
-		//// Load compressed file into string vector
-		//string line;
-		//vector<string> file_data;
-		//infile.open("morphology_file1.txt", ifstream::in);
-		//while (getline(infile, line)) {
-		//	file_data.push_back(line);
-		//}
-		//infile.close();
-		//infile.clear();
-		//// Delete last 2 lines
-		//file_data.pop_back();
-		//file_data.pop_back();
-		//// Save data back to file
-		//outfile.open("morphology_file1.txt", ofstream::out | ofstream::trunc);
-		//for (auto& item : file_data) {
-		//	outfile << item << endl;
-		//}
-		//outfile.close();
-		//outfile.clear();
-		//// Try importing corrupted compressed file
-		//infile.open("morphology_file1.txt", ifstream::in);
-		//EXPECT_FALSE(morph.importMorphologyFile(infile));
-		//infile.close();
-		//infile.clear();
-		//// Test attempt to load a corrupted uncompressed morphology file with missing data
-		//// Load uncompressed file into string vector
-		//file_data.clear();
-		//infile.open("morphology_file2.txt", ifstream::in);
-		//while (getline(infile, line)) {
-		//	file_data.push_back(line);
-		//}
-		//infile.close();
-		//infile.clear();
-		//// Delete last 2 lines
-		//file_data.pop_back();
-		//file_data.pop_back();
-		//// Save data back to file
-		//outfile.open("morphology_file2.txt", ofstream::out | ofstream::trunc);
-		//for (auto& item : file_data) {
-		//	outfile << item << endl;
-		//}
-		//outfile.close();
-		//outfile.clear();
-		//// Try importing corrupted compressed file
-		//infile.open("morphology_file2.txt", ifstream::in);
-		//EXPECT_FALSE(morph.importMorphologyFile(infile));
-		//infile.close();
-		//infile.clear();
+		Morphology morph = *morph_start;
+		// Get the mix fractions of the original morphology
+		double mix_fraction1 = morph.getMixFraction((char)1);
+		double mix_fraction2 = morph.getMixFraction((char)2);
+		// Get the domain size of the initial morphology
+		double domain_size1 = morph.getDomainSize((char)1);
+		double domain_size2 = morph.getDomainSize((char)2);
+		// output original morphology in compressed format
+		ofstream outfile1("morphology_file1.txt");
+		morph.outputMorphologyFile("v4.0", outfile1, true);
+		outfile1.close();
+		// Import compressed morphology file
+		cout << "Importing compressed morphology file." << endl;
+		ifstream infile1("morphology_file1.txt");
+		EXPECT_TRUE(morph.importMorphologyFile(infile1));
+		infile1.close();
+		// Check dimensions of imported morphology
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(50, morph.getWidth());
+		EXPECT_EQ(50, morph.getHeight());
+		// Check that the mix fractions remained the same
+		EXPECT_NEAR(mix_fraction1, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(mix_fraction2, morph.getMixFraction((char)2), 0.001);
+		// Calculate domain size of imported morphology
+		morph.calculateCorrelationDistances();
+		// Check that domain size of original and imported morphologies are the same
+		EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
+		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
+		// output original morphology in uncompressed format
+		ofstream outfile2("morphology_file2.txt");
+		morph.outputMorphologyFile("v4.0", outfile2, false);
+		outfile2.close();
+		// Import uncompressed morphology file
+		cout << "Importing uncompressed morphology file." << endl;
+		ifstream infile2("morphology_file2.txt", ifstream::in);
+		EXPECT_TRUE(morph.importMorphologyFile(infile2));
+		infile2.close();
+		// Check dimensions of imported morphology
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(50, morph.getWidth());
+		EXPECT_EQ(50, morph.getHeight());
+		// Check that the mix fractions remained the same
+		EXPECT_NEAR(mix_fraction1, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(mix_fraction2, morph.getMixFraction((char)2), 0.001);
+		// Calculate domain size of imported morphology
+		morph.calculateCorrelationDistances();
+		// Check that domain size of original and imported morphologies are the same
+		EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
+		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
+		// Test attempt to load a corrupted compressed morphology file with missing data
+		// Load compressed file into string vector
+		string line;
+		vector<string> file_data;
+		ifstream infile3("morphology_file1.txt");
+		while (getline(infile3, line)) {
+			file_data.push_back(line);
+		}
+		infile3.close();
+		// Delete last 2 lines
+		file_data.pop_back();
+		file_data.pop_back();
+		// Save data back to file
+		ofstream outfile3("morphology_file1.txt");
+		for (auto& item : file_data) {
+			outfile3 << item << endl;
+		}
+		outfile3.close();
+		// Try importing corrupted compressed file
+		ifstream infile4("morphology_file1.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile4));
+		infile4.close();
+		// Test attempt to load a corrupted uncompressed morphology file with missing data
+		// Load uncompressed file into string vector
+		file_data.clear();
+		ifstream infile5("morphology_file2.txt");
+		while (getline(infile5, line)) {
+			file_data.push_back(line);
+		}
+		infile5.close();
+		// Delete last 2 lines
+		file_data.pop_back();
+		file_data.pop_back();
+		// Save data back to file
+		ofstream outfile4("morphology_file2.txt");
+		for (auto& item : file_data) {
+			outfile4 << item << endl;
+		}
+		outfile4.close();
+		// Try importing corrupted compressed file
+		ifstream infile6("morphology_file2.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile6));
+		infile6.close();
 	}
 
 	TEST_F(MorphologyTest, OtherOutputTests) {

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unit_5fsize',['Unit_size',['../struct_lattice___params.html#a553078017c1b03d67a41e55595db8eb9',1,'Lattice_Params']]]
+  ['tomogram_5fname',['Tomogram_name',['../class_parameters.html#a6936048a953d17eab047762e9e5cb6d1',1,'Parameters']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['vector_5favg',['vector_avg',['../namespace_utils.html#acbc030ce708229ea393215fe13e6377b',1,'Utils']]],
-  ['vector_5fmedian',['vector_median',['../namespace_utils.html#a42943c1b17d7ff53692a1a39d9d7fea0',1,'Utils']]],
-  ['vector_5fstdev',['vector_stdev',['../namespace_utils.html#a6bfa9b066d7c0967807d588024c15d4e',1,'Utils']]],
-  ['vector_5fwhich_5fmedian',['vector_which_median',['../namespace_utils.html#a1b1947f9fcde876be0bef9f3f7c57717',1,'Utils']]]
+  ['unit_5fsize',['Unit_size',['../struct_lattice___params.html#a553078017c1b03d67a41e55595db8eb9',1,'Lattice_Params']]],
+  ['utils',['Utils',['../namespace_utils.html',1,'']]],
+  ['utils_2ecpp',['Utils.cpp',['../_utils_8cpp.html',1,'']]],
+  ['utils_2eh',['Utils.h',['../_utils_8h.html',1,'']]]
 ];

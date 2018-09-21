@@ -19,8 +19,6 @@ int main(int argc, char * argv[]) {
 	Parameters parameters;
 	// Internal parameters
 	string version = "v4.0-rc1";
-	bool Enable_import_morphology = false;
-	bool Enable_import_tomogram = false;
 	double mix_ratio = 0;
 	double domain_size1 = 0;
 	double domain_size2 = 0;
@@ -73,8 +71,6 @@ int main(int argc, char * argv[]) {
 	vector<double> depth_iv_vect;
 	vector<double> depth_size1_vect;
 	vector<double> depth_size2_vect;
-	string input_morphology, input_file_path, filename_prefix;
-	string tomo_info_filename, tomo_data_filename;
 	// Begin
 	start_time = time(NULL);
 	// Initialize parallel processing.
@@ -82,26 +78,11 @@ int main(int argc, char * argv[]) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 	MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 	// Import parameters from text file.
-	if (argc > 3) {
-		string argument = string(argv[2]);
-		if (argument.compare("-import") == 0) {
-			cout << procid << ": Attempting to import Ising_OPV morphology data..." << endl;
-			Enable_import_morphology = true;
-		}
-		else if (argument.compare("-importTomogram") == 0) {
-			cout << procid << ": Attempting to import tomogram data..." << endl;
-			Enable_import_tomogram = true;
-			Enable_import_morphology = true;
-		}
-	}
-	else if (argc == 2) {
-		// Standard operation
-	}
-	else {
+	if (argc != 2) {
 		cout << procid << ": Incorrect arguments. There needs to be at least one argument which is the filename of a parameter file. Program will exit now!" << endl;
 		return 0;
 	}
-	parameter_file.open((argv[1]), ifstream::in);
+	parameter_file.open(argv[1]);
 	success = parameters.importParameters(parameter_file);
 	parameter_file.close();
 	if (success) {
@@ -111,16 +92,10 @@ int main(int argc, char * argv[]) {
 		cout << procid << ": Error importing variables from file!  Program will exit now." << endl;
 		return 0;
 	}
-	// Parameter checks
-	if (parameters.Enable_analysis_only && !Enable_import_morphology && !Enable_import_tomogram) {
-		cout << procid << ": Error!  The 'analysis only' option can only be used when a morphology is imported from a file." << endl;
-		return 0;
-	}
-	if (parameters.Enable_analysis_only) {
-		cout << procid << ": Warning! Only morphology analysis will be performed." << endl;
-	}
-	if (Enable_import_tomogram && ((parameters.Enable_cutoff_analysis && parameters.Enable_probability_analysis) || (!parameters.Enable_cutoff_analysis && !parameters.Enable_probability_analysis))) {
-		cout << procid << " Error! When importing a tomogram the cutoff analysis or the probability analysis option must be enabled, but not both." << endl;
+	// Check validity of loaded parameters
+	success = parameters.checkParameters();
+	if (!success) {
+		cout << procid << ": Error! One or more imported parameters are invalid.  Program will exit now." << endl;
 		return 0;
 	}
 	// Wait until all processors have loaded the parameters.
@@ -129,27 +104,27 @@ int main(int argc, char * argv[]) {
 	Morphology morph(parameters, procid);
 	// Import morphology if enabled.
 	// Import tomogram file in binary format
-	if (Enable_import_tomogram) {
+	if (parameters.Enable_import_tomogram) {
 		if (procid == 0) {
 			if (parameters.N_extracted_segments*parameters.N_variants != nproc) {
-				cout << procid << ": Error! The number of processors used must be equal to N_extracted_segments*N_variants. ";
-				cout << parameters.N_extracted_segments*parameters.N_variants << " processors are needed but " << nproc << " were requested." << endl;
+				cout << ": Error! The number of processors used must be equal to N_extracted_segments*N_variants. Program will exit now.";
+				cout << parameters.N_extracted_segments * parameters.N_variants << " processors are needed but " << nproc << " were requested." << endl;
 				return 0;
 			}
 			// Create initial lattice based on filename to load the tomogram data into
 			Morphology morph_tomo(procid);
 			// Collect tomogram import options
 			cout << procid << ": Loading and analyzing tomogram data." << endl;
-			tomo_info_filename = string(argv[3]);
-			tomo_data_filename = string(argv[4]);
-			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename);
+			string tomo_xml_filename = parameters.Tomogram_name + ".xml";
+			string tomo_data_filename = parameters.Tomogram_name + ".raw";
+			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(tomo_xml_filename, tomo_data_filename);
 			// Check that a set of morphologies has been produced
 			if (morphology_set.size() == 0) {
-				cout << procid << ": Error! Morphology set could not be generated from the input tomogram." << endl;
+				cout << procid << ": Error! Morphology set could not be generated from the input tomogram. Program will exit now." << endl;
 				return 0;
 			}
 			for (int i = 1; i < parameters.N_variants; i++) {
-				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(tomo_info_filename, tomo_data_filename);
+				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(tomo_xml_filename, tomo_data_filename);
 				morphology_set.insert(morphology_set.end(), morphology_set2.begin(), morphology_set2.end());
 			}
 			// Output morphology set to separate files
@@ -164,39 +139,9 @@ int main(int argc, char * argv[]) {
 		// All processors must wait until the root proc finishes with morphology set generation.
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
-	if (Enable_import_morphology) {
-		size_t pos_path, pos_id;
-		// Filename from tomogram set
-		if (Enable_import_tomogram) {
-			input_morphology = "morphology_#.txt";
-		}
-		// Get filename of imported morphology from command line arguments.
-		else {
-			input_morphology = (argv[3]);
-		}
-		// Separate filepath and differentiate between Windows (1) and Linux (2) filepaths.
-		// Linux filepaths
-		if (input_morphology.substr(0, 1).compare("/") == 0) {
-			pos_path = input_morphology.find_last_of("/");
-			input_file_path = input_morphology.substr(0, pos_path) + "/";
-			pos_path++;
-		}
-		// Windows filepaths
-		else if (input_morphology.substr(0, 2).compare("\\") == 0) {
-			pos_path = input_morphology.find_last_of("\\");
-			input_file_path = input_morphology.substr(0, pos_path) + "\\";
-			pos_path += 2;
-		}
-		// Default to be used when the morphology data file is in the current working directory
-		else {
-			input_file_path = "";
-			pos_path = 0;
-		}
-		// Separate filename prefix from ID number.
-		pos_id = input_morphology.find_last_of("_");
-		filename_prefix = input_morphology.substr(pos_path, pos_id);
-		filename = filename_prefix + "_" + to_string(procid) + ".txt";
-		cout << procid << ": Opening morphology file " << input_file_path << filename << endl;
+	if (parameters.Enable_import_morphologies) {
+		string filename = "morphology_" + to_string(procid) + ".txt";
+		cout << procid << ": Opening morphology file " << filename << endl;
 		morphology_input_file.open(filename);
 		if (morphology_input_file.is_open()) {
 			cout << procid << ": Morphology file successfully opened!" << endl;
@@ -345,14 +290,9 @@ int main(int argc, char * argv[]) {
 		areal_composition_file.close();
 	}
 	// Save final morphology to a text file.
-	if (!parameters.Enable_analysis_only || Enable_import_tomogram) {
+	if (!parameters.Enable_analysis_only || parameters.Enable_import_tomogram) {
 		cout << procid << ": Writing morphology to file..." << endl;
-		if (!Enable_import_morphology || Enable_import_tomogram) {
-			filename = "morphology_" + to_string(procid) + ".txt";
-		}
-		else {
-			filename = filename_prefix + "mod_" + to_string(procid) + ".txt";
-		}
+		filename = "morphology_" + to_string(procid) + ".txt";
 		morphology_output_file.open(filename);
 		morph.outputMorphologyFile(version, morphology_output_file, parameters.Enable_export_compressed_files);
 		morphology_output_file.close();
@@ -419,17 +359,7 @@ int main(int argc, char * argv[]) {
 		cout << "Writing morphology analysis data to files..." << endl;
 		// Output the average pair-pair correlation function.
 		if (parameters.Enable_correlation_calc) {
-			if (!Enable_import_morphology || Enable_import_tomogram) {
-				correlation_avg_file.open("correlation_data_avg.txt");
-			}
-			else {
-				if (parameters.Enable_analysis_only) {
-					correlation_avg_file.open("correlation_data_avg_new.txt");
-				}
-				else {
-					correlation_avg_file.open("correlation_data_avg_mod.txt");
-				}
-			}
+			correlation_avg_file.open("correlation_data_avg.txt");
 			correlation_avg_file << "Distance (nm),Correlation1,Correlation2" << endl;
 			for (int i = 0; i < (int)correlation1_vect.size(); i++) {
 				correlation_avg_file << morph.getUnitSize()*(double)i*0.5 << "," << correlation1_vect[i] << "," << correlation2_vect[i] << endl;
@@ -438,17 +368,7 @@ int main(int argc, char * argv[]) {
 		}
 		// Output the average tortuosity histograms and the end-to-end path data.
 		if (parameters.Enable_tortuosity_calc) {
-			if (!Enable_import_morphology || Enable_import_tomogram) {
-				tortuosity_hist_file.open("tortuosity_histograms.txt");
-			}
-			else {
-				if (parameters.Enable_analysis_only) {
-					tortuosity_hist_file.open("tortuosity_histograms_new.txt");
-				}
-				else {
-					tortuosity_hist_file.open("tortuosity_histograms_mod.txt");
-				}
-			}
+			tortuosity_hist_file.open("tortuosity_histograms.txt");
 			auto probhist1 = calculateProbabilityHist(tortuosity_data1, 0.02);
 			auto probhist2 = calculateProbabilityHist(tortuosity_data2, 0.02);
 			tortuosity_hist_file << "Tortuosity, Probability1,Probability2" << endl;
@@ -473,17 +393,7 @@ int main(int argc, char * argv[]) {
 		}
 		// Output the interfacial distance histograms.
 		if (parameters.Enable_interfacial_distance_calc) {
-			if (!Enable_import_morphology || Enable_import_tomogram) {
-				interfacial_dist_hist_file.open("interfacial_distance_histograms.txt");
-			}
-			else {
-				if (parameters.Enable_analysis_only) {
-					interfacial_dist_hist_file.open("interfacial_distance_histograms_new.txt");
-				}
-				else {
-					interfacial_dist_hist_file.open("interfacial_distance_histograms_mod.txt");
-				}
-			}
+			interfacial_dist_hist_file.open("interfacial_distance_histograms.txt");
 			interfacial_dist_hist_file << "Distance (a),Probability1,Probability2" << endl;
 			int hist_size = (interfacial_dist_probhist1.size() > interfacial_dist_probhist2.size()) ? (int)interfacial_dist_probhist1.size() : (int)interfacial_dist_probhist2.size();
 			for (int i = 0; i < hist_size; i++) {
@@ -505,17 +415,7 @@ int main(int argc, char * argv[]) {
 		}
 		// Output the average depth dependent data.
 		if (parameters.Enable_depth_dependent_calc) {
-			if (!Enable_import_morphology || Enable_import_tomogram) {
-				depthdata_avg_file.open("depth_dependent_data_avg.txt");
-			}
-			else {
-				if (parameters.Enable_analysis_only) {
-					depthdata_avg_file.open("depth_dependent_data_avg_new.txt");
-				}
-				else {
-					depthdata_avg_file.open("depth_dependent_data_avg_mod.txt");
-				}
-			}
+			depthdata_avg_file.open("depth_dependent_data_avg.txt");
 			depthdata_avg_file << "Z-Position,Type1_composition,Type2_composition,Type1_domain_size,Type2_domain_size,IV_fraction" << endl;
 			for (int i = 0; i < (int)depth_size1_vect.size(); i++) {
 				depthdata_avg_file << i << "," << depth_comp1_vect[i] << "," << depth_comp2_vect[i] << "," << depth_size1_vect[i] << "," << depth_size2_vect[i] << "," << depth_iv_vect[i] << endl;
@@ -523,17 +423,7 @@ int main(int argc, char * argv[]) {
 			depthdata_avg_file.close();
 		}
 		// Output the final morphology set analysis summary to a text file.
-		if (!Enable_import_morphology || Enable_import_tomogram) {
-			analysis_file.open("analysis_summary.txt");
-		}
-		else {
-			if (parameters.Enable_analysis_only) {
-				analysis_file.open("analysis_summary_new.txt");
-			}
-			else {
-				analysis_file.open("analysis_summary_mod.txt");
-			}
-		}
+		analysis_file.open("analysis_summary.txt");
 		analysis_file << "Summary of results for this morphology set containing " << nproc << " morphologies created using Ising_OPV " << version << ":" << endl;
 		analysis_file << "length,width,height,mix_ratio_avg,mix_ratio_stdev,domain1_size_avg,domain1_size_stdev,domain2_size_avg,domain2_size_stdev,";
 		analysis_file << "domain1_anisotropy_avg,domain1_anisotropy_stdev,domain2_anisotropy_avg,domain2_anisotropy_stdev,";
@@ -604,9 +494,9 @@ int main(int argc, char * argv[]) {
 			int index = vector_which_median(tortuosities1);
 			analysis_file << "Morphology number " << index << " has the median tortuosity1 of " << tortuosities1[index] << endl;
 		}
-		if (Enable_import_tomogram) {
+		if (parameters.Enable_import_tomogram) {
 			analysis_file << endl;
-			analysis_file << "Morphologies imported from tomogram file: " << tomo_data_filename << endl;
+			analysis_file << "Morphologies imported from tomogram dataset: " << parameters.Tomogram_name << endl;
 		}
 		analysis_file.close();
 		cout << "Finished!" << endl;

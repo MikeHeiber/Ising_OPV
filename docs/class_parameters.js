@@ -1,6 +1,7 @@
 var class_parameters =
 [
     [ "Parameters", "class_parameters.html#af4d94ee360ac0157d9065f78797fe9a1", null ],
+    [ "checkParameters", "class_parameters.html#a5c3f854d49f647d3f82d2fbdcbac5d0e", null ],
     [ "importParameters", "class_parameters.html#ad43bc6a4b859536b5003c42f17923ee3", null ],
     [ "Additional_interaction", "class_parameters.html#a11c9e88faa7793fdd547c07421e1751b", null ],
     [ "Desired_unit_size", "class_parameters.html#ae67157853bf2ef4c1302befd41767bee", null ],
@@ -15,6 +16,8 @@ var class_parameters =
     [ "Enable_export_cross_section", "class_parameters.html#a5a7bae00cf39143113810641f5710e72", null ],
     [ "Enable_extended_correlation_calc", "class_parameters.html#a4b3c352bb54477e7123b71341dba3a1d", null ],
     [ "Enable_growth_pref", "class_parameters.html#aed324145a5043698a7d0b8daf1f1c434", null ],
+    [ "Enable_import_morphologies", "class_parameters.html#aeec69464f802b67a65abadb3dd99897f", null ],
+    [ "Enable_import_tomogram", "class_parameters.html#a4e4316ab67acab1c958762b305afa7fd", null ],
     [ "Enable_interfacial_distance_calc", "class_parameters.html#a8a7d1f5f219239a1a7b8d3c2bae56c56", null ],
     [ "Enable_interfacial_mixing", "class_parameters.html#adbce655ef40567a18607f61ad90de71c", null ],
     [ "Enable_mix_frac_method", "class_parameters.html#a62706ccbc7961d9e8224e6463bef6c38", null ],
@@ -43,5 +46,6 @@ var class_parameters =
     [ "Probability_scaling_exponent", "class_parameters.html#acad9782a85fdafd54dd327369749a144", null ],
     [ "Rescale_factor", "class_parameters.html#a4ffc1e96505f14d8899da20c0d3b4cb7", null ],
     [ "Smoothing_threshold", "class_parameters.html#a8a0e8f76994c9e085528e909df940d09", null ],
+    [ "Tomogram_name", "class_parameters.html#a6936048a953d17eab047762e9e5cb6d1", null ],
     [ "Width", "class_parameters.html#a3e74d6518a0ca83712787dcf793f47de", null ]
 ];

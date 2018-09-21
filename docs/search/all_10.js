@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['width',['Width',['../struct_lattice___params.html#a4a16dbd8c80bf388ac04b0732c8068e6',1,'Lattice_Params::Width()'],['../class_parameters.html#a3e74d6518a0ca83712787dcf793f47de',1,'Parameters::Width()']]]
+  ['vector_5favg',['vector_avg',['../namespace_utils.html#acbc030ce708229ea393215fe13e6377b',1,'Utils']]],
+  ['vector_5fmedian',['vector_median',['../namespace_utils.html#a42943c1b17d7ff53692a1a39d9d7fea0',1,'Utils']]],
+  ['vector_5fstdev',['vector_stdev',['../namespace_utils.html#a6bfa9b066d7c0967807d588024c15d4e',1,'Utils']]],
+  ['vector_5fwhich_5fmedian',['vector_which_median',['../namespace_utils.html#a1b1947f9fcde876be0bef9f3f7c57717',1,'Utils']]]
 ];

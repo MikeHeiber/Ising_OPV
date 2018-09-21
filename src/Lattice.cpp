@@ -145,6 +145,15 @@ bool Lattice::checkMoveValidity(const Coords& coords_initial, const int i, const
 }
 
 Lattice Lattice::extractSublattice(const int x, const int sublength, const int y, const int subwidth, const int z, const int subheight) const {
+	if (x < 0 || y < 0 || z < 0) {
+		throw invalid_argument("Unable to extract sublattice given negative x, y, or z starting coordinates.");
+	}
+	if (sublength < 0 || subwidth < 0 || subheight < 0) {
+		throw invalid_argument("Unable to extract sublattice given negative input sublattice dimensions.");
+	}
+	if (x + sublength >= Length || y + subwidth >= Width || z + subheight >= Height) {
+		throw out_of_range("Unable the extract sublattice because the requested sublattice extends beyond the range of the original lattice.");
+	}
 	Lattice sublattice;
 	Lattice_Params params;
 	params.Enable_periodic_x = false;
