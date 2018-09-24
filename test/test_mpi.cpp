@@ -8,7 +8,7 @@
 #include <mpi.h>
 
 using namespace std;
-using namespace Utils;
+using namespace Ising_OPV;
 
 namespace MPI_Tests {
 

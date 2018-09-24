@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['n_5fextracted_5fsegments',['N_extracted_segments',['../class_parameters.html#a0e13c28425eb0524d540ef41ffb0ea8c',1,'Parameters']]],
-  ['n_5fsampling_5fmax',['N_sampling_max',['../class_parameters.html#a8309ac383b75e785097291d4bb6682ea',1,'Parameters']]],
-  ['n_5fvariants',['N_variants',['../class_parameters.html#a1897e2674669ec154a94967cd472b0a5',1,'Parameters']]]
+  ['mc_5fsteps',['MC_steps',['../class_ising___o_p_v_1_1_parameters.html#aaba341d2c04d3d289d96416c7341e203',1,'Ising_OPV::Parameters']]],
+  ['mix_5ffraction',['Mix_fraction',['../class_ising___o_p_v_1_1_parameters.html#a3d7ca201ce6218ed7f5c657a7eed62ca',1,'Ising_OPV::Parameters']]],
+  ['mixed_5fconc',['Mixed_conc',['../class_ising___o_p_v_1_1_parameters.html#a692f8c98043ca48463116dc2ebbf0dfd',1,'Ising_OPV::Parameters']]],
+  ['mixed_5fgreyscale_5fwidth',['Mixed_greyscale_width',['../class_ising___o_p_v_1_1_parameters.html#a960cf8354fa1bf5feaabceed4843a13b',1,'Ising_OPV::Parameters']]]
 ];

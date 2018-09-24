@@ -5,9 +5,9 @@
 
 #include "Utils.h"
 
-namespace Utils {
+using namespace std;
 
-	using namespace std;
+namespace Ising_OPV {
 
 	std::vector<std::pair<double, double>> calculateCumulativeHist(const std::vector<std::pair<double, double>>& hist) {
 		auto result = hist;
@@ -212,22 +212,8 @@ namespace Utils {
 		double min_bin = input_hist[0].first;
 		double max_bin = input_hist.back().first;
 		// Gather all of the min and max bins from each proc into vectors
-		vector<double> min_bins;
-		vector<double> max_bins;
-		try {
-			min_bins = MPI_gatherValues(min_bin);
-		}
-		catch (bad_alloc& ba) {
-			cout << procid << ": bad_alloc caught: " << ba.what() << endl;
-			cout << procid << ": Error gathering histogram starting bin information." << endl;
-		}
-		try {
-			max_bins = MPI_gatherValues(max_bin);
-		}
-		catch (bad_alloc& ba) {
-			cout << procid << ": bad_alloc caught: " << ba.what() << endl;
-			cout << procid << ": Error gathering histogram ending bin information." << endl;
-		}
+		auto min_bins = MPI_gatherValues(min_bin);
+		auto max_bins = MPI_gatherValues(max_bin);
 		// Determine the overall smallest and largest bin in the set
 		double smallest_bin;
 		double largest_bin;
@@ -247,14 +233,7 @@ namespace Utils {
 			counts[bin_index] = input_hist[i].second;
 		}
 		// Add up the counts from all processors
-		vector<int> counts_sum;
-		try {
-			counts_sum = MPI_calculateVectorSum(counts);
-		}
-		catch (bad_alloc& ba) {
-			cout << procid << ": bad_alloc caught: " << ba.what() << endl;
-			cout << procid << ": Error gathering counts for total histogram." << endl;
-		}
+		auto counts_sum = MPI_calculateVectorSum(counts);
 		// Create output probablilty histogram
 		vector<pair<double, double>> prob_hist;
 		if (procid == 0) {
@@ -268,109 +247,89 @@ namespace Utils {
 	}
 
 	std::vector<double> MPI_calculateVectorAvg(const std::vector<double>& input_vector) {
-		int data_size = 0;
-		int data_count = 0;
-		double* data = NULL;
-		double* data_all = NULL;
-		int* data_sizes = NULL;
-		int* data_displacement = NULL;
-		int max_data_size = 0;
-		double average = 0;
 		int procid;
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-		vector<double> output_vector;
+		// Get maximum size of all vectors
+		int data_size = (int)input_vector.size();
+		auto data_sizes = MPI_gatherValues(data_size);
+		int max_size;
 		if (procid == 0) {
-			data_sizes = new int[nproc];
+			max_size = *max_element(data_sizes.begin(), data_sizes.end());
 		}
-		data_size = (int)input_vector.size();
-		data = new double[data_size];
-		for (int i = 0; i < data_size; i++) {
-			data[i] = input_vector[i];
-		}
-		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Tell all procs what the max size is
+		MPI_Bcast(&max_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Copy the input data vector into new data vector and add zeros padding to vectors that are smaller than the max size
+		auto data = input_vector;
+		data.resize(max_size, 0.0);
+		// Calculate the element-wise sum of the vectors
+		auto output_vector = MPI_calculateVectorSum(data);
 		if (procid == 0) {
-			for (int i = 0; i < nproc; i++) {
-				data_count += data_sizes[i];
-			}
-			data_all = new double[data_count];
-			data_displacement = new int[nproc];
-			data_displacement[0] = 0;
-			for (int i = 1; i < nproc; i++) {
-				data_displacement[i] = data_displacement[i - 1] + data_sizes[i - 1];
+			// Normalize the sum vector by nproc to get average
+			for (auto& item : output_vector) {
+				item /= nproc;
 			}
 		}
-		MPI_Gatherv(data, data_size, MPI_DOUBLE, data_all, data_sizes, data_displacement, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		if (procid == 0) {
-			for (int i = 0; i < nproc; i++) {
-				if (data_sizes[i] > max_data_size) {
-					max_data_size = data_sizes[i];
-				}
-			}
-			for (int i = 0; i < max_data_size; i++) {
-				average = 0;
-				for (int j = 0; j < nproc; j++) {
-					if (i < data_sizes[j]) {
-						average += data_all[data_displacement[j] + i];
-					}
-				}
-				average = average / (double)nproc;
-				output_vector.push_back(average);
-			}
-		}
-		delete[] data;
-		delete[] data_all;
-		delete[] data_sizes;
-		delete[] data_displacement;
+		// return final data vector
 		return output_vector;
 	}
 
 	std::vector<double> MPI_calculateVectorSum(const std::vector<double>& input_vector) {
-		int data_size = 0;
-		double* data = NULL;
-		double* sum = NULL;
-		vector<double> output_vector;
 		int procid;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
-		data_size = (int)input_vector.size();
-		data = new double[data_size];
-		sum = new double[data_size];
+		// Get the size of the input data
+		int data_size = (int)input_vector.size();
+		// Copt the input data into an array
+		double* data = new double[data_size];
 		for (int i = 0; i < (int)input_vector.size(); i++) {
 			data[i] = input_vector[i];
 		}
+		// Allocate array memory for the sum data
+		double* sum = new double[data_size];
+		// Calculate the sum of all of the input vectors
 		MPI_Reduce(data, sum, data_size, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+		// Copy the data from the sum array into the final data vector
+		vector<double> output_vector;
 		if (procid == 0) {
+			output_vector.reserve(data_size);
 			for (int i = 0; i < data_size; i++) {
 				output_vector.push_back(sum[i]);
 			}
 		}
+		// Cleanup allocated memory
 		delete[] data;
 		delete[] sum;
+		// return the final data vector
 		return output_vector;
 	}
 
 	std::vector<int> MPI_calculateVectorSum(const std::vector<int>& input_vector) {
-		int data_size = 0;
-		int* data = NULL;
-		int* sum = NULL;
-		vector<int> output_vector;
 		int procid;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
-		data_size = (int)input_vector.size();
-		data = new int[data_size];
-		sum = new int[data_size];
+		// Get the size of the data
+		int data_size = (int)input_vector.size();
+		// Copy the input data to an array
+		int* data = new int[data_size];
 		for (int i = 0; i < (int)input_vector.size(); i++) {
 			data[i] = input_vector[i];
 		}
+		// Allocate array memory for the sum data
+		int* sum = new int[data_size];
+		// Calculate the sum of all of the input vectors
 		MPI_Reduce(data, sum, data_size, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+		// Copy the data from the sum array into the final data vector
+		vector<int> output_vector;
 		if (procid == 0) {
+			output_vector.reserve(data_size);
 			for (int i = 0; i < data_size; i++) {
 				output_vector.push_back(sum[i]);
 			}
 		}
+		// Cleanup allocated memory
 		delete[] data;
 		delete[] sum;
+		// return final data vector
 		return output_vector;
 	}
 
@@ -379,17 +338,21 @@ namespace Utils {
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-		int* data = NULL;
-		data = new int[nproc];
-		vector<int> output_vector;
-		output_vector.reserve(nproc);
+		// Allocate array memory for the incoming data
+		int* data = new int[nproc];
+		// Gather all of the data into the array
 		MPI_Gather(&input_val, 1, MPI_INT, data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Copy the data from the array into the final data vector
+		vector<int> output_vector;
 		if (procid == 0) {
+			output_vector.reserve(nproc);
 			for (int i = 0; i < nproc; i++) {
 				output_vector.push_back(data[i]);
 			}
 		}
+		// Cleanup allocated memory
 		delete[] data;
+		// return the final data vector
 		return output_vector;
 	}
 
@@ -398,107 +361,117 @@ namespace Utils {
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-		double* data = NULL;
-		data = new double[nproc];
-		vector<double> output_vector;
-		output_vector.reserve(nproc);
+		// Allocate array memory for the incoming data
+		double* data = new double[nproc];
+		// Gather all of the data into the array
 		MPI_Gather(&input_val, 1, MPI_DOUBLE, data, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		// Copy the data from the array into the final data vector
+		vector<double> output_vector;
 		if (procid == 0) {
+			output_vector.reserve(nproc);
 			for (int i = 0; i < nproc; i++) {
 				output_vector.push_back(data[i]);
 			}
 		}
+		// Cleanup allocated memory
 		delete[] data;
+		// return the final data vector
 		return output_vector;
 	}
 
 	std::vector<double> MPI_gatherVectors(const std::vector<double>& input_vector) {
-		int data_size = 0;
-		int data_count = 0;
-		double* data = NULL;
-		double* data_all = NULL;
-		int* data_sizes = NULL;
-		int* data_displacement = NULL;
-		vector<double> output_vector;
 		int procid;
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-		if (procid == 0) {
-			data_sizes = new int[nproc];
-		}
-		data_size = (int)input_vector.size();
-		data = new double[data_size];
-		for (int i = 0; i < (int)input_vector.size(); i++) {
-			data[i] = input_vector[i];
-		}
+		// Get size of each vector
+		int* data_sizes = new int[nproc];
+		int data_size = (int)input_vector.size();
 		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Determine data_count and displacements and allocate memory for all data
+		int* data_displacement = new int[nproc];
+		int data_count = 0;
+		double* data_all = NULL;
 		if (procid == 0) {
 			for (int i = 0; i < nproc; i++) {
 				data_count += data_sizes[i];
 			}
-			data_all = new double[data_count];
-			data_displacement = new int[nproc];
 			data_displacement[0] = 0;
 			for (int i = 1; i < nproc; i++) {
 				data_displacement[i] = data_displacement[i - 1] + data_sizes[i - 1];
 			}
+			// Allocate memory to hold all of the data
+			data_all = new double[data_count];
 		}
+		// Copy input data into an array
+		double* data = new double[data_size];
+		for (int i = 0; i < (int)input_vector.size(); i++) {
+			data[i] = input_vector[i];
+		}
+		// Gather data arrays from all procs into the data_all array on proc 0
 		MPI_Gatherv(data, data_size, MPI_DOUBLE, data_all, data_sizes, data_displacement, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		// Copy data from data_all array into the output data vector
+		vector<double> output_vector;
 		if (procid == 0) {
+			output_vector.reserve(data_count);
 			for (int i = 0; i < data_count; i++) {
 				output_vector.push_back(data_all[i]);
 			}
 		}
+		// Cleanup allocated memory
 		delete[] data;
 		delete[] data_all;
 		delete[] data_sizes;
 		delete[] data_displacement;
+		// return the final data vector
 		return output_vector;
 	}
 
 	std::vector<int> MPI_gatherVectors(const std::vector<int>& input_vector) {
-		int data_size = 0;
-		int data_count = 0;
-		int* data = NULL;
-		int* data_all = NULL;
-		int* data_sizes = NULL;
-		int* data_displacement = NULL;
-		vector<int> output_vector;
 		int procid;
 		int nproc;
 		MPI_Comm_rank(MPI_COMM_WORLD, &procid);
 		MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-		if (procid == 0) {
-			data_sizes = new int[nproc];
-		}
-		data_size = (int)input_vector.size();
-		data = new int[data_size];
-		for (int i = 0; i < (int)input_vector.size(); i++) {
-			data[i] = input_vector[i];
-		}
+		// Get size of each vector
+		int* data_sizes = new int[nproc];
+		int data_size = (int)input_vector.size();
 		MPI_Gather(&data_size, 1, MPI_INT, data_sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		// Determine data_count and displacements and allocate memory for all data
+		int* data_displacement = new int[nproc];
+		int data_count = 0;
+		int* data_all = NULL;
 		if (procid == 0) {
 			for (int i = 0; i < nproc; i++) {
 				data_count += data_sizes[i];
 			}
-			data_all = new int[data_count];
-			data_displacement = new int[nproc];
 			data_displacement[0] = 0;
 			for (int i = 1; i < nproc; i++) {
 				data_displacement[i] = data_displacement[i - 1] + data_sizes[i - 1];
 			}
+			// Allocate memory to hold all of the data
+			data_all = new int[data_count];
 		}
+		// Copy input data into an array
+		int* data = new int[data_size];
+		for (int i = 0; i < (int)input_vector.size(); i++) {
+			data[i] = input_vector[i];
+		}
+		// Gather data arrays from all procs into the data_all array on proc 0
 		MPI_Gatherv(data, data_size, MPI_INT, data_all, data_sizes, data_displacement, MPI_INT, 0, MPI_COMM_WORLD);
+		// Copy data from data_all array into the output data vector
+		vector<int> output_vector;
 		if (procid == 0) {
+			output_vector.reserve(data_count);
 			for (int i = 0; i < data_count; i++) {
 				output_vector.push_back(data_all[i]);
 			}
 		}
+		// Cleanup allocated memory
 		delete[] data;
 		delete[] data_all;
 		delete[] data_sizes;
 		delete[] data_displacement;
+		// return the final data vector
 		return output_vector;
 	}
 
@@ -526,5 +499,4 @@ namespace Utils {
 			throw invalid_argument("Error! Input string is not true or false.");
 		}
 	}
-
 }

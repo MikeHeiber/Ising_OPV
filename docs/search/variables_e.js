@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['width',['Width',['../struct_lattice___params.html#a4a16dbd8c80bf388ac04b0732c8068e6',1,'Lattice_Params::Width()'],['../class_parameters.html#a3e74d6518a0ca83712787dcf793f47de',1,'Parameters::Width()']]]
+  ['unit_5fsize',['Unit_size',['../struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html#a2b54b741426e85a93ef7e41524e9507a',1,'Ising_OPV::Lattice::Lattice_Params']]]
 ];

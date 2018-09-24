@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['lattice',['Lattice',['../class_lattice.html',1,'Lattice'],['../class_lattice.html#a70a5cebc3c0c5a0f609be0592e7cc117',1,'Lattice::Lattice()']]],
+  ['lattice',['Lattice',['../class_ising___o_p_v_1_1_lattice.html',1,'Ising_OPV::Lattice'],['../class_ising___o_p_v_1_1_lattice.html#a427783b130c1276f6c246c48ab971283',1,'Ising_OPV::Lattice::Lattice()']]],
   ['lattice_2ecpp',['Lattice.cpp',['../_lattice_8cpp.html',1,'']]],
   ['lattice_2eh',['Lattice.h',['../_lattice_8h.html',1,'']]],
-  ['lattice_5fparams',['Lattice_Params',['../struct_lattice___params.html',1,'']]],
-  ['length',['Length',['../struct_lattice___params.html#a8882aa5621bdf69dc91a5976083e7745',1,'Lattice_Params::Length()'],['../class_parameters.html#a40c9a934b5bc348ce6d3aab44abf5bf3',1,'Parameters::Length()']]]
+  ['lattice_5fparams',['Lattice_Params',['../struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html',1,'Ising_OPV::Lattice']]],
+  ['length',['Length',['../struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html#ada0221451cd0568918c0c7b48bdc41c1',1,'Ising_OPV::Lattice::Lattice_Params::Length()'],['../class_ising___o_p_v_1_1_parameters.html#aa6e4b650351e3fa187818175bf70f49e',1,'Ising_OPV::Parameters::Length()']]]
 ];

@@ -8,9 +8,76 @@
 #include "Morphology.h"
 #include "Parameters.h"
 #include "Utils.h"
+#include "Version.h"
 
 using namespace std;
-using namespace Utils;
+using namespace Ising_OPV;
+
+namespace VersionTests {
+
+	TEST(VersionTests, ConstructorTests) {
+		// Check behavior of incorrect formats
+		EXPECT_THROW(Version ver1("blah"), invalid_argument);
+		EXPECT_THROW(Version ver1("v1.0"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.0"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.1-gamma"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.1-alpha"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.1-alpha.0"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.0-alpha.1"), invalid_argument);
+		EXPECT_THROW(Version ver1("1.0.0-alpha"), invalid_argument);
+		EXPECT_THROW(Version ver1("-1.0.0-alpha"), invalid_argument);
+	}
+
+	TEST(VersionTests, ComparisonTests) {
+		Version ver1("1.0.0-alpha.1");
+		Version ver2("1.0.0-alpha.1");
+		EXPECT_EQ(ver1, ver2);
+		EXPECT_GE(ver1, ver2);
+		EXPECT_LE(ver1, ver2);
+		Version ver3("1.0.0-alpha.2");
+		EXPECT_LT(ver1, ver3);
+		EXPECT_GT(ver3, ver2);
+		Version ver4("1.0.0-beta.1");
+		EXPECT_GT(ver4, ver1);
+		Version ver5("1.0.0-rc.1");
+		EXPECT_LT(ver4, ver5);
+		Version ver6("1.1.0-beta.1");
+		EXPECT_GT(ver6, ver5);
+		Version ver7("1.0-beta.1");
+		EXPECT_EQ(ver7, ver4);
+	}
+
+	TEST(VersionTests, GetVersionStrTssts) {
+		string version_str = "1.0.0-beta.1";
+		Version ver1(version_str);
+		EXPECT_EQ(version_str, ver1.getVersionStr());
+		stringstream ss1;
+		ss1 << ver1;
+		EXPECT_EQ(version_str, ss1.str());
+		version_str = "2.0.1";
+		Version ver2(version_str);
+		EXPECT_EQ(version_str, ver2.getVersionStr());
+		stringstream ss2;
+		ss2 << ver2;
+		EXPECT_EQ(version_str, ss2.str());
+	}
+}
+
+namespace ParametersTests {
+
+	TEST(ParametersTests, ImportTests) {
+		Parameters params;
+		ifstream param_file("parameters_default.txt");
+		// Check that default parameters can be loaded 
+		EXPECT_TRUE(params.importParameters(param_file));
+		// Check that default parameters are valid
+		EXPECT_TRUE(params.checkParameters());
+		// Change some parameters to invalid values
+		params.Length = -1;
+		// Check the behavior of invalid params
+		EXPECT_FALSE(params.checkParameters());
+	}
+}
 
 namespace UtilsTests {
 
@@ -313,7 +380,7 @@ namespace LatticeTests {
 
 	class LatticeTest : public ::testing::Test {
 	protected:
-		Lattice_Params params_lattice;
+		Lattice::Lattice_Params params_lattice;
 		Lattice lattice;
 
 		void SetUp() {
@@ -533,8 +600,12 @@ namespace MorphologyTests {
 		EXPECT_EQ(50, morph.getLength());
 		EXPECT_EQ(60, morph.getWidth());
 		EXPECT_EQ(70, morph.getHeight());
+		// Check behavior of constructor using invalid parameter values
+		params.Length = -1;
+		EXPECT_THROW(morph = Morphology(params, 1), invalid_argument);
+		params.Length = 50;
 		// Check the lattice input constructor
-		Lattice_Params params_lattice;
+		Lattice::Lattice_Params params_lattice;
 		params_lattice.Enable_periodic_x = true;
 		params_lattice.Enable_periodic_y = true;
 		params_lattice.Enable_periodic_z = false;
@@ -545,6 +616,16 @@ namespace MorphologyTests {
 		Lattice lattice;
 		// Initialize Lattice object
 		lattice.init(params_lattice);
+		// Check that mismatching dimensions of lattice and params throws exception
+		EXPECT_THROW(morph = Morphology(lattice, params, 2),invalid_argument);
+		// Check that mismatching periodic boundary conditions of lattice and params throws exception
+		params.Length = 20;
+		params.Width = 30;
+		params.Height = 40;
+		params.Enable_periodic_z = true;
+		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
+		// Check the correct params
+		params.Enable_periodic_z = false;
 		morph = Morphology(lattice, params, 2);
 		// Check that ID number is set properly
 		EXPECT_EQ(2, morph.getID());
@@ -554,8 +635,6 @@ namespace MorphologyTests {
 		EXPECT_EQ(40, morph.getHeight());
 		// Check that the lattice has the correct unit size
 		EXPECT_DOUBLE_EQ(1.5, morph.getUnitSize());
-		// Check that the params are set properly
-
 	}
 
 	TEST(MorphologyTests, RandomMorphologyTests) {
@@ -711,7 +790,7 @@ namespace MorphologyTests {
 		morph = Morphology(params, 0);
 		morph.createRandomMorphology(mix_fractions);
 		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
-		morph.executeIsingSwapping(500, 0.4, 0.4, true, 3, -0.1);
+		morph.executeIsingSwapping(600, 0.4, 0.4, true, 3, -0.1);
 		// Check calculation of anisotropy with narrow lattice
 		morph.calculateAnisotropies();
 		// Calculation should have an error and result in default value of -1
@@ -846,8 +925,8 @@ namespace MorphologyTests {
 		EXPECT_EQ(11, data1.size());
 		EXPECT_EQ(11, data2.size());
 		// Check that the domain size is the same
-		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.02);
-		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.02);
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.025);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.025);
 		// Calculate domain size using the regular mix fraction method
 		params.Enable_e_method = false;
 		params.Enable_mix_frac_method = true;
@@ -857,14 +936,18 @@ namespace MorphologyTests {
 		morph.calculateCorrelationDistances();
 		domain_size1_f = morph.getDomainSize((char)1);
 		domain_size2_f = morph.getDomainSize((char)2);
+		// Reset params back to using the 1/e method
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		morph.setParameters(params);
 		// Check the approximate magnitude of the domain size
 		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
 		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
 		// Check domain anisotropy
 		morph.calculateAnisotropies();
 		// Check that the phase separated blend is isotropic
-		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.1);
-		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.1);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.125);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.125);
 		// Calculate the depth dependent characteristics
 		morph.calculateDepthDependentData();
 		data1 = morph.getDepthDomainSizeData((char)1);
@@ -1079,7 +1162,7 @@ namespace MorphologyTests {
 		double domain_size2 = morph.getDomainSize((char)2);
 		// output original morphology in compressed format
 		ofstream outfile1("morphology_file1.txt");
-		morph.outputMorphologyFile("v4.0", outfile1, true);
+		morph.outputMorphologyFile(outfile1, true);
 		outfile1.close();
 		// Import compressed morphology file
 		cout << "Importing compressed morphology file." << endl;
@@ -1100,7 +1183,7 @@ namespace MorphologyTests {
 		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
 		// output original morphology in uncompressed format
 		ofstream outfile2("morphology_file2.txt");
-		morph.outputMorphologyFile("v4.0", outfile2, false);
+		morph.outputMorphologyFile(outfile2, false);
 		outfile2.close();
 		// Import uncompressed morphology file
 		cout << "Importing uncompressed morphology file." << endl;

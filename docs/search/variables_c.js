@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tomogram_5fname',['Tomogram_name',['../class_parameters.html#a6936048a953d17eab047762e9e5cb6d1',1,'Parameters']]]
+  ['smoothing_5fthreshold',['Smoothing_threshold',['../class_ising___o_p_v_1_1_parameters.html#af407adc5366025ae224b62eeec4eae03',1,'Ising_OPV::Parameters']]]
 ];

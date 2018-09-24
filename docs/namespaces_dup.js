@@ -1,4 +1,4 @@
 var namespaces_dup =
 [
-    [ "Utils", "namespace_utils.html", null ]
+    [ "Ising_OPV", "namespace_ising___o_p_v.html", null ]
 ];

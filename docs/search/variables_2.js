@@ -1,29 +1,4 @@
 var searchData=
 [
-  ['enable_5fanalysis_5fonly',['Enable_analysis_only',['../class_parameters.html#adf9a8471f298ad86b75f05ea52b828ec',1,'Parameters']]],
-  ['enable_5fareal_5fmaps_5fcalc',['Enable_areal_maps_calc',['../class_parameters.html#afefa8118826d8bfa8b280bf4e2fe1342',1,'Parameters']]],
-  ['enable_5fcheckerboard_5fstart',['Enable_checkerboard_start',['../class_parameters.html#aaa2001bda2335cf9fd37de9f81206614',1,'Parameters']]],
-  ['enable_5fcorrelation_5fcalc',['Enable_correlation_calc',['../class_parameters.html#ad6655e72356ca44228e7f85d32d8b61f',1,'Parameters']]],
-  ['enable_5fcutoff_5fanalysis',['Enable_cutoff_analysis',['../class_parameters.html#a36a5576000eeda6461d47ca2a5732ce2',1,'Parameters']]],
-  ['enable_5fdepth_5fdependent_5fcalc',['Enable_depth_dependent_calc',['../class_parameters.html#aa378e07f2b1576349740705c7f204126',1,'Parameters']]],
-  ['enable_5fe_5fmethod',['Enable_e_method',['../class_parameters.html#a977400a126a709450fbe33a173a84e43',1,'Parameters']]],
-  ['enable_5fexport_5fcompressed_5ffiles',['Enable_export_compressed_files',['../class_parameters.html#a45d59684fb7f0fe388e5df64fba1a26e',1,'Parameters']]],
-  ['enable_5fexport_5fcross_5fsection',['Enable_export_cross_section',['../class_parameters.html#a5a7bae00cf39143113810641f5710e72',1,'Parameters']]],
-  ['enable_5fextended_5fcorrelation_5fcalc',['Enable_extended_correlation_calc',['../class_parameters.html#a4b3c352bb54477e7123b71341dba3a1d',1,'Parameters']]],
-  ['enable_5fgrowth_5fpref',['Enable_growth_pref',['../class_parameters.html#aed324145a5043698a7d0b8daf1f1c434',1,'Parameters']]],
-  ['enable_5fimport_5fmorphologies',['Enable_import_morphologies',['../class_parameters.html#aeec69464f802b67a65abadb3dd99897f',1,'Parameters']]],
-  ['enable_5fimport_5ftomogram',['Enable_import_tomogram',['../class_parameters.html#a4e4316ab67acab1c958762b305afa7fd',1,'Parameters']]],
-  ['enable_5finterfacial_5fdistance_5fcalc',['Enable_interfacial_distance_calc',['../class_parameters.html#a8a7d1f5f219239a1a7b8d3c2bae56c56',1,'Parameters']]],
-  ['enable_5finterfacial_5fmixing',['Enable_interfacial_mixing',['../class_parameters.html#adbce655ef40567a18607f61ad90de71c',1,'Parameters']]],
-  ['enable_5fmix_5ffrac_5fmethod',['Enable_mix_frac_method',['../class_parameters.html#a62706ccbc7961d9e8224e6463bef6c38',1,'Parameters']]],
-  ['enable_5fperiodic_5fx',['Enable_periodic_x',['../struct_lattice___params.html#a2132d74511f6c0562fd344a6331dcbba',1,'Lattice_Params']]],
-  ['enable_5fperiodic_5fy',['Enable_periodic_y',['../struct_lattice___params.html#a02574fd571949edb8039524b02e259b9',1,'Lattice_Params']]],
-  ['enable_5fperiodic_5fz',['Enable_periodic_z',['../struct_lattice___params.html#a18a6d0ed85e579f4275785e02974a8d9',1,'Lattice_Params::Enable_periodic_z()'],['../class_parameters.html#ae2e2d3fe04efaf68770c9ebb1f8a3dca',1,'Parameters::Enable_periodic_z()']]],
-  ['enable_5fprobability_5fanalysis',['Enable_probability_analysis',['../class_parameters.html#a22f986bba9b8806e3c0c38c4145f3d91',1,'Parameters']]],
-  ['enable_5freduced_5fmemory_5ftortuosity_5fcalc',['Enable_reduced_memory_tortuosity_calc',['../class_parameters.html#af0949864763cd96d81669080098f43e2',1,'Parameters']]],
-  ['enable_5frescale',['Enable_rescale',['../class_parameters.html#af29ee2cccb55e26b57f0d3e1c4765c3b',1,'Parameters']]],
-  ['enable_5fshrink',['Enable_shrink',['../class_parameters.html#a589ce4c3154ffd8c1a8b7647dafd566e',1,'Parameters']]],
-  ['enable_5fsmoothing',['Enable_smoothing',['../class_parameters.html#a88d95fea88ffdfbecd30d811e3d01553',1,'Parameters']]],
-  ['enable_5ftortuosity_5fcalc',['Enable_tortuosity_calc',['../class_parameters.html#a138469ab4c10bb12a786b834f4372952',1,'Parameters']]],
-  ['extended_5fcorrelation_5fcutoff_5fdistance',['Extended_correlation_cutoff_distance',['../class_parameters.html#a90245d743bd061e02227d171647c806d',1,'Parameters']]]
+  ['desired_5funit_5fsize',['Desired_unit_size',['../class_ising___o_p_v_1_1_parameters.html#a407108394e3dbeaaba0a25a44eb2e5f4',1,'Ising_OPV::Parameters']]]
 ];

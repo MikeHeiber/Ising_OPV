@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['smoothing_5fthreshold',['Smoothing_threshold',['../class_parameters.html#a8a0e8f76994c9e085528e909df940d09',1,'Parameters']]]
+  ['rescale_5ffactor',['Rescale_factor',['../class_ising___o_p_v_1_1_parameters.html#aea62d6daeb04924c8a8f6803a443bd46',1,'Ising_OPV::Parameters']]]
 ];

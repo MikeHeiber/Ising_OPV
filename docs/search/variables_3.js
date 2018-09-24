@@ -1,4 +1,29 @@
 var searchData=
 [
-  ['growth_5fdirection',['Growth_direction',['../class_parameters.html#af197dea6a6cc714a04ef9e2d14f5eb6f',1,'Parameters']]]
+  ['enable_5fanalysis_5fonly',['Enable_analysis_only',['../class_ising___o_p_v_1_1_parameters.html#adfebe34450ca58224d13db0ba23a65c5',1,'Ising_OPV::Parameters']]],
+  ['enable_5fareal_5fmaps_5fcalc',['Enable_areal_maps_calc',['../class_ising___o_p_v_1_1_parameters.html#a66e1fd5007c38855596cd1b50c649af1',1,'Ising_OPV::Parameters']]],
+  ['enable_5fcheckerboard_5fstart',['Enable_checkerboard_start',['../class_ising___o_p_v_1_1_parameters.html#af7ce7223e79d80a47ceae742003fc926',1,'Ising_OPV::Parameters']]],
+  ['enable_5fcorrelation_5fcalc',['Enable_correlation_calc',['../class_ising___o_p_v_1_1_parameters.html#a3634627c7680550587a8c35b1dd0b0a0',1,'Ising_OPV::Parameters']]],
+  ['enable_5fcutoff_5fanalysis',['Enable_cutoff_analysis',['../class_ising___o_p_v_1_1_parameters.html#ae757fd0a0d08c2245658e66512645d62',1,'Ising_OPV::Parameters']]],
+  ['enable_5fdepth_5fdependent_5fcalc',['Enable_depth_dependent_calc',['../class_ising___o_p_v_1_1_parameters.html#a6fe07ed64131b949d31532f98dae3c08',1,'Ising_OPV::Parameters']]],
+  ['enable_5fe_5fmethod',['Enable_e_method',['../class_ising___o_p_v_1_1_parameters.html#adcb6335f570ba7742a1bc32455c4be68',1,'Ising_OPV::Parameters']]],
+  ['enable_5fexport_5fcompressed_5ffiles',['Enable_export_compressed_files',['../class_ising___o_p_v_1_1_parameters.html#a88bb023fd94161fc0191e187cc5f97fe',1,'Ising_OPV::Parameters']]],
+  ['enable_5fexport_5fcross_5fsection',['Enable_export_cross_section',['../class_ising___o_p_v_1_1_parameters.html#a6277519a47da4967b5ee5d0d3ae78087',1,'Ising_OPV::Parameters']]],
+  ['enable_5fextended_5fcorrelation_5fcalc',['Enable_extended_correlation_calc',['../class_ising___o_p_v_1_1_parameters.html#adf59998b9801069f6855f94454484bbf',1,'Ising_OPV::Parameters']]],
+  ['enable_5fgrowth_5fpref',['Enable_growth_pref',['../class_ising___o_p_v_1_1_parameters.html#ad3b529ce5f5e9fe15d4f68869297d2cc',1,'Ising_OPV::Parameters']]],
+  ['enable_5fimport_5fmorphologies',['Enable_import_morphologies',['../class_ising___o_p_v_1_1_parameters.html#a39e7713a62449c1f8ab3a15174871467',1,'Ising_OPV::Parameters']]],
+  ['enable_5fimport_5ftomogram',['Enable_import_tomogram',['../class_ising___o_p_v_1_1_parameters.html#afc19d8e5b46c8375cb11ef89f1e55872',1,'Ising_OPV::Parameters']]],
+  ['enable_5finterfacial_5fdistance_5fcalc',['Enable_interfacial_distance_calc',['../class_ising___o_p_v_1_1_parameters.html#a847ec6be382ddcce7655c5341dc22da3',1,'Ising_OPV::Parameters']]],
+  ['enable_5finterfacial_5fmixing',['Enable_interfacial_mixing',['../class_ising___o_p_v_1_1_parameters.html#aeb5c48b12d8610ecd3b844160607da7c',1,'Ising_OPV::Parameters']]],
+  ['enable_5fmix_5ffrac_5fmethod',['Enable_mix_frac_method',['../class_ising___o_p_v_1_1_parameters.html#afd28d369bf06f75060d194330b9e26d9',1,'Ising_OPV::Parameters']]],
+  ['enable_5fperiodic_5fx',['Enable_periodic_x',['../struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html#a58fbe3f480d4d716650b7d64faa4383c',1,'Ising_OPV::Lattice::Lattice_Params']]],
+  ['enable_5fperiodic_5fy',['Enable_periodic_y',['../struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html#a70f785259d8caf2887e8bc8a3c45b73b',1,'Ising_OPV::Lattice::Lattice_Params']]],
+  ['enable_5fperiodic_5fz',['Enable_periodic_z',['../struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html#a396b89a8b774e6e259c87d34cbfb0d80',1,'Ising_OPV::Lattice::Lattice_Params::Enable_periodic_z()'],['../class_ising___o_p_v_1_1_parameters.html#a6e87b9f5965ae5601c66dee6b2b19a42',1,'Ising_OPV::Parameters::Enable_periodic_z()']]],
+  ['enable_5fprobability_5fanalysis',['Enable_probability_analysis',['../class_ising___o_p_v_1_1_parameters.html#ae72aaaea1ad1e5380055a0e6e7e5dd48',1,'Ising_OPV::Parameters']]],
+  ['enable_5freduced_5fmemory_5ftortuosity_5fcalc',['Enable_reduced_memory_tortuosity_calc',['../class_ising___o_p_v_1_1_parameters.html#a221639af03c358e41c0581c752f9eae2',1,'Ising_OPV::Parameters']]],
+  ['enable_5frescale',['Enable_rescale',['../class_ising___o_p_v_1_1_parameters.html#a1e6d01845ba2fb31f0afae2891a7bdc2',1,'Ising_OPV::Parameters']]],
+  ['enable_5fshrink',['Enable_shrink',['../class_ising___o_p_v_1_1_parameters.html#a151c9b1eb4f64b9822c9f6f0a078159d',1,'Ising_OPV::Parameters']]],
+  ['enable_5fsmoothing',['Enable_smoothing',['../class_ising___o_p_v_1_1_parameters.html#a205ed30bc75142a5f94ecad019859ad1',1,'Ising_OPV::Parameters']]],
+  ['enable_5ftortuosity_5fcalc',['Enable_tortuosity_calc',['../class_ising___o_p_v_1_1_parameters.html#a4f483cff762cfa9c0181a3f7b0292018',1,'Ising_OPV::Parameters']]],
+  ['extended_5fcorrelation_5fcutoff_5fdistance',['Extended_correlation_cutoff_distance',['../class_ising___o_p_v_1_1_parameters.html#a3c98783373320558be9e3344a60ccd6c',1,'Ising_OPV::Parameters']]]
 ];

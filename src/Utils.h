@@ -20,46 +20,47 @@
 #include <string>
 #include <vector>
 
-//! \brief This simple struct contains Cartesian coordinates specified by integers x,y,z.
-//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
-//! \author Michael C. Heiber
-//! \date 2014-2018
-struct Coords {
-	//! The x Cartesian coordinate.
-	int x;
-	//! The y Cartesian coordinate.
-	int y;
-	//! The z Cartesian coordinate.
-	int z;
+namespace Ising_OPV {
 
-	//! \brief Sets the x,y,z coordinates using the input values xval, yval, and zval.
-	//! \param xval is the input x value.
-	//! \param yval is the input y value.
-	//! \param zval is the input z value.
-	void setXYZ(const int xval, const int yval, const int zval) {
-		x = xval;
-		y = yval;
-		z = zval;
-	}
+	//! \brief This namespace provides useful constants and utility functions.
+	//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
+	//! \author Michael C. Heiber
+	//! \date 2014-2018
 
-	//! \brief Defines the conditions when two Coords structs are deemed to be equal.
-	//! \param rhs is the right hand side Coords struct of the comparison operator.
-	bool operator==(const Coords& rhs) const {
-		return (x == rhs.x && y == rhs.y && z == rhs.z);
-	}
+		//! \brief This simple struct contains Cartesian coordinates specified by integers x,y,z.
+		//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
+		//! \author Michael C. Heiber
+		//! \date 2014-2018
+	struct Coords {
+		//! The x Cartesian coordinate.
+		int x;
+		//! The y Cartesian coordinate.
+		int y;
+		//! The z Cartesian coordinate.
+		int z;
 
-	//! \brief Defines the conditions when two Coords structs are deemed to be unequal.
-	//! \param rhs is the right hand side Coords struct  of the comparison operator.
-	bool operator!=(const Coords& rhs) const {
-		return (x != rhs.x || y != rhs.y || z != rhs.z);
-	}
-};
+		//! \brief Sets the x,y,z coordinates using the input values xval, yval, and zval.
+		//! \param xval is the input x value.
+		//! \param yval is the input y value.
+		//! \param zval is the input z value.
+		void setXYZ(const int xval, const int yval, const int zval) {
+			x = xval;
+			y = yval;
+			z = zval;
+		}
 
-//! \brief This namespace provides useful constants and utility functions.
-//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
-//! \author Michael C. Heiber
-//! \date 2014-2018
-namespace Utils {
+		//! \brief Defines the conditions when two Coords structs are deemed to be equal.
+		//! \param rhs is the right hand side Coords struct of the comparison operator.
+		bool operator==(const Coords& rhs) const {
+			return (x == rhs.x && y == rhs.y && z == rhs.z);
+		}
+
+		//! \brief Defines the conditions when two Coords structs are deemed to be unequal.
+		//! \param rhs is the right hand side Coords struct  of the comparison operator.
+		bool operator!=(const Coords& rhs) const {
+			return (x != rhs.x || y != rhs.y || z != rhs.z);
+		}
+	};
 
 	// Scientific Constants
 	static constexpr double K_b = 8.61733035e-5;
@@ -144,8 +145,9 @@ namespace Utils {
 	std::vector<std::pair<double, double>> MPI_calculateProbHistAvg(const std::vector<std::pair<double, int>>& input_hist);
 
 	//! \brief Uses MPI to calculate the element-wise average vector from separate vectors coming from different processors.
-	//! \details Each processor calls this function and sends an input vector.  Upon function return, processor 0 
-	//! receives the average vector and all of the other processors receive an empty vector.
+	//! \details Each processor calls this function and sends an input vector. If vectors are different sizes, the function uses trailing zeroes
+	//! to make all vectors the same size before averaging. Upon function return, processor 0 receives the average vector and all of the other 
+	//! processors receive an empty vector.
 	//! \param input_vector is the input data from the processor calling the function.
 	//! \return A vector that is the element-wise average of all input vectors from each processor, when called on processor 0.
 	//! \return An empty vector when called on other processors.

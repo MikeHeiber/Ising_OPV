@@ -11,14 +11,13 @@
 #include <sstream>
 #include <mpi.h>
 
+using namespace Ising_OPV;
 using namespace std;
-using namespace Utils;
 
 int main(int argc, char * argv[]) {
 	// Input parameters
 	Parameters parameters;
 	// Internal parameters
-	string version = "v4.0-rc1";
 	double mix_ratio = 0;
 	double domain_size1 = 0;
 	double domain_size2 = 0;
@@ -132,7 +131,7 @@ int main(int argc, char * argv[]) {
 				cout << procid << ": Writing morphology " << i << " to an output file." << endl;
 				filename = "morphology_" + to_string(i) + ".txt";
 				morphology_output_file.open(filename);
-				morphology_set[i].outputMorphologyFile(version, morphology_output_file, parameters.Enable_export_compressed_files);
+				morphology_set[i].outputMorphologyFile(morphology_output_file, parameters.Enable_export_compressed_files);
 				morphology_output_file.close();
 			}
 		}
@@ -294,7 +293,7 @@ int main(int argc, char * argv[]) {
 		cout << procid << ": Writing morphology to file..." << endl;
 		filename = "morphology_" + to_string(procid) + ".txt";
 		morphology_output_file.open(filename);
-		morph.outputMorphologyFile(version, morphology_output_file, parameters.Enable_export_compressed_files);
+		morph.outputMorphologyFile(morphology_output_file, parameters.Enable_export_compressed_files);
 		morphology_output_file.close();
 	}
 	// Save the cross-section of the x=0 plane to a file if enabled.
@@ -424,7 +423,7 @@ int main(int argc, char * argv[]) {
 		}
 		// Output the final morphology set analysis summary to a text file.
 		analysis_file.open("analysis_summary.txt");
-		analysis_file << "Summary of results for this morphology set containing " << nproc << " morphologies created using Ising_OPV " << version << ":" << endl;
+		analysis_file << "Summary of results for this morphology set containing " << nproc << " morphologies created using Ising_OPV v" << Current_version.getVersionStr() << ":" << endl;
 		analysis_file << "length,width,height,mix_ratio_avg,mix_ratio_stdev,domain1_size_avg,domain1_size_stdev,domain2_size_avg,domain2_size_stdev,";
 		analysis_file << "domain1_anisotropy_avg,domain1_anisotropy_stdev,domain2_anisotropy_avg,domain2_anisotropy_stdev,";
 		analysis_file << "interfacial_area_volume_ratio_avg,interfacial_area_volume_ratio_stdev,interfacial_volume_ratio_avg,interfacial_volume_ratio_stdev,";
