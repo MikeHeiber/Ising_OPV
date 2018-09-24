@@ -34,17 +34,40 @@ namespace VersionTests {
 		EXPECT_EQ(ver1, ver2);
 		EXPECT_GE(ver1, ver2);
 		EXPECT_LE(ver1, ver2);
+		// Check different prerelease numbers
 		Version ver3("1.0.0-alpha.2");
+		EXPECT_NE(ver1, ver3);
 		EXPECT_LT(ver1, ver3);
 		EXPECT_GT(ver3, ver2);
+		// Check different prerelease names
 		Version ver4("1.0.0-beta.1");
+		EXPECT_NE(ver4, ver1);
 		EXPECT_GT(ver4, ver1);
+		EXPECT_LT(ver1, ver4);
 		Version ver5("1.0.0-rc.1");
+		EXPECT_NE(ver4, ver5);
 		EXPECT_LT(ver4, ver5);
-		Version ver6("1.1.0-beta.1");
-		EXPECT_GT(ver6, ver5);
-		Version ver7("1.0-beta.1");
-		EXPECT_EQ(ver7, ver4);
+		EXPECT_GT(ver5, ver4);
+		// Check different major numbers
+		Version ver6("2.0.0-alpha.1");
+		EXPECT_NE(ver6, ver1);
+		EXPECT_GT(ver6, ver1);
+		EXPECT_LT(ver1, ver6);
+		// Check different minor numbers
+		Version ver7("1.1.0-alpha.1");
+		EXPECT_NE(ver7, ver1);
+		EXPECT_GT(ver7, ver1);
+		EXPECT_LT(ver1, ver7);
+		// Check different rev numbers
+		Version ver8("1.0.1-alpha.1");
+		EXPECT_NE(ver8, ver1);
+		EXPECT_GT(ver8, ver1);
+		EXPECT_LT(ver1, ver8);
+		// Check abbreviated version
+		Version ver9("1.0-alpha.1");
+		EXPECT_EQ(ver9, ver1);
+		Version ver10("1.0-beta.1");
+		EXPECT_EQ(ver10, ver4);
 	}
 
 	TEST(VersionTests, GetVersionStrTssts) {
@@ -65,17 +88,157 @@ namespace VersionTests {
 
 namespace ParametersTests {
 
-	TEST(ParametersTests, ImportTests) {
+	TEST(ParametersTests, ImportandCheckTests) {
 		Parameters params;
-		ifstream param_file("parameters_default.txt");
+		// Check loading of parameter file with old format
+		ifstream param_file1("./test/parameters_old_format.txt");
+		EXPECT_FALSE(params.importParameters(param_file1));
+		param_file1.close();
+		// Check loading of parameter file with bad format
+		ifstream param_file2("./test/parameters_bad_format.txt");
+		EXPECT_FALSE(params.importParameters(param_file2));
+		param_file2.close();
+		// Check loading of parameter file with missing data
+		ifstream param_file3("./test/parameters_missing_data.txt");
+		EXPECT_FALSE(params.importParameters(param_file3));
+		param_file3.close();
+		// Load default parameters
+		ifstream param_file4("parameters_default.txt");
 		// Check that default parameters can be loaded 
-		EXPECT_TRUE(params.importParameters(param_file));
+		EXPECT_TRUE(params.importParameters(param_file4));
+		param_file4.close();
 		// Check that default parameters are valid
 		EXPECT_TRUE(params.checkParameters());
-		// Change some parameters to invalid values
-		params.Length = -1;
-		// Check the behavior of invalid params
-		EXPECT_FALSE(params.checkParameters());
+		// Check invalid parameters
+		Parameters params_invalid;
+		// Check invalid dimensions
+		params_invalid = params;
+		params_invalid.Length = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check mix fraction
+		params_invalid = params;
+		params_invalid.Mix_fraction = 1.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid interaction energy
+		params_invalid = params;
+		params_invalid.Interaction_energy1 = -0.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid MC steps
+		params_invalid = params;
+		params_invalid.MC_steps = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid smoothing threshold
+		params_invalid = params;
+		params_invalid.Enable_smoothing = true;
+		params_invalid.Smoothing_threshold = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid rescale
+		params_invalid = params;
+		params_invalid.Enable_rescale = true;
+		params_invalid.Rescale_factor = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid rescale
+		params_invalid = params;
+		params_invalid.Enable_rescale = true;
+		params_invalid.Enable_shrink = true;
+		params_invalid.Rescale_factor = 3;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid interfacial mixing
+		params_invalid = params;
+		params_invalid.Enable_interfacial_mixing = true;
+		params_invalid.Interface_width = 0.0;
+		params_invalid.Interface_conc = 0.5;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid.Interface_width = 1.0;
+		params_invalid.Interface_conc = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid correlation calc params
+		// Check invalid calc method options
+		params_invalid = params;
+		params_invalid.Enable_correlation_calc = true;
+		params_invalid.Enable_e_method = false;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid = params;
+		params_invalid.Enable_mix_frac_method = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid N_sampling
+		params_invalid = params;
+		params_invalid.N_sampling_max = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid extended calc
+		params_invalid = params;
+		params_invalid.Enable_extended_correlation_calc = true;
+		params_invalid.Extended_correlation_cutoff_distance = 0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check growth preference params
+		params_invalid = params;
+		params_invalid.Enable_growth_pref = true;
+		params_invalid.Growth_direction = 0;
+		params_invalid.Additional_interaction = 0.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid = params;
+		params_invalid.Enable_growth_pref = true;
+		params_invalid.Growth_direction = 1;
+		params_invalid.Additional_interaction = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check import options
+		params_invalid = params;
+		params_invalid.Enable_import_morphologies = true;
+		params_invalid.Enable_import_tomogram = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check import tomogram options
+		// Check missing analysis option
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check two analysis options
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_cutoff_analysis = true;
+		params_invalid.Enable_probability_analysis = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid unit size
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_cutoff_analysis = true;
+		params_invalid.Desired_unit_size = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check cutoff analysis options
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_cutoff_analysis = true;
+		params_invalid.Mixed_greyscale_width = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check cutoff analysis options
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_cutoff_analysis = true;
+		params_invalid.Mixed_conc = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check prob analysis options
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_probability_analysis = true;
+		params_invalid.Probability_scaling_exponent = -1.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check extracted segments
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_probability_analysis = true;
+		params_invalid.N_extracted_segments = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid.N_extracted_segments = 3;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check number of variants
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Enable_probability_analysis = true;
+		params_invalid.N_variants = 0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check analysis only
+		params_invalid = params;
+		params_invalid.Enable_analysis_only = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
 	}
 }
 

@@ -178,7 +178,7 @@ namespace Ising_OPV {
 			file_version = Version(line);
 		}
 		catch (invalid_argument exception) {
-			cout << "Error! Unable to load parameter file with version '" << line << "'. Only parameter files formatted for Ising_OPV v4.0.0-rc.1 or greater are supported." << endl;
+			cout << "Error! Unable to load parameter file with version " << line << ". Only parameter files formatted for Ising_OPV v4.0.0-rc.1 or greater are supported." << endl;
 			return false;
 		}
 		if (file_version < min_version) {

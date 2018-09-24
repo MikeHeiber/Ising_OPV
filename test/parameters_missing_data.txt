@@ -1,0 +1,61 @@
+## Parameters for Ising_OPV v4.0-rc.1
+---------------------------------------------------------------------------------------------
+## General Parameters
+50 //Length (integer values only) (specify the x-direction size of the lattice)
+50 //Width (integer values only) (specify the y-direction size of the lattice)
+50 //Height (integer values only) (specify the z-direction size of the lattice)
+true //Enable_z_periodic_boundary (true or false) (periodic boundaries in x- and y-directions are enabled by default, but z-direction can also be enabled here)
+0.5 //Mix_fraction (type1 volume fraction)
+0.4 //Interaction_energy1 (code optimized for values from 0.3 to 1.0) (energetic favorability for type1-type1 interactions over type1-type2 interactions in units of kT)
+200 //MC_steps (integer values only) (specifies the duration of the phase separation process)
+---------------------------------------------------------------------------------------------
+## Smoothing Options
+true //Enable_smoothing (true or false) (choose whether or not to execute the domain smoothing process)
+0.52 //Smoothing_threshold (0.52 is optimal value determined when domain size >= 5 nm)
+---------------------------------------------------------------------------------------------
+## Rescale Morphology Options
+false //Enable_rescale (true or false) (choose whether or not to rescale the lattice after phase separation is complete; smoothing is performed after rescaling if both are enabled)
+2 //Rescale_factor (positive integer values only)
+false //Enable_shrink (true or false) (choose whether or not to shrink the lattice by 1/rescale factor; smoothing is performed before shrinking if both are enabled)
+---------------------------------------------------------------------------------------------
+## Interfacial Mixing Options
+false //Enable_interfacial_mixing (true or false) (choose whether or not to introduce interfacial mixing after phase separation, smoothing, and rescaling is complete)
+4.0 //Interface_width (nm) (specify the approximate width of the interfacial mixing region)
+0.5 //Interface_conc (donor fraction) (specify the mixed type1 volume fraction in the interfacial region)
+---------------------------------------------------------------------------------------------
+## Analysis Options
+false //Enable_analysis_only (true or false)
+true //Enable_correlation_calc (true or false) (choose whether or not to calculate the domain size using the pair-pair correlation method)
+100000 //N_sampling_max (integer values only) (specify the maximum number of sites to randomly sample for the correlation calculation)
+false //Enable_mix_frac_method (true or false) (choose whether or not to calculate the domain size using the mix fraction method)
+true //Enable_e_method (true or false) (choose whether or not to calculate the domain size using the 1/e method)
+false //Enable_extended_correlation_calc (true of false) (choose whether or not to extend the correlation function calculation to a specified distance)
+10 // Extended_correlation_cutoff_distance (integer values only) (specify the distance to which the extended correlation function should be calculated)
+true //Enable_interfacial_distance_calc (true of false) (choose whether or not to calculate and output the interfacial distance histograms)
+true //Enable_tortuosity_calc (true or false) (choose whether or not to calculate and output the end-to-end tortuosity histograms and calculate the island volume fraction)
+false //Enable_reduced_memory_tortuosity_calc (true or false) (choose whether or not to enable a tortuosity calculation method that takes longer, but uses less memory)
+true //Enable_depth_dependent_calc (true or false) (choose whether or not to enable calculation and output of the depth dependent composition, domain size, and interfacial volume fraction)
+true //Enable_areal_maps_calc (true or false) (choose whether or not to enable calculation and output of areal maps of the composition and tortuosity)
+---------------------------------------------------------------------------------------------
+## Other Options
+false //Enable_checkerboard_start (true or false) (choose whether or not to create a 3D checkerboard morphology) (creates 50:50 blend, works best with even lattice dimensions)
+false //Enable_growth_pref (true or false) (choose whether or not to modify the interaction energies in one direction)
+3 //Growth_direction (specify the direction to modify the interactions, with 1=x,2=y,3=z)
+-0.1 //Additional_interaction (specify the amount that the interaction energy should be modified along the designated direction)
+---------------------------------------------------------------------------------------------
+## Export Morphology Options
+true //Enable_export_compressed_files (true or false) (choose whether or not morphology file output is in compressed format)
+false //Enable_export_cross_section (true or false) (choose whether or not to separately output uncompressed data for the cross-section at the x=0 plane)
+---------------------------------------------------------------------------------------------
+## Import Morphology Options
+false //Enable_import_morphologies (true or false) (choose whether or not to import a previously generated set of morphology files)
+false //Enable_import_tomogram (true or false) (choose whether or not to import a tomogram dataset)
+TOMO_000001 //Tomogram_name (specify the name of the tomogram dataset) (name cannot contain spaces)
+1.0 //Desired_unit_size (nm) (specify the desired lattice unit size to use when importing the tomogram dataset)
+false //Enable_cutoff_analysis (true or false) (choose whether or not to analyze the tomogram dataset using a simple grayscale brightness cutoff method)
+10 //Mixed_greyscale_width (integer values only) (specify the grayscale brightness range to assign to a mixed phase)
+0.5 //Mixed_conc (specify the type1 volume fraction to randomly assign to sites within the detected mixed phase)
+false //Enable_probability_analysis (true or false) (choose whether or not to analyze the tomogram dataset using a grayscale-based probability method)
+0.05 //Probability_scaling_exponent (specify the grayscale probability scaling exponent used to convert a grayscale value into a site type probability)
+16 //N_extracted_segments (specify the number of cuboid segments to extract from the tomogram) (must be 4, 9, 16, 25, 64, 49, etc.)
+1 //N_variants (specify the number of random variants to create from each extracted cuboid segment)
