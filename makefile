@@ -81,4 +81,4 @@ test/test_mpi.o : test/test_mpi.cpp $(GTEST_HEADERS) $(OBJS)
 	mpicxx $(GTEST_FLAGS) $(FLAGS) -c $< -o $@
 	
 clean:
-	\rm src/*.o tinyxml/*.o *~ Ising_OPV.exe src/*.gcno* src/*.gcda test/*.o test/*.gcno* test/*.gcda test/Ising_OPV_tests.exe test/Ising_OPV_MPI_tests.exe
+	\rm src/*.o tinyxml/*.o *~ Ising_OPV.exe src/*.gcno* src/*.gcda test/*.o test/*.txt test/*.gcno* test/*.gcda test/Ising_OPV_tests.exe test/Ising_OPV_MPI_tests.exe

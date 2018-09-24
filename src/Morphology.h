@@ -13,6 +13,7 @@
 #include "tinyxml2/tinyxml2.h"
 #include <algorithm>
 #include <array>
+#include <cstdio>
 #include <ctime>
 #include <fstream>
 #include <functional>
@@ -80,10 +81,6 @@ namespace Ising_OPV {
 		//! \brief Default constructor that creates a Morphology object with the default parameters and an empty lattice.
 		//! \warning An empty Morphology object should not be used without defining a lattice.
 		Morphology();
-
-		//! \brief This is the simplest constructor that creates a Morphology object with the default member variables and an empty lattice.
-		//! \param id is the input integer ID number that will be assigned to the Morphology object.
-		Morphology(const int id);
 
 		//! \brief This constructor creates a Morphology object with a 3D lattice with a size defined by the input dimensions (length, width, height).
 		//! \details Two-dimensional periodic boundaries in the x- and y- directions are implemented by default, but periodic boundaries in the z-direction can also be enabled upon construction.
@@ -243,11 +240,9 @@ namespace Ising_OPV {
 		//! \return an integer representing the width or y-direction size of the lattice.
 		int getWidth() const;
 
-		//! \brief imports a tomogram dataset using a combination of information from an xml metadata file and a set of import parameters
-		//! \param info_filename is the name of the xml metadata file
-		//! \param data_filename is the name of the raw morphology data file
-		//! \returns a vector of Morphology objects that consists of a series of subsections of the original tomogram data
-		std::vector<Morphology> importTomogramMorphologyFile(const std::string& info_filename, const std::string& data_filename);
+		//! \brief Imports the tomogram dataset specified in the parameter file.
+		//! \returns a vector of Morphology objects that consists of a series of subsections of the original tomogram data.
+		std::vector<Morphology> importTomogramMorphologyFile();
 
 		//! \brief Imports the Ising_OPV morphology text file given by the specified input filestream.
 		//! \param infile is the already open input filestream pointing to an Ising_OPV morphology file.

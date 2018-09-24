@@ -546,11 +546,17 @@ namespace LatticeTests {
 		EXPECT_EQ(20, lattice_new.getWidth());
 		EXPECT_EQ(20, lattice_new.getHeight());
 		// Extract a smaller lattice
-		lattice_new = lattice.extractSublattice(9, 40, 19, 30, 0, 30);
+		lattice_new = lattice.extractSublattice(10, 40, 20, 30, 0, 30);
 		// Check new lattice dimensions
 		EXPECT_EQ(40, lattice_new.getLength());
 		EXPECT_EQ(30, lattice_new.getWidth());
 		EXPECT_EQ(30, lattice_new.getHeight());
+		// Extract a smaller lattice up to the edge of the larger lattice
+		lattice_new = lattice.extractSublattice(25, 25, 25, 25, 25, 25);
+		// Check new lattice dimensions
+		EXPECT_EQ(25, lattice_new.getLength());
+		EXPECT_EQ(25, lattice_new.getWidth());
+		EXPECT_EQ(25, lattice_new.getHeight());
 		// Check that invalid input throws the correct excpetions
 		// Check negative inputs
 		EXPECT_THROW(lattice.extractSublattice(-1, 20, 0, 20, 0, 20), invalid_argument);
@@ -578,12 +584,6 @@ namespace MorphologyTests {
 		// Test the default constructor
 		Morphology morph;
 		// Check that the object has the default ID number
-		EXPECT_EQ(0, morph.getID());
-		// Check that the lattice has default size of 0,0,0.
-		EXPECT_EQ(0, morph.getLength());
-		// Test simple constructor
-		morph = Morphology(0);
-		// Check that ID number is set properly
 		EXPECT_EQ(0, morph.getID());
 		// Check that the lattice has default size of 0,0,0.
 		EXPECT_EQ(0, morph.getLength());
@@ -764,8 +764,8 @@ namespace MorphologyTests {
 		// Calculate the final domain anisotropy
 		morph.calculateAnisotropies();
 		// Check the approximate magnitude of the anisotropy factor
-		EXPECT_NEAR(0.84, morph.getDomainAnisotropy((char)1), 0.125);
-		EXPECT_NEAR(0.84, morph.getDomainAnisotropy((char)2), 0.125);
+		EXPECT_NEAR(0.845, morph.getDomainAnisotropy((char)1), 0.125);
+		EXPECT_NEAR(0.845, morph.getDomainAnisotropy((char)2), 0.125);
 		// Reset morphology to a random blend
 		morph.createRandomMorphology(mix_fractions);
 		// Perform some anisotropic phase separation that creates aligned structures in the x-direction
@@ -833,6 +833,28 @@ namespace MorphologyTests {
 		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
 		// Check the interfacial volume fraction
 		EXPECT_DOUBLE_EQ(1.0, morph.calculateInterfacialVolumeFraction());
+	}
+
+	TEST(MorphologyTests, ImportTomogramTests) {
+		// Setup default parameters
+		Parameters params;
+		params.Length = 100;
+		params.Width = 100;
+		params.Height = 50;
+		params.Enable_periodic_z = false;
+		params.N_sampling_max = 50000;
+		params.Enable_e_method = true;
+		params.Enable_import_tomogram = true;
+		params.Tomogram_name = "./test/TOMO_test_data";
+		params.Desired_unit_size = 1.0;
+		params.Enable_cutoff_analysis = true;
+		params.Mixed_greyscale_width = 0;
+		params.Mixed_conc = 0.5;
+		params.N_extracted_segments = 4;
+		params.N_variants = 1;
+		Morphology morph(params, 0);
+		auto morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
 	}
 
 	class MorphologyTest : public ::testing::Test {
@@ -974,11 +996,11 @@ namespace MorphologyTests {
 		}
 		string line;
 		// Output correlation data
-		ofstream outfile2("correlation_data.txt");
+		ofstream outfile2("./test/correlation_data.txt");
 		morph.outputCorrelationData(outfile2);
 		outfile2.close();
 		// Check that output looks valid
-		ifstream infile2("correlation_data.txt");
+		ifstream infile2("./test/correlation_data.txt");
 		getline(infile2, line);
 		// Check first column names line
 		EXPECT_EQ("Distance (nm),Correlation1,Correlation2", line);
@@ -987,11 +1009,11 @@ namespace MorphologyTests {
 		EXPECT_EQ("0,1,1", line);
 		infile2.close();
 		// Output depth dependent data
-		ofstream outfile3("depth_data.txt");
+		ofstream outfile3("./test/depth_data.txt");
 		morph.outputDepthDependentData(outfile3);
 		outfile3.close();
 		// Check that output looks valid
-		ifstream infile3("depth_data.txt");
+		ifstream infile3("./test/depth_data.txt");
 		// Check first column names line
 		getline(infile3, line);
 		EXPECT_EQ("Z-Position,Type1_composition,Type2_composition,Type1_domain_size,Type2_domain_size,IV_fraction", line);
@@ -1018,11 +1040,11 @@ namespace MorphologyTests {
 		EXPECT_DOUBLE_EQ(tortuosity1, vector_avg(data1));
 		EXPECT_DOUBLE_EQ(tortuosity2, vector_avg(data2));
 		// Output tortuosity maps
-		ofstream outfile("tortuosity_maps.txt");
+		ofstream outfile("./test/tortuosity_maps.txt");
 		morph.outputTortuosityMaps(outfile);
 		outfile.close();
 		// Check that output looks valid
-		ifstream infile("tortuosity_maps.txt");
+		ifstream infile("./test/tortuosity_maps.txt");
 		string line;
 		// Check first column names line
 		getline(infile, line);
@@ -1161,12 +1183,12 @@ namespace MorphologyTests {
 		double domain_size1 = morph.getDomainSize((char)1);
 		double domain_size2 = morph.getDomainSize((char)2);
 		// output original morphology in compressed format
-		ofstream outfile1("morphology_file1.txt");
+		ofstream outfile1("./test/morphology_file1.txt");
 		morph.outputMorphologyFile(outfile1, true);
 		outfile1.close();
 		// Import compressed morphology file
 		cout << "Importing compressed morphology file." << endl;
-		ifstream infile1("morphology_file1.txt");
+		ifstream infile1("./test/morphology_file1.txt");
 		EXPECT_TRUE(morph.importMorphologyFile(infile1));
 		infile1.close();
 		// Check dimensions of imported morphology
@@ -1182,12 +1204,12 @@ namespace MorphologyTests {
 		EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
 		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
 		// output original morphology in uncompressed format
-		ofstream outfile2("morphology_file2.txt");
+		ofstream outfile2("./test/morphology_file2.txt");
 		morph.outputMorphologyFile(outfile2, false);
 		outfile2.close();
 		// Import uncompressed morphology file
 		cout << "Importing uncompressed morphology file." << endl;
-		ifstream infile2("morphology_file2.txt", ifstream::in);
+		ifstream infile2("./test/morphology_file2.txt", ifstream::in);
 		EXPECT_TRUE(morph.importMorphologyFile(infile2));
 		infile2.close();
 		// Check dimensions of imported morphology
@@ -1206,7 +1228,7 @@ namespace MorphologyTests {
 		// Load compressed file into string vector
 		string line;
 		vector<string> file_data;
-		ifstream infile3("morphology_file1.txt");
+		ifstream infile3("./test/morphology_file1.txt");
 		while (getline(infile3, line)) {
 			file_data.push_back(line);
 		}
@@ -1215,19 +1237,19 @@ namespace MorphologyTests {
 		file_data.pop_back();
 		file_data.pop_back();
 		// Save data back to file
-		ofstream outfile3("morphology_file1.txt");
+		ofstream outfile3("./test/morphology_file1.txt");
 		for (auto& item : file_data) {
 			outfile3 << item << endl;
 		}
 		outfile3.close();
 		// Try importing corrupted compressed file
-		ifstream infile4("morphology_file1.txt");
+		ifstream infile4("./test/morphology_file1.txt");
 		EXPECT_FALSE(morph.importMorphologyFile(infile4));
 		infile4.close();
 		// Test attempt to load a corrupted uncompressed morphology file with missing data
 		// Load uncompressed file into string vector
 		file_data.clear();
-		ifstream infile5("morphology_file2.txt");
+		ifstream infile5("./test/morphology_file2.txt");
 		while (getline(infile5, line)) {
 			file_data.push_back(line);
 		}
@@ -1236,13 +1258,13 @@ namespace MorphologyTests {
 		file_data.pop_back();
 		file_data.pop_back();
 		// Save data back to file
-		ofstream outfile4("morphology_file2.txt");
+		ofstream outfile4("./test/morphology_file2.txt");
 		for (auto& item : file_data) {
 			outfile4 << item << endl;
 		}
 		outfile4.close();
 		// Try importing corrupted compressed file
-		ifstream infile6("morphology_file2.txt");
+		ifstream infile6("./test/morphology_file2.txt");
 		EXPECT_FALSE(morph.importMorphologyFile(infile6));
 		infile6.close();
 	}
@@ -1251,11 +1273,11 @@ namespace MorphologyTests {
 		Morphology morph = *morph_start;
 		string line;
 		// Output composition maps
-		ofstream outfile1("composition_maps.txt");
+		ofstream outfile1("./test/composition_maps.txt");
 		morph.outputCompositionMaps(outfile1);
 		outfile1.close();
 		// Check that output looks valid
-		ifstream infile1("composition_maps.txt");
+		ifstream infile1("./test/composition_maps.txt");
 		// Check first column names line
 		getline(infile1, line);
 		EXPECT_EQ("X-Position,Y-Position,Composition1,Composition2", line);
@@ -1264,11 +1286,11 @@ namespace MorphologyTests {
 		EXPECT_TRUE(line.find("0,0,") != string::npos);
 		infile1.close();
 		// Output morphology cross-section
-		ofstream outfile2("morphology_cross.txt");
+		ofstream outfile2("./test/morphology_cross.txt");
 		morph.outputMorphologyCrossSection(outfile2);
 		outfile2.close();
 		// Check that output looks valid
-		ifstream infile2("morphology_cross.txt");
+		ifstream infile2("./test/morphology_cross.txt");
 		// Check first column names line
 		getline(infile2, line);
 		EXPECT_EQ("X-Position,Y-Position,Z-Position,Site_type", line);

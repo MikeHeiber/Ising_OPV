@@ -85,6 +85,10 @@ namespace Ising_OPV {
 			Error_found = true;
 		}
 		// Check tomogram import parameters
+		if (Enable_import_morphologies && Enable_import_tomogram) {
+			cout << "Parameter error! The import morphologies and import tomogram options cannot both be enabled." << endl;
+			Error_found = true;
+		}
 		if (Enable_import_tomogram && !(Desired_unit_size > 0)) {
 			cout << "Parameter error! When importing a tomogram dataset, the input Desired_unit_size must not be zero." << endl;
 			Error_found = true;
@@ -116,6 +120,41 @@ namespace Ising_OPV {
 		if (Enable_import_tomogram && N_variants <= 0) {
 			cout << "Parameter error! When importing a tomogram dataset, the input N_variants segments must be greater than zero." << endl;
 			Error_found = true;
+		}
+		if (Enable_import_tomogram) {
+			switch (N_extracted_segments) {
+			case 1:
+				break;
+			case 4:
+				break;
+			case 9:
+				break;
+			case 16:
+				break;
+			case 25:
+				break;
+			case 36:
+				break;
+			case 49:
+				break;
+			case 64:
+				break;
+			case 81:
+				break;
+			case 100:
+				break;
+			case 121:
+				break;
+			case 144:
+				break;
+			case 169:
+				break;
+			case 196:
+				break;
+			default:
+				cout << "Parameter error! When importing a tomogram dataset, the input value for N_extracted_segments must be 1, 4, 9, 16, 25, 36, 49, 64, 89, 100, 121, 144, 169, or 196 but " << N_extracted_segments << " was entered." << endl;
+				Error_found = true;
+			}
 		}
 		// Check other parameter conflicts
 		if (Enable_analysis_only && !Enable_import_morphologies && !Enable_import_tomogram) {
@@ -149,11 +188,11 @@ namespace Ising_OPV {
 		string var;
 		vector<string> stringvars;
 		// Read input file line by line.
-		while (getline(parameterfile, line)) {	
+		while (getline(parameterfile, line)) {
 			// Skip lines designated as section breaks and section headers.
 			if ((line.substr(0, 2)).compare("--") != 0 && (line.substr(0, 2)).compare("##") != 0) {
 				// Strip off trailing comments from each line.
-				var = line.substr(0, line.find('/'));
+				var = line.substr(0, line.find("//"));
 				var = removeWhitespace(var);
 				// Add parameter value strings to a vector.
 				stringvars.push_back(var);

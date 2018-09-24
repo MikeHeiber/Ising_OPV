@@ -33,19 +33,19 @@ namespace Ising_OPV {
 		//! \date 2014-2018
 		struct Lattice_Params {
 			//! Determines whether the x-direction periodic boundaries will be enabled. 
-			bool Enable_periodic_x;
+			bool Enable_periodic_x = false;
 			//! Determines whether the y-direction periodic boundaries will be enabled. 
-			bool Enable_periodic_y;
+			bool Enable_periodic_y = false;
 			//! Determines whether the z-direction periodic boundaries will be enabled. 
-			bool Enable_periodic_z;
+			bool Enable_periodic_z = false;
 			//! Defines the desired x-direction size of the lattice.
-			int Length;
+			int Length = 0;
 			//! Defines the desired y-direction size of the lattice.
-			int Width;
+			int Width = 0;
 			//! Defines the desired z-direction size of the lattice.
-			int Height;
+			int Height = 0;
 			//! Defines the desired lattice unit size, which is used to convert lattice units into real space units.
-			double Unit_size; // nm
+			double Unit_size = 0.0; // nm
 		};
 
 		//! \brief Default constructor that creates an empty Lattice object.
@@ -266,7 +266,7 @@ namespace Ising_OPV {
 		int Length = 0; // nm
 		int Width = 0; // nm
 		int Height = 0; // nm
-		double Unit_size = 1.0; // nm
+		double Unit_size = 0.0; // nm
 		std::vector<Site> sites;
 		std::mt19937_64 gen;
 	};

@@ -153,7 +153,7 @@ namespace Ising_OPV {
 		if (sublength < 0 || subwidth < 0 || subheight < 0) {
 			throw invalid_argument("Unable to extract sublattice given negative input sublattice dimensions.");
 		}
-		if (x + sublength >= Length || y + subwidth >= Width || z + subheight >= Height) {
+		if (x + sublength > Length || y + subwidth > Width || z + subheight > Height) {
 			throw out_of_range("Unable the extract sublattice because the requested sublattice extends beyond the range of the original lattice.");
 		}
 		Lattice sublattice;

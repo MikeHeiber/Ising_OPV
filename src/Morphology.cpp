@@ -14,11 +14,6 @@ namespace Ising_OPV {
 
 	}
 
-	Morphology::Morphology(const int id) {
-		ID = id;
-		gen.seed((int)time(0)*(id + 1));
-	}
-
 	Morphology::Morphology(const Parameters& params, const int id) {
 		if (!params.checkParameters()) {
 			cout << ID << ": Error! Input parameters are invalid." << endl;
@@ -1852,64 +1847,35 @@ namespace Ising_OPV {
 		return lattice.getWidth();
 	}
 
-	vector<Morphology> Morphology::importTomogramMorphologyFile(const string& info_filename, const string& data_filename) {
+	vector<Morphology> Morphology::importTomogramMorphologyFile() {
 		vector<Morphology> morphologies;
-		// Input file checking
-		if ((int)info_filename.length() > 4 && info_filename.substr(info_filename.length() - 4, 4).compare(".xml") != 0) {
-			cout << ID << ": Error! Input tomogram info file " << info_filename << " is not an xml file." << endl;
-			return morphologies;
+		if (!Params.Enable_import_tomogram) {
+			cout << ID << ": Error! Attempting to import tomogram data when tomogram import is not enabled in the parameters." << endl;
+			throw runtime_error("Error! Attempting to import tomogram data when tomogram import is not enabled in the parameters.");
 		}
-		if ((int)data_filename.length() > 4 && data_filename.substr(data_filename.length() - 4, 4).compare(".raw") != 0) {
-			cout << ID << ": Error! Input tomogram data file " << data_filename << "  is not a .raw file." << endl;
-			return morphologies;
-		}
-		// Parameter checking
-		switch (Params.N_extracted_segments) {
-		case 1:
-			break;
-		case 4:
-			break;
-		case 9:
-			break;
-		case 16:
-			break;
-		case 25:
-			break;
-		case 36:
-			break;
-		case 49:
-			break;
-		case 64:
-			break;
-		case 81:
-			break;
-		case 100:
-			break;
-		case 121:
-			break;
-		case 144:
-			break;
-		case 169:
-			break;
-		case 196:
-			break;
-		default:
-			cout << "Error! Invalid value for N_extracted_segments parameter. Value must be 1, 4, 9, 16, 25, 36, 49, 64, 89, or 100 but " << Params.N_extracted_segments << " was entered." << endl;
-			return morphologies;
-		}
+		string info_filename = Params.Tomogram_name + ".xml";
+		string data_filename = Params.Tomogram_name + ".raw";
 		// Parse xml info file
 		XMLDocument xml_doc;
-		Lattice::Lattice_Params lattice_params;
 		string data_format;
-		xml_doc.LoadFile(info_filename.c_str());
+		FILE* xml_file_ptr;
+		//cout << ID << ": Importing XML metadata file with path: " << info_filename << endl;
+		xml_file_ptr = fopen(info_filename.c_str(), "r");
+		if (xml_file_ptr == NULL) {
+			cout << ID << ": Error! XML metadata file not found." << endl;
+			throw runtime_error("Error! XML metadata file not found.");
+		}
+		xml_doc.LoadFile(xml_file_ptr);
 		if (xml_doc.Error()) {
 			xml_doc.PrintError();
-			return morphologies;
+			cout << ID << ": Error loading XML metadata file." << endl;
+			throw runtime_error("Error loading XML metadata file.");
 		}
 		// Analyze xml info file based on metadata format version
 		string schema_version = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
+		// Initialize lattice params based on xml data
+		Lattice::Lattice_Params lattice_params;
 		if (schema_version.compare("1.0") == 0) {
-			// Initialize lattice params based on xml data
 			lattice_params.Length = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("length")->GetText());
 			lattice_params.Width = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("width")->GetText());
 			lattice_params.Height = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("height")->GetText());
@@ -1927,12 +1893,9 @@ namespace Ising_OPV {
 			}
 		}
 		else {
-			cout << ID << ": Error! XML info file format version not recognized." << endl;
-			return morphologies;
+			cout << ID << ": Error! XML metadata file format version not recognized." << endl;
+			throw runtime_error("Error! XML metadata file format version not recognized.");
 		}
-		lattice_params.Enable_periodic_x = false;
-		lattice_params.Enable_periodic_y = false;
-		lattice_params.Enable_periodic_z = false;
 		Lattice lattice_i;
 		lattice_i.init(lattice_params);
 		// Clear existing Site_type_counts data
@@ -1941,7 +1904,11 @@ namespace Ising_OPV {
 		}
 		// Open and read data file
 		ifstream data_file(data_filename, ifstream::in | ifstream::binary);
-		if (data_file.is_open()) {
+		if(!data_file.is_open()){
+			cout << ID << ": Error! Tomogram binary file " << data_filename << " could not be opened." << endl;
+			throw runtime_error("Error! Tomogram binary .raw file could not be opened.");
+		}
+		else{
 			data_file.seekg(0, data_file.end);
 			streampos N_bytes;
 			N_bytes = data_file.tellg();
@@ -1974,11 +1941,16 @@ namespace Ising_OPV {
 					data_vec[i] = (float)data_block[i];
 				}
 			}
+			else {
+				cout << "Error! The xml metadata file does not specify a valid data format." << endl;
+				throw runtime_error("Error! The xml metadata file does not specify a valid data format.");
+			}
 			data_file.close();
+			fclose(xml_file_ptr);
 			if ((int)data_vec.size() != lattice_i.getNumSites()) {
-				cout << "Error! The imported tomogram binary file does not contain the correct number of sites." << endl;
+				cout << "Error! The imported tomogram binary .raw file does not contain the correct number of sites." << endl;
 				cout << "The initial lattice has " << lattice_i.getNumSites() << " sites but the data file has " << data_vec.size() << " entries." << endl;
-				return morphologies;
+				throw runtime_error("Error! The imported tomogram binary .raw file does not contain the correct number of sites.");
 			}
 			// Determine final lattice dimensions based on desired unit size
 			lattice_params.Length = (int)floor(lattice_params.Length*(lattice_params.Unit_size / Params.Desired_unit_size));
@@ -2046,7 +2018,6 @@ namespace Ising_OPV {
 					}
 				}
 			}
-
 			vector<float>().swap(data_vec_new);
 			// Normalize test data vector to have range from 0 to 100
 			//vector<double> test_vec(data_vec_final.size());
@@ -2136,7 +2107,7 @@ namespace Ising_OPV {
 			if (Params.N_extracted_segments > 1) {
 				int dim = round_int(sqrt(Params.N_extracted_segments));
 				int new_length = lattice.getLength() / dim;
-				// make dimension even
+				// make dimensions even
 				if (new_length % 2 != 0) {
 					new_length--;
 				}
@@ -2148,10 +2119,14 @@ namespace Ising_OPV {
 				int offset_x = (lattice.getLength() - size * dim) / 2;
 				int offset_y = (lattice.getWidth() - size * dim) / 2;
 				Lattice sublattice;
+				Parameters params_new = Params;
+				params_new.Length = new_length;
+				params_new.Width = new_width;
+				params_new.Height = lattice.getHeight();
 				for (int x = 0; x < dim; x++) {
 					for (int y = 0; y < dim; y++) {
 						sublattice = lattice.extractSublattice(x*size + offset_x, size, y*size + offset_y, size, 0, lattice.getHeight());
-						morphologies.push_back(Morphology(sublattice, Params, x * dim + y));
+						morphologies.push_back(Morphology(sublattice, params_new, x * dim + y));
 						morphologies[x * dim + y].calculateMixFractions();
 					}
 				}
@@ -2159,9 +2134,6 @@ namespace Ising_OPV {
 			else {
 				morphologies.push_back(*this);
 			}
-		}
-		else {
-			cout << "Error! Tomogram binary file " << data_filename << " could not be opened." << endl;
 		}
 		return morphologies;
 	}

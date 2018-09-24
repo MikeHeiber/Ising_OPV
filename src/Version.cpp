@@ -13,7 +13,7 @@ namespace Ising_OPV {
 
 	Version::Version() { }
 
-	Version::Version(const string& version_str) {
+	Version::Version(const std::string& version_str) {
 		string str = version_str;
 		// Separate out main version info from possible prerelease version info
 		string main_str = str.substr(0, str.find('-'));

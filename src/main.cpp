@@ -6,6 +6,7 @@
 #include "Morphology.h"
 #include "Parameters.h"
 #include "Utils.h"
+#include "Version.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -110,20 +111,16 @@ int main(int argc, char * argv[]) {
 				cout << parameters.N_extracted_segments * parameters.N_variants << " processors are needed but " << nproc << " were requested." << endl;
 				return 0;
 			}
-			// Create initial lattice based on filename to load the tomogram data into
-			Morphology morph_tomo(procid);
 			// Collect tomogram import options
 			cout << procid << ": Loading and analyzing tomogram data." << endl;
-			string tomo_xml_filename = parameters.Tomogram_name + ".xml";
-			string tomo_data_filename = parameters.Tomogram_name + ".raw";
-			vector<Morphology> morphology_set = morph_tomo.importTomogramMorphologyFile(tomo_xml_filename, tomo_data_filename);
+			vector<Morphology> morphology_set = morph.importTomogramMorphologyFile();
 			// Check that a set of morphologies has been produced
 			if (morphology_set.size() == 0) {
 				cout << procid << ": Error! Morphology set could not be generated from the input tomogram. Program will exit now." << endl;
 				return 0;
 			}
 			for (int i = 1; i < parameters.N_variants; i++) {
-				vector<Morphology> morphology_set2 = morph_tomo.importTomogramMorphologyFile(tomo_xml_filename, tomo_data_filename);
+				vector<Morphology> morphology_set2 = morph.importTomogramMorphologyFile();
 				morphology_set.insert(morphology_set.end(), morphology_set2.begin(), morphology_set2.end());
 			}
 			// Output morphology set to separate files
@@ -138,7 +135,7 @@ int main(int argc, char * argv[]) {
 		// All processors must wait until the root proc finishes with morphology set generation.
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
-	if (parameters.Enable_import_morphologies) {
+	if (parameters.Enable_import_morphologies || parameters.Enable_import_tomogram) {
 		string filename = "morphology_" + to_string(procid) + ".txt";
 		cout << procid << ": Opening morphology file " << filename << endl;
 		morphology_input_file.open(filename);

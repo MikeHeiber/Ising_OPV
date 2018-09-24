@@ -800,7 +800,7 @@ An empty vector when called on other processors. </dd></dl>
 </div><div class="memdoc">
 
 <p>Uses MPI to calculate the element-wise average vector from separate vectors coming from different processors. </p>
-<p>Each processor calls this function and sends an input vector. Upon function return, processor 0 receives the average vector and all of the other processors receive an empty vector. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Each processor calls this function and sends an input vector. If vectors are different sizes, the function uses trailing zeroes to make all vectors the same size before averaging. Upon function return, processor 0 receives the average vector and all of the other processors receive an empty vector. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">input_vector</td><td>is the input data from the processor calling the function. </td></tr>
   </table>
