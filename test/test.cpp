@@ -1048,16 +1048,77 @@ namespace MorphologyTests {
 		params.N_sampling_max = 50000;
 		params.Enable_e_method = true;
 		params.Enable_import_tomogram = true;
-		params.Tomogram_name = "./test/TOMO_test_data";
+		params.Tomogram_name = "./test/TOMO_test_8bit";
 		params.Desired_unit_size = 1.0;
 		params.Enable_cutoff_analysis = true;
 		params.Mixed_greyscale_width = 0;
 		params.Mixed_conc = 0.5;
 		params.N_extracted_segments = 4;
 		params.N_variants = 1;
+		// Check import of 8 bit data
 		Morphology morph(params, 0);
 		auto morphologies = morph.importTomogramMorphologyFile();
 		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		for (auto& item : morphologies) {
+			EXPECT_EQ(100, item.getLength());
+			EXPECT_EQ(100, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
+		}
+		// Check extraction of 9 segments
+		params.N_extracted_segments = 9;
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		for (auto& item : morphologies) {
+			EXPECT_EQ(66, item.getLength());
+			EXPECT_EQ(66, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
+		}
+		params.N_extracted_segments = 4;
+		// Check import attempt when not enabled in parameters
+		params.Enable_import_tomogram = false;
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(),runtime_error);
+		params.Enable_import_tomogram = true;
+		// Check import attempt when tomo data is not present
+		params.Tomogram_name = "./test/TOMO_data";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml is found but not the .raw file
+		params.Tomogram_name = "./test/TOMO_test_noraw";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml has invalid format
+		params.Tomogram_name = "./test/TOMO_test_invalidXML";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import of tomo dataset with missing data
+		params.Tomogram_name = "./test/TOMO_test_8bit_missing";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import of 16 bit data
+		params.Tomogram_name = "./test/TOMO_test_16bit";
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		for (auto& item : morphologies) {
+			EXPECT_EQ(100, item.getLength());
+			EXPECT_EQ(100, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
+		}
 	}
 
 	class MorphologyTest : public ::testing::Test {

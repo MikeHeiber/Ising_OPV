@@ -1872,10 +1872,12 @@ namespace Ising_OPV {
 			throw runtime_error("Error loading XML metadata file.");
 		}
 		// Analyze xml info file based on metadata format version
-		string schema_version = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
+		Version required_version("1.0.0");
+		string schema_version_str = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
+		Version schema_version(schema_version_str);
 		// Initialize lattice params based on xml data
 		Lattice::Lattice_Params lattice_params;
-		if (schema_version.compare("1.0") == 0) {
+		if (schema_version == required_version) {
 			lattice_params.Length = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("length")->GetText());
 			lattice_params.Width = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("width")->GetText());
 			lattice_params.Height = atoi(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("height")->GetText());
@@ -1893,8 +1895,8 @@ namespace Ising_OPV {
 			}
 		}
 		else {
-			cout << ID << ": Error! XML metadata file format version not recognized." << endl;
-			throw runtime_error("Error! XML metadata file format version not recognized.");
+			cout << ID << ": Error! XML metadata schema version not supported. Only v1.0.0 is supported." << endl;
+			throw runtime_error("Error! XML metadata schema version not supported. Only v1.0.0 is supported.");
 		}
 		Lattice lattice_i;
 		lattice_i.init(lattice_params);
@@ -1904,11 +1906,11 @@ namespace Ising_OPV {
 		}
 		// Open and read data file
 		ifstream data_file(data_filename, ifstream::in | ifstream::binary);
-		if(!data_file.is_open()){
+		if (!data_file.is_open()) {
 			cout << ID << ": Error! Tomogram binary file " << data_filename << " could not be opened." << endl;
 			throw runtime_error("Error! Tomogram binary .raw file could not be opened.");
 		}
-		else{
+		else {
 			data_file.seekg(0, data_file.end);
 			streampos N_bytes;
 			N_bytes = data_file.tellg();
@@ -1932,18 +1934,18 @@ namespace Ising_OPV {
 					data_vec[i] = (float)data_block[i];
 				}
 			}
-			else if (data_format.compare("32 bit") == 0) {
-				int32_t* data_block;
-				data_block = (int32_t*)malloc(sizeof(char)*N_bytes);
-				data_file.read((char*)data_block, N_bytes);
-				data_vec.assign(N_bytes / 4, 0);
-				for (int i = 0; i < (int)(N_bytes / 4); i++) {
-					data_vec[i] = (float)data_block[i];
-				}
-			}
+			//else if (data_format.compare("32 bit") == 0) {
+			//	int32_t* data_block;
+			//	data_block = (int32_t*)malloc(sizeof(char)*N_bytes);
+			//	data_file.read((char*)data_block, N_bytes);
+			//	data_vec.assign(N_bytes / 4, 0);
+			//	for (int i = 0; i < (int)(N_bytes / 4); i++) {
+			//		data_vec[i] = (float)data_block[i];
+			//	}
+			//}
 			else {
-				cout << "Error! The xml metadata file does not specify a valid data format." << endl;
-				throw runtime_error("Error! The xml metadata file does not specify a valid data format.");
+				cout << "Error! The xml metadata file does not specify a valid data format. Only 8 bit and 16 bit formats are supported." << endl;
+				throw runtime_error("Error! The xml metadata file does not specify a valid data format. Only 8 bit and 16 bit formats are supported.");
 			}
 			data_file.close();
 			fclose(xml_file_ptr);
