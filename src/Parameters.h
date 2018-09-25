@@ -82,16 +82,16 @@ namespace Ising_OPV {
 		std::string Tomogram_name = "";
 		//! Specifies the final unit size (resolution) of the output morphology dataset.
 		double Desired_unit_size = 0.0;
-		//! Choose whether to enable the image brightness cutoff threshold-based interpretation of the tomography data.
-		bool Enable_cutoff_analysis = false;
-		//! Specifies the pixel brightness range to assign to a distinct mixed third phase.
-		int Mixed_greyscale_width = 0;
+		// //! Choose whether to enable the image brightness cutoff threshold-based interpretation of the tomography data.
+		// bool Enable_cutoff_analysis = false;
+		//! Specifies the volume fraction of the mixed phase.
+		double Mixed_frac = 0.0;
 		//! Specifies the volume fraction of the mixed third phase.
 		double Mixed_conc = 0.0;
-		//! Choose whether to enable a probability-based analysis of pixel brightness for interpreting the tomography data. 
-		bool Enable_probability_analysis = false;
-		//! Specifies the probability scaling exponent use by the probability-based pixel brightness analysis method.
-		double Probability_scaling_exponent = 0.0;
+		// //! Choose whether to enable a probability-based analysis of pixel brightness for interpreting the tomography data. 
+		// bool Enable_probability_analysis = false;
+		// //! Specifies the probability scaling exponent use by the probability-based pixel brightness analysis method.
+		// double Probability_scaling_exponent = 0.0;
 		//! Specify the number of equal size cuboids to extract from the tomogram.
 		int N_extracted_segments = 0;
 		//! Specify the number of random variants to create from each extracted cuboid segment.

@@ -280,12 +280,12 @@ namespace Ising_OPV {
 	//! \brief This template function calculates and returns the results of an integer power operation on a base numerical datatype.
 	//! \param base is the base of the integer power operation and can be any numerical type.
 	//! \param exponent is the integer exponent for the integer power operation.
-	//! \return The result of the integer power operation in whichever datatype format was input with the base.
-	template<typename base_type>
-	base_type intpow(const base_type base, const int exponent) {
-		base_type result;
+	//! \return The result of the integer power operation in double format.
+	template<typename T>
+	double intpow(const T base, const int exponent) {
+		double result;
 		if (exponent == 0) {
-			result = 1;
+			result = 1.0;
 			return result;
 		}
 		result = base;
@@ -399,9 +399,9 @@ namespace Ising_OPV {
 	template<typename T, typename A>
 	int vector_which_median(const std::vector<T, A>& data) {
 		double median = vector_median(data);
-		auto diff = data;
-		for (auto& item : diff) {
-			item = fabs(item - median);
+		std::vector<double> diff(data.size());
+		for (int i = 0; i < (int)data.size();i++ ) {
+			diff[i] = fabs(data[i] - median);
 		}
 		auto it = min_element(diff.begin(), diff.end());
 		return distance(diff.begin(), it);

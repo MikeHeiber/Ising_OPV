@@ -14,7 +14,7 @@ var _utils_8h =
     [ "calculateProbabilityHist", "_utils_8h.html#ac187d08d4fb5222cafb3349e04125cf1", null ],
     [ "integrateData", "_utils_8h.html#a2fd5e2ba266c8551a5800d12ebf2effc", null ],
     [ "interpolateData", "_utils_8h.html#a7d9e7c269686f48f923c5a0e039ed6c8", null ],
-    [ "intpow", "_utils_8h.html#a253badab2b085c394222b0d623f4489a", null ],
+    [ "intpow", "_utils_8h.html#a6fed09f731e198fc51d387fb5acdc5a4", null ],
     [ "MPI_calculateProbHistAvg", "_utils_8h.html#a8ca9bca11102688e2730c91c63fd0dbc", null ],
     [ "MPI_calculateVectorAvg", "_utils_8h.html#a047cc3aedc716dd98b480cee17536a31", null ],
     [ "MPI_calculateVectorSum", "_utils_8h.html#a95c186bf06672de29e3baca5ee0c05de", null ],

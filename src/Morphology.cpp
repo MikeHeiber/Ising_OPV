@@ -1853,14 +1853,14 @@ namespace Ising_OPV {
 			cout << ID << ": Error! Attempting to import tomogram data when tomogram import is not enabled in the parameters." << endl;
 			throw runtime_error("Error! Attempting to import tomogram data when tomogram import is not enabled in the parameters.");
 		}
-		string info_filename = Params.Tomogram_name + ".xml";
+		string metadata_filename = Params.Tomogram_name + ".xml";
 		string data_filename = Params.Tomogram_name + ".raw";
-		// Parse xml info file
+		// Parse XML metadata file
+		cout << ID << ": Loading XML metadata file..." << endl;
 		XMLDocument xml_doc;
 		string data_format;
 		FILE* xml_file_ptr;
-		//cout << ID << ": Importing XML metadata file with path: " << info_filename << endl;
-		xml_file_ptr = fopen(info_filename.c_str(), "r");
+		xml_file_ptr = fopen(metadata_filename.c_str(), "r");
 		if (xml_file_ptr == NULL) {
 			cout << ID << ": Error! XML metadata file not found." << endl;
 			throw runtime_error("Error! XML metadata file not found.");
@@ -1871,7 +1871,8 @@ namespace Ising_OPV {
 			cout << ID << ": Error loading XML metadata file." << endl;
 			throw runtime_error("Error loading XML metadata file.");
 		}
-		// Analyze xml info file based on metadata format version
+		// Analyze XML info file based on metadata format version
+		cout << ID << ": Parsing XML metadata file..." << endl;
 		Version required_version("1.0.0");
 		string schema_version_str = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
 		Version schema_version(schema_version_str);
@@ -1884,6 +1885,10 @@ namespace Ising_OPV {
 			lattice_params.Unit_size = atof(xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("pixel_size")->FirstChildElement("value")->GetText());
 			// Save additional xml data needed
 			data_format = xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("data_info")->FirstChildElement("data_format")->GetText();
+			if (data_format.compare("8 bit") != 0 && data_format.compare("16 bit") != 0) {
+				cout << "Error! The xml metadata file does not specify a valid data format. Only 8 bit and 16 bit formats are supported." << endl;
+				throw runtime_error("Error! The xml metadata file does not specify a valid data format. Only 8 bit and 16 bit formats are supported.");
+			}
 			// Initialize Morphology site types
 			int site_type_index = 0;
 			XMLElement* element_ptr = xml_doc.FirstChildElement("tomogram_metadata")->FirstChildElement("sample_info")->FirstChildElement("composition_info")->FirstChildElement("chemical_component");
@@ -1898,244 +1903,201 @@ namespace Ising_OPV {
 			cout << ID << ": Error! XML metadata schema version not supported. Only v1.0.0 is supported." << endl;
 			throw runtime_error("Error! XML metadata schema version not supported. Only v1.0.0 is supported.");
 		}
+		fclose(xml_file_ptr);
+		double Mix_fraction_import = Mix_fractions[0];
+		// Construct initial lattice based on XML metadata
 		Lattice lattice_i;
 		lattice_i.init(lattice_params);
-		// Clear existing Site_type_counts data
-		for (int n = 0; n < (int)Site_types.size(); n++) {
-			Site_type_counts[n] = 0;
-		}
 		// Open and read data file
+		cout << ID << ": Loading RAW data file..." << endl;
 		ifstream data_file(data_filename, ifstream::in | ifstream::binary);
 		if (!data_file.is_open()) {
 			cout << ID << ": Error! Tomogram binary file " << data_filename << " could not be opened." << endl;
 			throw runtime_error("Error! Tomogram binary .raw file could not be opened.");
 		}
+		data_file.seekg(0, data_file.end);
+		int N_bytes = data_file.tellg();
+		data_file.seekg(0, data_file.beg);
+		vector<float> data_vec;
+		if (data_format.compare("8 bit") == 0) {
+			unsigned char* data_block = new unsigned char[N_bytes];
+			data_file.read((char*)data_block, N_bytes);
+			data_vec.resize(N_bytes);
+			for (int i = 0; i < (int)data_vec.size(); i++) {
+				data_vec[i] = (float)data_block[i];
+			}
+			delete[] data_block;
+		}
+		else if (data_format.compare("16 bit") == 0) {
+			char16_t* data_block = new char16_t[N_bytes / 2];
+			data_file.read((char*)data_block, N_bytes);
+			data_vec.resize(N_bytes / 2);
+			for (int i = 0; i < (int)data_vec.size(); i++) {
+				data_vec[i] = (float)data_block[i];
+			}
+			delete[] data_block;
+		}
+		data_file.close();
+		// Check amount of data read from the RAW file
+		if ((int)data_vec.size() != lattice_i.getNumSites()) {
+			cout << "Error! The imported tomogram RAW file does not contain the correct number of sites." << endl;
+			cout << "The initial lattice has " << lattice_i.getNumSites() << " sites but the data file has " << data_vec.size() << " entries." << endl;
+			throw runtime_error("Error! The imported tomogram RAW file does not contain the correct number of sites.");
+		}
+		// Rotate image data to standard Ising_OPV reference frame
+		int index = 0;
+		vector<float> data_vec_new(data_vec.size());
+		for (int k = 0; k < lattice_i.getHeight(); k++) {
+			for (int j = 0; j < lattice_i.getWidth(); j++) {
+				for (int i = 0; i < lattice_i.getLength(); i++) {
+					data_vec_new[lattice_i.getSiteIndex(i, j, k)] = data_vec[index];
+					index++;
+				}
+			}
+		}
+		vector<float>().swap(data_vec);
+		// Construct lattice with desired unit size
+		cout << ID << ": Interpolating data to construct final lattice..." << endl;
+		// Determine final lattice dimensions based on desired unit size
+		lattice_params.Length = (int)floor(lattice_params.Length*(lattice_params.Unit_size / Params.Desired_unit_size));
+		lattice_params.Width = (int)floor(lattice_params.Width*(lattice_params.Unit_size / Params.Desired_unit_size));
+		lattice_params.Height = (int)floor(lattice_params.Height*(lattice_params.Unit_size / Params.Desired_unit_size));
+		lattice_params.Unit_size = Params.Desired_unit_size;
+		lattice.init(lattice_params);
+		vector<float> data_vec_final(lattice.getNumSites());
+		for (int i = 0; i < lattice.getLength(); i++) {
+			for (int j = 0; j < lattice.getWidth(); j++) {
+				for (int k = 0; k < lattice.getHeight(); k++) {
+					double x = i * lattice.getUnitSize();
+					double y = j * lattice.getUnitSize();
+					double z = k * lattice.getUnitSize();
+					static vector<float> weights(8, 0.0);
+					static vector<float> vals(8, 0.0);
+					int x1 = (int)floor(x / lattice_i.getUnitSize());
+					int x2 = (int)ceil(x / lattice_i.getUnitSize());
+					int y1 = (int)floor(y / lattice_i.getUnitSize());
+					int y2 = (int)ceil(y / lattice_i.getUnitSize());
+					int z1 = (int)floor(z / lattice_i.getUnitSize());
+					int z2 = (int)ceil(z / lattice_i.getUnitSize());
+					if ((x - x1 * lattice_i.getUnitSize()) < 1e-6 && (y - y1 * lattice_i.getUnitSize()) < 1e-6 && (z - z1 * lattice_i.getUnitSize()) < 1e-6) {
+						data_vec_final[lattice.getSiteIndex(i, j, k)] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z1)];
+						continue;
+					}
+					if (x2 >= lattice_i.getLength()) {
+						x2 = lattice_i.getLength() - 1;
+					}
+					if (y2 >= lattice_i.getWidth()) {
+						y2 = lattice_i.getWidth() - 1;
+					}
+					if (z2 >= lattice_i.getHeight()) {
+						z2 = lattice_i.getHeight() - 1;
+					}
+					vals[0] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z1)];
+					vals[1] = data_vec_new[lattice_i.getSiteIndex(x1, y2, z1)];
+					vals[2] = data_vec_new[lattice_i.getSiteIndex(x2, y1, z1)];
+					vals[3] = data_vec_new[lattice_i.getSiteIndex(x2, y2, z1)];
+					vals[4] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z2)];
+					vals[5] = data_vec_new[lattice_i.getSiteIndex(x1, y2, z2)];
+					vals[6] = data_vec_new[lattice_i.getSiteIndex(x2, y1, z2)];
+					vals[7] = data_vec_new[lattice_i.getSiteIndex(x2, y2, z2)];
+					weights[0] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[1] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[2] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[3] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
+					weights[4] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					weights[5] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					weights[6] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					weights[7] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
+					std::transform(vals.begin(), vals.end(), weights.begin(), vals.begin(), multiplies<float>());
+					data_vec_final[lattice.getSiteIndex(i, j, k)] = accumulate(vals.begin(), vals.end(), 0.0f) / accumulate(weights.begin(), weights.end(), 0.0f);
+				}
+			}
+		}
+		vector<float>().swap(data_vec_new);
+		// Use pixel brightness cutoff method to assign site types, dark sites are type2 and bright sites are type1
+		cout << ID << ": Analyzing pixel brightness to assign site types..." << endl;
+		// Determine number of each type of site
+		int N_type1_total = round_int(Mix_fraction_import * lattice.getNumSites());
+		int N_type2_total = lattice.getNumSites() - N_type1_total;
+		int N_mixed_total = round_int(Params.Mixed_frac * lattice.getNumSites());
+		int N_type1_mixed = round_int(Params.Mixed_conc * N_mixed_total);
+		int N_type2_mixed = N_mixed_total - N_type1_mixed;
+		int N_type1_pure = N_type1_total - N_type1_mixed;
+		int N_type2_pure = N_type2_total - N_type2_mixed;
+		// Create vector of indices sorted by the corresponding pixel brightness
+		vector<int> indices(data_vec_final.size());
+		iota(indices.begin(), indices.end(), 0);
+		sort(indices.begin(), indices.end(), [&data_vec_final](const int& a, const int& b) {
+			return (data_vec_final[a] < data_vec_final[b]);
+		});
+		// Assign indices to a site type from pure regions
+		vector<int> type1_indices;
+		type1_indices.insert(type1_indices.end(), indices.end() - N_type1_pure, indices.end());
+		vector<int> type2_indices;
+		type2_indices.insert(type2_indices.end(), indices.begin(), indices.begin() + N_type2_pure);
+		// Add the remaining indices to a vector of mixed indices
+		vector<int> mixed_indices;
+		mixed_indices.insert(mixed_indices.end(), indices.begin() + N_type2_pure, indices.end() - N_type1_pure);
+		// Shuffle the mixed indices
+		shuffle(mixed_indices.begin(), mixed_indices.end(), gen);
+		// Assign mixed indices as type1 or type2 
+		type1_indices.insert(type1_indices.end(), mixed_indices.begin(), mixed_indices.begin() + N_type1_mixed);
+		type2_indices.insert(type2_indices.end(), mixed_indices.begin() + N_type1_mixed, mixed_indices.end());
+		// Clear existing Site_type_counts data
+		for (int n = 0; n < (int)Site_types.size(); n++) {
+			Site_type_counts[n] = 0;
+		}
+		// Assign sites based on indices vectors
+		for (auto& item : type1_indices) {
+			lattice.setSiteType(item, (char)1);
+			Site_type_counts[getSiteTypeIndex((char)1)]++;
+		}
+		for (auto& item : type2_indices) {
+			lattice.setSiteType(item, (char)2);
+			Site_type_counts[getSiteTypeIndex((char)2)]++;
+		}
+		// Check that all sites were assigned a type
+		if (lattice.getNumSites() != accumulate(Site_type_counts.begin(), Site_type_counts.end(), 0)) {
+			cout << ID << ": Error importing morphology file. All sites were not assigned to a valid site type." << endl;
+			throw runtime_error("Error importing morphology file. All sites were not assigned to a valid site type.");
+		}
+		// Check the final mix fractions
+		calculateMixFractions();
+		if (abs(Mix_fractions[0] - Mix_fraction_import) > 0.01) {
+			cout << ID << ": Error importing morphology file. Final type1 mix fraction does not match the mix fraction designated in the xml metadata file." << endl;
+			throw runtime_error("Error importing morphology file. Final type1 mix fraction does not match the mix fraction designated in the xml metadata file.");
+		}
+		// Generate morphology set
+		cout << ID << ": Creating morphology set from tomogram data." << endl;
+		if (Params.N_extracted_segments > 1) {
+			int dim = round_int(sqrt(Params.N_extracted_segments));
+			int new_length = lattice.getLength() / dim;
+			// make dimensions even
+			if (new_length % 2 != 0) {
+				new_length--;
+			}
+			int new_width = lattice.getWidth() / dim;
+			if (new_width % 2 != 0) {
+				new_width--;
+			}
+			int size = (new_length < new_width) ? new_length : new_width;
+			int offset_x = (lattice.getLength() - size * dim) / 2;
+			int offset_y = (lattice.getWidth() - size * dim) / 2;
+			Lattice sublattice;
+			Parameters params_new = Params;
+			params_new.Length = new_length;
+			params_new.Width = new_width;
+			params_new.Height = lattice.getHeight();
+			for (int x = 0; x < dim; x++) {
+				for (int y = 0; y < dim; y++) {
+					sublattice = lattice.extractSublattice(x*size + offset_x, size, y*size + offset_y, size, 0, lattice.getHeight());
+					morphologies.push_back(Morphology(sublattice, params_new, x * dim + y));
+					morphologies[x * dim + y].calculateMixFractions();
+				}
+			}
+		}
 		else {
-			data_file.seekg(0, data_file.end);
-			streampos N_bytes;
-			N_bytes = data_file.tellg();
-			data_file.seekg(0, data_file.beg);
-			vector<float> data_vec;
-			if (data_format.compare("8 bit") == 0) {
-				unsigned char* data_block;
-				data_block = (unsigned char*)malloc(sizeof(char)*N_bytes);
-				data_file.read((char*)data_block, N_bytes);
-				data_vec.assign(N_bytes, 0);
-				for (int i = 0; i < (int)N_bytes; i++) {
-					data_vec[i] = (float)data_block[i];
-				}
-			}
-			else if (data_format.compare("16 bit") == 0) {
-				char16_t* data_block;
-				data_block = (char16_t*)malloc(sizeof(char)*N_bytes);
-				data_file.read((char*)data_block, N_bytes);
-				data_vec.assign(N_bytes / 2, 0);
-				for (int i = 0; i < (int)(N_bytes / 2); i++) {
-					data_vec[i] = (float)data_block[i];
-				}
-			}
-			//else if (data_format.compare("32 bit") == 0) {
-			//	int32_t* data_block;
-			//	data_block = (int32_t*)malloc(sizeof(char)*N_bytes);
-			//	data_file.read((char*)data_block, N_bytes);
-			//	data_vec.assign(N_bytes / 4, 0);
-			//	for (int i = 0; i < (int)(N_bytes / 4); i++) {
-			//		data_vec[i] = (float)data_block[i];
-			//	}
-			//}
-			else {
-				cout << "Error! The xml metadata file does not specify a valid data format. Only 8 bit and 16 bit formats are supported." << endl;
-				throw runtime_error("Error! The xml metadata file does not specify a valid data format. Only 8 bit and 16 bit formats are supported.");
-			}
-			data_file.close();
-			fclose(xml_file_ptr);
-			if ((int)data_vec.size() != lattice_i.getNumSites()) {
-				cout << "Error! The imported tomogram binary .raw file does not contain the correct number of sites." << endl;
-				cout << "The initial lattice has " << lattice_i.getNumSites() << " sites but the data file has " << data_vec.size() << " entries." << endl;
-				throw runtime_error("Error! The imported tomogram binary .raw file does not contain the correct number of sites.");
-			}
-			// Determine final lattice dimensions based on desired unit size
-			lattice_params.Length = (int)floor(lattice_params.Length*(lattice_params.Unit_size / Params.Desired_unit_size));
-			lattice_params.Width = (int)floor(lattice_params.Width*(lattice_params.Unit_size / Params.Desired_unit_size));
-			lattice_params.Height = (int)floor(lattice_params.Height*(lattice_params.Unit_size / Params.Desired_unit_size));
-			lattice_params.Unit_size = Params.Desired_unit_size;
-			lattice.init(lattice_params);
-			int index = 0;
-			vector<float> data_vec_new(data_vec.size());
-			for (int k = 0; k < lattice_i.getHeight(); k++) {
-				for (int j = 0; j < lattice_i.getWidth(); j++) {
-					for (int i = 0; i < lattice_i.getLength(); i++) {
-						data_vec_new[lattice_i.getSiteIndex(i, j, k)] = data_vec[index];
-						index++;
-					}
-				}
-			}
-			vector<float>().swap(data_vec);
-			vector<float> data_vec_final(lattice.getNumSites());
-			for (int i = 0; i < lattice.getLength(); i++) {
-				for (int j = 0; j < lattice.getWidth(); j++) {
-					for (int k = 0; k < lattice.getHeight(); k++) {
-						double x = i * lattice.getUnitSize();
-						double y = j * lattice.getUnitSize();
-						double z = k * lattice.getUnitSize();
-						static vector<float> weights(8, 0.0);
-						static vector<float> vals(8, 0.0);
-						int x1 = (int)floor(x / lattice_i.getUnitSize());
-						int x2 = (int)ceil(x / lattice_i.getUnitSize());
-						int y1 = (int)floor(y / lattice_i.getUnitSize());
-						int y2 = (int)ceil(y / lattice_i.getUnitSize());
-						int z1 = (int)floor(z / lattice_i.getUnitSize());
-						int z2 = (int)ceil(z / lattice_i.getUnitSize());
-						if ((x - x1 * lattice_i.getUnitSize()) < 1e-6 && (y - y1 * lattice_i.getUnitSize()) < 1e-6 && (z - z1 * lattice_i.getUnitSize()) < 1e-6) {
-							data_vec_final[lattice.getSiteIndex(i, j, k)] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z1)];
-							continue;
-						}
-						if (x2 >= lattice_i.getLength()) {
-							x2 = lattice_i.getLength() - 1;
-						}
-						if (y2 >= lattice_i.getWidth()) {
-							y2 = lattice_i.getWidth() - 1;
-						}
-						if (z2 >= lattice_i.getHeight()) {
-							z2 = lattice_i.getHeight() - 1;
-						}
-						vals[0] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z1)];
-						vals[1] = data_vec_new[lattice_i.getSiteIndex(x1, y2, z1)];
-						vals[2] = data_vec_new[lattice_i.getSiteIndex(x2, y1, z1)];
-						vals[3] = data_vec_new[lattice_i.getSiteIndex(x2, y2, z1)];
-						vals[4] = data_vec_new[lattice_i.getSiteIndex(x1, y1, z2)];
-						vals[5] = data_vec_new[lattice_i.getSiteIndex(x1, y2, z2)];
-						vals[6] = data_vec_new[lattice_i.getSiteIndex(x2, y1, z2)];
-						vals[7] = data_vec_new[lattice_i.getSiteIndex(x2, y2, z2)];
-						weights[0] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
-						weights[1] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
-						weights[2] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
-						weights[3] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z1 * lattice_i.getUnitSize(), 2)));
-						weights[4] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
-						weights[5] = (float)(1.0 / (intpow(x - x1 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
-						weights[6] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y1 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
-						weights[7] = (float)(1.0 / (intpow(x - x2 * lattice_i.getUnitSize(), 2) + intpow(y - y2 * lattice_i.getUnitSize(), 2) + intpow(z - z2 * lattice_i.getUnitSize(), 2)));
-						std::transform(vals.begin(), vals.end(), weights.begin(), vals.begin(), multiplies<float>());
-						data_vec_final[lattice.getSiteIndex(i, j, k)] = accumulate(vals.begin(), vals.end(), 0.0f) / accumulate(weights.begin(), weights.end(), 0.0f);
-					}
-				}
-			}
-			vector<float>().swap(data_vec_new);
-			// Normalize test data vector to have range from 0 to 100
-			//vector<double> test_vec(data_vec_final.size());
-			//for (int i = 0; i < data_vec_final.size(); i++) {
-			//	test_vec[i] = (double)data_vec_final[i];
-			//}
-			//double maximum = *max_element(test_vec.begin(), test_vec.end());
-			//double minimum = *min_element(test_vec.begin(), test_vec.end());
-			//std::transform(test_vec.begin(), test_vec.end(), test_vec.begin(), bind(minus<double>(), std::placeholders::_1, minimum));
-			//std::transform(test_vec.begin(), test_vec.end(), test_vec.begin(), bind(divides<double>(), std::placeholders::_1, 0.01*maximum));
-			//auto prob = calculateProbabilityHist(test_vec, 1.0);
-			//Utils::outputVectorToFile(prob, "hist_data1.txt");
-			//vector<double>().swap(test_vec);
-			// 
-			// Interpret data vector using probability analysis method
-			if (Params.Enable_probability_analysis) {
-				float avg = (float)vector_avg(data_vec_final);
-				float min_val = *min_element(data_vec_final.begin(), data_vec_final.end());
-				float max_val = *max_element(data_vec_final.begin(), data_vec_final.end());
-				std::transform(data_vec_final.begin(), data_vec_final.end(), data_vec_final.begin(), bind(minus<float>(), std::placeholders::_1, avg));
-				min_val -= avg;
-				max_val -= avg;
-				for (int i = 0; i < (int)data_vec_final.size(); i++) {
-					if (data_vec_final[i] > 0) {
-						data_vec_final[i] = pow(abs(data_vec_final[i]), (float)Params.Probability_scaling_exponent);
-					}
-					else {
-						data_vec_final[i] = -pow(abs(data_vec_final[i]), (float)Params.Probability_scaling_exponent);
-					}
-				}
-				min_val = -pow(abs(min_val), (float)Params.Probability_scaling_exponent);
-				max_val = pow(max_val, (float)Params.Probability_scaling_exponent);
-				for (int i = 0; i < (int)data_vec_final.size(); i++) {
-					data_vec_final[i] = (data_vec_final[i] - min_val) / (max_val - min_val);
-				}
-				for (int x = 0; x < lattice.getLength(); x++) {
-					for (int y = 0; y < lattice.getWidth(); y++) {
-						for (int z = 0; z < lattice.getHeight(); z++) {
-							if (rand01() < data_vec_final[lattice.getSiteIndex(x, y, z)]) {
-								lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)1);
-								Site_type_counts[getSiteTypeIndex((char)1)]++;
-							}
-							else {
-								lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)2);
-								Site_type_counts[getSiteTypeIndex((char)2)]++;
-							}
-						}
-					}
-				}
-			}
-			if (Params.Enable_cutoff_analysis) {
-				vector<float> temp_vec = data_vec_final;
-				sort(temp_vec.begin(), temp_vec.end());
-				float cutoff = temp_vec[round_int(Mix_fractions[1] * (temp_vec.size() - 1))];
-				vector<float>().swap(temp_vec);
-				int mix_bin = Params.Mixed_greyscale_width;
-				//addSiteType((char)3);
-				for (int x = 0; x < lattice.getLength(); x++) {
-					for (int y = 0; y < lattice.getWidth(); y++) {
-						for (int z = 0; z < lattice.getHeight(); z++) {
-							if (data_vec_final[lattice.getSiteIndex(x, y, z)] > cutoff + (mix_bin / 2)) {
-								lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)1);
-								Site_type_counts[getSiteTypeIndex((char)1)]++;
-							}
-							else if (data_vec_final[lattice.getSiteIndex(x, y, z)] < cutoff - (mix_bin / 2)) {
-								lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)2);
-								Site_type_counts[getSiteTypeIndex((char)2)]++;
-							}
-							else {
-								//lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)3);
-								//Site_type_counts[getSiteTypeIndex((char)3)]++;
-								if (rand01() > 0.5) {
-									lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)1);
-									Site_type_counts[getSiteTypeIndex((char)1)]++;
-								}
-								else {
-									lattice.setSiteType(lattice.getSiteIndex(x, y, z), (char)2);
-									Site_type_counts[getSiteTypeIndex((char)2)]++;
-								}
-							}
-						}
-					}
-				}
-			}
-			// Generate morphology set
-			cout << ID << ": Creating morphology set from tomogram data." << endl;
-			if (Params.N_extracted_segments > 1) {
-				int dim = round_int(sqrt(Params.N_extracted_segments));
-				int new_length = lattice.getLength() / dim;
-				// make dimensions even
-				if (new_length % 2 != 0) {
-					new_length--;
-				}
-				int new_width = lattice.getWidth() / dim;
-				if (new_width % 2 != 0) {
-					new_width--;
-				}
-				int size = (new_length < new_width) ? new_length : new_width;
-				int offset_x = (lattice.getLength() - size * dim) / 2;
-				int offset_y = (lattice.getWidth() - size * dim) / 2;
-				Lattice sublattice;
-				Parameters params_new = Params;
-				params_new.Length = new_length;
-				params_new.Width = new_width;
-				params_new.Height = lattice.getHeight();
-				for (int x = 0; x < dim; x++) {
-					for (int y = 0; y < dim; y++) {
-						sublattice = lattice.extractSublattice(x*size + offset_x, size, y*size + offset_y, size, 0, lattice.getHeight());
-						morphologies.push_back(Morphology(sublattice, params_new, x * dim + y));
-						morphologies[x * dim + y].calculateMixFractions();
-					}
-				}
-			}
-			else {
-				morphologies.push_back(*this);
-			}
+			morphologies.push_back(*this);
 		}
 		return morphologies;
 	}

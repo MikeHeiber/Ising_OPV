@@ -223,44 +223,31 @@ namespace ParametersTests {
 		params_invalid.Enable_import_tomogram = true;
 		EXPECT_FALSE(params_invalid.checkParameters());
 		// Check import tomogram options
-		// Check missing analysis option
-		params_invalid = params;
-		params_invalid.Enable_import_tomogram = true;
-		EXPECT_FALSE(params_invalid.checkParameters());
-		// Check two analysis options
-		params_invalid = params;
-		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_cutoff_analysis = true;
-		params_invalid.Enable_probability_analysis = true;
-		EXPECT_FALSE(params_invalid.checkParameters());
 		// Check invalid unit size
 		params_invalid = params;
 		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_cutoff_analysis = true;
 		params_invalid.Desired_unit_size = 0.0;
 		EXPECT_FALSE(params_invalid.checkParameters());
-		// Check cutoff analysis options
+		// Check invalid Mixed_frac
 		params_invalid = params;
 		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_cutoff_analysis = true;
-		params_invalid.Mixed_greyscale_width = -1;
+		params_invalid.Mixed_frac = 1.1;
+		params_invalid.Mixed_conc = 0.5;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid Mixed_conc
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Mixed_frac = 0.1;
+		params_invalid.Mixed_conc = 1.1;
 		EXPECT_FALSE(params_invalid.checkParameters());
 		// Check cutoff analysis options
 		params_invalid = params;
 		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_cutoff_analysis = true;
 		params_invalid.Mixed_conc = 0.0;
-		EXPECT_FALSE(params_invalid.checkParameters());
-		// Check prob analysis options
-		params_invalid = params;
-		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_probability_analysis = true;
-		params_invalid.Probability_scaling_exponent = -1.0;
 		EXPECT_FALSE(params_invalid.checkParameters());
 		// Check extracted segments
 		params_invalid = params;
 		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_probability_analysis = true;
 		params_invalid.N_extracted_segments = -1;
 		EXPECT_FALSE(params_invalid.checkParameters());
 		params_invalid.N_extracted_segments = 3;
@@ -268,7 +255,6 @@ namespace ParametersTests {
 		// Check number of variants
 		params_invalid = params;
 		params_invalid.Enable_import_tomogram = true;
-		params_invalid.Enable_probability_analysis = true;
 		params_invalid.N_variants = 0;
 		EXPECT_FALSE(params_invalid.checkParameters());
 		// Check analysis only
@@ -379,9 +365,9 @@ namespace UtilsTests {
 		EXPECT_EQ(10, (int)prob.size());
 		// Check several random values from the uniform probability hist
 		uniform_int_distribution<> dist2(0, 9);
-		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2e-4);
-		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2e-4);
-		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
 		// Check that the prob hist sums to 1
 		auto cum_hist = calculateCumulativeHist(prob);
 		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
@@ -390,9 +376,9 @@ namespace UtilsTests {
 		// Check for the correct number of bins
 		EXPECT_EQ(10, (int)prob.size());
 		// Check several random values from the uniform probability hist
-		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2e-4);
-		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2e-4);
-		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
 		// Check that the prob hist sums to 1
 		cum_hist = calculateCumulativeHist(prob);
 		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
@@ -497,6 +483,8 @@ namespace UtilsTests {
 		EXPECT_DOUBLE_EQ(1.048576e-4, intpow(2.5, -10));
 		EXPECT_DOUBLE_EQ(1.0, intpow(15.04564, 0));
 		EXPECT_DOUBLE_EQ(1e-21, intpow(1e-7, 3));
+		// Check integer base to negative power
+		EXPECT_DOUBLE_EQ(0.5, intpow(2, -1));
 	}
 
 	TEST(UtilsTests, RemoveDuplicatesTests) {
@@ -1050,8 +1038,7 @@ namespace MorphologyTests {
 		params.Enable_import_tomogram = true;
 		params.Tomogram_name = "./test/TOMO_test_8bit";
 		params.Desired_unit_size = 1.0;
-		params.Enable_cutoff_analysis = true;
-		params.Mixed_greyscale_width = 0;
+		params.Mixed_frac = 0.0;
 		params.Mixed_conc = 0.5;
 		params.N_extracted_segments = 4;
 		params.N_variants = 1;

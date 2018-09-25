@@ -229,7 +229,7 @@ namespace Ising_OPV {
 		vector<int> counts(final_size);
 		// Separate out the counts data from the input histograms into appropriate bins
 		for (int i = 0; i < (int)input_hist.size(); i++) {
-			int bin_index = (input_hist[i].first - smallest_bin) / bin_size;
+			int bin_index = (int)floor((input_hist[i].first - smallest_bin) / bin_size);
 			counts[bin_index] = input_hist[i].second;
 		}
 		// Add up the counts from all processors

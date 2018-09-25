@@ -93,26 +93,26 @@ namespace Ising_OPV {
 			cout << "Parameter error! When importing a tomogram dataset, the input Desired_unit_size must not be zero." << endl;
 			Error_found = true;
 		}
-		if (Enable_import_tomogram && Enable_cutoff_analysis && Mixed_greyscale_width < 0) {
-			cout << "Parameter error! When importing a tomogram dataset and using the cutoff analysis option, the Mixed_greyscale_width must not be negative." << endl;
+		if (Enable_import_tomogram && !(Mixed_frac < 1)) {
+			cout << "Parameter error! When importing a tomogram dataset, the Mixed_frac must be graeter than equal to 0 and less than 1." << endl;
 			Error_found = true;
 		}
-		if (Enable_import_tomogram && Enable_cutoff_analysis && (!(Mixed_conc > 0) || !(Mixed_conc < 1))) {
-			cout << "Parameter error! When importing a tomogram dataset and using the cutoff analysis option, the Mixed_conc must be greater than zero and less than 1." << endl;
+		if (Enable_import_tomogram && (!(Mixed_conc > 0) || !(Mixed_conc < 1))) {
+			cout << "Parameter error! When importing a tomogram dataset, the Mixed_conc must be greater than zero and less than 1." << endl;
 			Error_found = true;
 		}
-		if (Enable_import_tomogram && !Enable_cutoff_analysis && !Enable_probability_analysis) {
-			cout << "Parameter error! When importing a tomogram dataset, the cutoff analysis or the probability analysis option must be enabled." << endl;
-			Error_found = true;
-		}
-		if (Enable_import_tomogram && Enable_cutoff_analysis && Enable_probability_analysis) {
-			cout << "Parameter error! When importing a tomogram dataset, the cutoff analysis and the probability analysis options cannot both be enabled." << endl;
-			Error_found = true;
-		}
-		if (Enable_import_tomogram && Enable_probability_analysis && Probability_scaling_exponent < 0) {
-			cout << "Parameter error! When importing a tomogram dataset and using the probability analysis option, the Probability_scaling_exponent must not be negative." << endl;
-			Error_found = true;
-		}
+		//if (Enable_import_tomogram && !Enable_cutoff_analysis && !Enable_probability_analysis) {
+		//	cout << "Parameter error! When importing a tomogram dataset, the cutoff analysis or the probability analysis option must be enabled." << endl;
+		//	Error_found = true;
+		//}
+		//if (Enable_import_tomogram && Enable_cutoff_analysis && Enable_probability_analysis) {
+		//	cout << "Parameter error! When importing a tomogram dataset, the cutoff analysis and the probability analysis options cannot both be enabled." << endl;
+		//	Error_found = true;
+		//}
+		//if (Enable_import_tomogram && Enable_probability_analysis && Probability_scaling_exponent < 0) {
+		//	cout << "Parameter error! When importing a tomogram dataset and using the probability analysis option, the Probability_scaling_exponent must not be negative." << endl;
+		//	Error_found = true;
+		//}
 		if (Enable_import_tomogram && N_extracted_segments <= 0) {
 			cout << "Parameter error! When importing a tomogram dataset, the input N_extracted segments must be greater than zero." << endl;
 			Error_found = true;
@@ -168,7 +168,7 @@ namespace Ising_OPV {
 			}
 		}
 		// Check that correct number of parameters have been imported
-		if ((int)stringvars.size() != 45) {
+		if ((int)stringvars.size() != 42) {
 			cout << "Error! Incorrect number of parameters were loaded from the parameter file." << endl;
 			return false;
 		}
@@ -422,30 +422,30 @@ namespace Ising_OPV {
 		i++;
 		Desired_unit_size = atof(stringvars[i].c_str());
 		i++;
-		try {
-			Enable_cutoff_analysis = str2bool(stringvars[i]);
-		}
-		catch (invalid_argument& exception) {
-			cout << exception.what() << endl;
-			cout << "Error setting tomogram import conditions" << endl;
-			Error_found = true;
-		}
-		i++;
-		Mixed_greyscale_width = atoi(stringvars[i].c_str());
+		//try {
+		//	Enable_cutoff_analysis = str2bool(stringvars[i]);
+		//}
+		//catch (invalid_argument& exception) {
+		//	cout << exception.what() << endl;
+		//	cout << "Error setting tomogram import conditions" << endl;
+		//	Error_found = true;
+		//}
+		//i++;
+		Mixed_frac = atoi(stringvars[i].c_str());
 		i++;
 		Mixed_conc = atof(stringvars[i].c_str());
 		i++;
-		try {
-			Enable_probability_analysis = str2bool(stringvars[i]);
-		}
-		catch (invalid_argument& exception) {
-			cout << exception.what() << endl;
-			cout << "Error setting tomogram import conditions" << endl;
-			Error_found = true;
-		}
-		i++;
-		Probability_scaling_exponent = atof(stringvars[i].c_str());
-		i++;
+		//try {
+		//	Enable_probability_analysis = str2bool(stringvars[i]);
+		//}
+		//catch (invalid_argument& exception) {
+		//	cout << exception.what() << endl;
+		//	cout << "Error setting tomogram import conditions" << endl;
+		//	Error_found = true;
+		//}
+		//i++;
+		//Probability_scaling_exponent = atof(stringvars[i].c_str());
+		//i++;
 		N_extracted_segments = atoi(stringvars[i].c_str());
 		i++;
 		N_variants = atoi(stringvars[i].c_str());
