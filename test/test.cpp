@@ -386,7 +386,7 @@ namespace UtilsTests {
 		data.clear();
 		// Check that empty double data vectors throw an exception
 		EXPECT_THROW(calculateProbabilityHist(data, 10.0), invalid_argument);
-		EXPECT_THROW(calculateProbabilityHist(data, 5); , invalid_argument);
+		EXPECT_THROW(calculateProbabilityHist(data, 5);, invalid_argument);
 		EXPECT_THROW(calculateProbabilityHist(data, 1.0, 5), invalid_argument);
 		// Check behavior on a test dataset
 		data = { 0.0, 1.0, 2.0, 3.0, 4.0 };
@@ -790,6 +790,8 @@ namespace MorphologyTests {
 		// Check behavior of constructor using invalid parameter values
 		params.Length = -1;
 		EXPECT_THROW(morph = Morphology(params, 1), invalid_argument);
+		// Check behavior setting invalid params
+		EXPECT_THROW(morph.setParameters(params), invalid_argument);
 		params.Length = 50;
 		// Check the lattice input constructor
 		Lattice::Lattice_Params params_lattice;
@@ -981,7 +983,7 @@ namespace MorphologyTests {
 		morph = Morphology(params, 0);
 		morph.createRandomMorphology(mix_fractions);
 		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
-		morph.executeIsingSwapping(600, 0.4, 0.4, true, 3, -0.1);
+		morph.executeIsingSwapping(700, 0.4, 0.4, true, 3, -0.1);
 		// Check calculation of anisotropy with narrow lattice
 		morph.calculateAnisotropies();
 		// Calculation should have an error and result in default value of -1
@@ -995,7 +997,7 @@ namespace MorphologyTests {
 		morph = Morphology(params, 0);
 		morph.createRandomMorphology(mix_fractions);
 		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
-		morph.executeIsingSwapping(600, 0.35, 0.35, true, 3, 0.05);
+		morph.executeIsingSwapping(700, 0.35, 0.35, true, 3, 0.05);
 		// Check calculation of anisotropy with thin lattice
 		morph.calculateAnisotropies();
 		// Calculation should have an error and result in default value of -1
@@ -1054,24 +1056,36 @@ namespace MorphologyTests {
 			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
 			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
 		}
-		// Check extraction of 9 segments
-		params.N_extracted_segments = 9;
+		// Check extraction of 1 segment
+		params.N_extracted_segments = 1;
 		morph = Morphology(params, 0);
 		morphologies = morph.importTomogramMorphologyFile();
 		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
 		// Check extracted morphologies
 		for (auto& item : morphologies) {
-			EXPECT_EQ(66, item.getLength());
-			EXPECT_EQ(66, item.getWidth());
+			EXPECT_EQ(200, item.getLength());
+			EXPECT_EQ(200, item.getWidth());
 			EXPECT_EQ(100, item.getHeight());
 			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
 			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
 		}
 		params.N_extracted_segments = 4;
+		// Check extraction of 36 segments
+		params.N_extracted_segments = 36;
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		for (auto& item : morphologies) {
+			EXPECT_EQ(32, item.getLength());
+			EXPECT_EQ(32, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+		}
+		params.N_extracted_segments = 4;
 		// Check import attempt when not enabled in parameters
 		params.Enable_import_tomogram = false;
 		morph = Morphology(params, 0);
-		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(),runtime_error);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
 		params.Enable_import_tomogram = true;
 		// Check import attempt when tomo data is not present
 		params.Tomogram_name = "./test/TOMO_data";
@@ -1090,6 +1104,16 @@ namespace MorphologyTests {
 		params.Tomogram_name = "./test/TOMO_test_8bit";
 		// Check import of tomo dataset with missing data
 		params.Tomogram_name = "./test/TOMO_test_8bit_missing";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml has bad schema version
+		params.Tomogram_name = "./test/TOMO_test_badversion";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml has bad data format
+		params.Tomogram_name = "./test/TOMO_test_badformat";
 		morph = Morphology(params, 0);
 		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
 		params.Tomogram_name = "./test/TOMO_test_8bit";
@@ -1518,6 +1542,17 @@ namespace MorphologyTests {
 		ifstream infile6("./test/morphology_file2.txt");
 		EXPECT_FALSE(morph.importMorphologyFile(infile6));
 		infile6.close();
+		// Try importing morphology file from old version
+		ifstream infile7("./test/morphology_old_version.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile7));
+		infile7.close();
+		// Try importing morphology with unopening ifstream
+		ifstream unopen_file;
+		EXPECT_FALSE(morph.importMorphologyFile(unopen_file));
+		// Try importing a morphology file without a header line
+		ifstream infile8("./test/morphology_no_header.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile8));
+		infile8.close();
 	}
 
 	TEST_F(MorphologyTest, OtherOutputTests) {

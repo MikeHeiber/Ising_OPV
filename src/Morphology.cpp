@@ -1856,7 +1856,7 @@ namespace Ising_OPV {
 		string metadata_filename = Params.Tomogram_name + ".xml";
 		string data_filename = Params.Tomogram_name + ".raw";
 		// Parse XML metadata file
-		cout << ID << ": Loading XML metadata file..." << endl;
+		cout << ID << ": Loading and Parsing the XML metadata file..." << endl;
 		XMLDocument xml_doc;
 		string data_format;
 		FILE* xml_file_ptr;
@@ -1872,7 +1872,6 @@ namespace Ising_OPV {
 			throw runtime_error("Error loading XML metadata file.");
 		}
 		// Analyze XML info file based on metadata format version
-		cout << ID << ": Parsing XML metadata file..." << endl;
 		Version required_version("1.0.0");
 		string schema_version_str = xml_doc.FirstChildElement("tomogram_metadata")->Attribute("schema_version");
 		Version schema_version(schema_version_str);
@@ -2109,8 +2108,8 @@ namespace Ising_OPV {
 		Lattice::Lattice_Params lattice_params;
 		lattice_params.Unit_size = 1.0;
 		// Check status of input filestream
-		if (!infile.good()) {
-			cout << ID << ": Error importing morphology file. Input filestream is not in a good state." << endl;
+		if (!infile.is_open() || !infile.good()) {
+			cout << ID << ": Error importing morphology file. Input filestream is not open or is not a good state." << endl;
 			return false;
 		}
 		// Load file lines into string vector
@@ -2191,11 +2190,6 @@ namespace Ising_OPV {
 					for (int z = 0; z < lattice.getHeight(); z++) {
 						if (site_count == 0) {
 							if (line_count == (int)file_data.size()) {
-								cout << ID << ": Error parsing input morphology file. End of file reached before expected." << endl;
-								return false;
-							}
-							stringstream linestream(file_data[line_count]);
-							if (!linestream.good()) {
 								cout << ID << ": Error parsing input morphology file. End of file reached before expected." << endl;
 								return false;
 							}
