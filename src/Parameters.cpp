@@ -121,40 +121,9 @@ namespace Ising_OPV {
 			cout << "Parameter error! When importing a tomogram dataset, the input N_variants segments must be greater than zero." << endl;
 			Error_found = true;
 		}
-		if (Enable_import_tomogram) {
-			switch (N_extracted_segments) {
-			case 1:
-				break;
-			case 4:
-				break;
-			case 9:
-				break;
-			case 16:
-				break;
-			case 25:
-				break;
-			case 36:
-				break;
-			case 49:
-				break;
-			case 64:
-				break;
-			case 81:
-				break;
-			case 100:
-				break;
-			case 121:
-				break;
-			case 144:
-				break;
-			case 169:
-				break;
-			case 196:
-				break;
-			default:
-				cout << "Parameter error! When importing a tomogram dataset, the input value for N_extracted_segments must be 1, 4, 9, 16, 25, 36, 49, 64, 89, 100, 121, 144, 169, or 196 but " << N_extracted_segments << " was entered." << endl;
-				Error_found = true;
-			}
+		if (Enable_import_tomogram && N_extracted_segments != intpow((int)floor(sqrt(N_extracted_segments)), 2)) {
+			cout << "Parameter error! When importing a tomogram dataset, the input value for N_extracted_segments must be 1, 4, 9, 16, 25, 36, 49, 64, 89, 100, 121, 144, 169, or 196 but " << N_extracted_segments << " was entered." << endl;
+			Error_found = true;
 		}
 		// Check other parameter conflicts
 		if (Enable_analysis_only && !Enable_import_morphologies && !Enable_import_tomogram) {
@@ -198,6 +167,12 @@ namespace Ising_OPV {
 				stringvars.push_back(var);
 			}
 		}
+		// Check that correct number of parameters have been imported
+		if ((int)stringvars.size() != 45) {
+			cout << "Error! Incorrect number of parameters were loaded from the parameter file." << endl;
+			return false;
+		}
+		bool Error_found = false;
 		int i = 0;
 		// Convert strings into the correct data type and assign them to their corresponding parameter variable.
 		// General Parameters
@@ -214,7 +189,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting z-direction periodic boundary conditions!" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Mix_fraction = atof(stringvars[i].c_str());
@@ -232,7 +207,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting morphology smoothing options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Smoothing_threshold = atof(stringvars[i].c_str());
@@ -244,7 +219,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting morphology rescale options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Rescale_factor = atoi(stringvars[i].c_str());
@@ -255,7 +230,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting morphology shrink options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_interfacial_mixing
@@ -265,7 +240,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting interfacial mixing options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Interface_width = atof(stringvars[i].c_str());
@@ -279,7 +254,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting analysis options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_correlation_calc
@@ -289,7 +264,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting correlation calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		N_sampling_max = atoi(stringvars[i].c_str());
@@ -301,7 +276,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting correlation calculation domain size determination method options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_e_method
@@ -311,7 +286,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting correlation calculation domain size determination method  options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_extended_correlation_calc
@@ -321,7 +296,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting extended correlation calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Extended_correlation_cutoff_distance = atoi(stringvars[i].c_str());
@@ -333,7 +308,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting interfacial distance calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_tortuosity_calc
@@ -343,7 +318,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting tortuosity calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_reduced_memory_tortuosity_calc
@@ -353,7 +328,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting reduced memory tortuosity calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_depth_dependent_cal
@@ -363,7 +338,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting areal mapping calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_areal_maps_cal
@@ -373,7 +348,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting depth dependent calculation options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_checkerboard_start
@@ -383,7 +358,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting checkerboard starting condition" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//enable_growth_pref
@@ -393,7 +368,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting growth preference conditions" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Growth_direction = atoi(stringvars[i].c_str());
@@ -408,7 +383,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting export options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		//Enable_export_cross_section
@@ -418,7 +393,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting export cross-section options" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		// Import Morphology Options
@@ -429,7 +404,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting morphology import option" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		// Tomogram Import Options
@@ -440,7 +415,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting tomogram import option" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Tomogram_name = stringvars[i];
@@ -453,7 +428,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting tomogram import conditions" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Mixed_greyscale_width = atoi(stringvars[i].c_str());
@@ -466,7 +441,7 @@ namespace Ising_OPV {
 		catch (invalid_argument& exception) {
 			cout << exception.what() << endl;
 			cout << "Error setting tomogram import conditions" << endl;
-			return false;
+			Error_found = true;
 		}
 		i++;
 		Probability_scaling_exponent = atof(stringvars[i].c_str());
@@ -475,6 +450,6 @@ namespace Ising_OPV {
 		i++;
 		N_variants = atoi(stringvars[i].c_str());
 		i++;
-		return true;
+		return !Error_found;
 	}
 }

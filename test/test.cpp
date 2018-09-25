@@ -102,6 +102,42 @@ namespace ParametersTests {
 		ifstream param_file3("./test/parameters_missing_data.txt");
 		EXPECT_FALSE(params.importParameters(param_file3));
 		param_file3.close();
+		// Check parameter files with typos in boolean values to check conversion of string to bool
+		ifstream param_file5("parameters_default.txt");
+		vector<string> file_data;
+		string line;
+		while (getline(param_file5, line)) {
+			file_data.push_back(line);
+		}
+		param_file5.close();
+		for (auto& item : file_data) {
+			// Find parameter lines with a boolean true value
+			if (item.substr(0, 4).compare("true") == 0) {
+				// Replace true with misspelled 'tue'
+				item.replace(item.find("true"), 4, "tue");
+				// Save file data vector to a new parameter file
+				outputVectorToFile(file_data, "./test/parameters_misspell.txt");
+				// Try to open and import new parameter file with misspelled true
+				ifstream param_file6("./test/parameters_misspell.txt");
+				EXPECT_FALSE(params.importParameters(param_file6));
+				param_file6.close();
+				// Reset mispelled tue back to true
+				item.replace(item.find("tue"), 3, "true");
+			}
+			// Find parameter lines with a boolean false value
+			else if (item.substr(0, 5).compare("false") == 0) {
+				// Replace false with misspelled 'fase'
+				item.replace(item.find("false"), 5, "fase");
+				// Save file data vector to a new parameter file
+				outputVectorToFile(file_data, "./test/parameters_misspell.txt");
+				// Try to open and import new parameter file with misspelled false
+				ifstream param_file6("./test/parameters_misspell.txt");
+				EXPECT_FALSE(params.importParameters(param_file6));
+				param_file6.close();
+				// Reset mispelled fase back to false
+				item.replace(item.find("fase"), 4, "false");
+			}
+		}
 		// Load default parameters
 		ifstream param_file4("parameters_default.txt");
 		// Check that default parameters can be loaded 
@@ -364,7 +400,7 @@ namespace UtilsTests {
 		data.clear();
 		// Check that empty double data vectors throw an exception
 		EXPECT_THROW(calculateProbabilityHist(data, 10.0), invalid_argument);
-		EXPECT_THROW(calculateProbabilityHist(data, 5);, invalid_argument);
+		EXPECT_THROW(calculateProbabilityHist(data, 5); , invalid_argument);
 		EXPECT_THROW(calculateProbabilityHist(data, 1.0, 5), invalid_argument);
 		// Check behavior on a test dataset
 		data = { 0.0, 1.0, 2.0, 3.0, 4.0 };
@@ -780,15 +816,19 @@ namespace MorphologyTests {
 		// Initialize Lattice object
 		lattice.init(params_lattice);
 		// Check that mismatching dimensions of lattice and params throws exception
-		EXPECT_THROW(morph = Morphology(lattice, params, 2),invalid_argument);
+		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
 		// Check that mismatching periodic boundary conditions of lattice and params throws exception
 		params.Length = 20;
 		params.Width = 30;
 		params.Height = 40;
 		params.Enable_periodic_z = true;
 		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
-		// Check the correct params
+		// Check that invalid params throws exception
+		params.Length = 0;
 		params.Enable_periodic_z = false;
+		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
+		params.Length = 20;
+		// Check the correct params
 		morph = Morphology(lattice, params, 2);
 		// Check that ID number is set properly
 		EXPECT_EQ(2, morph.getID());
@@ -1095,8 +1135,8 @@ namespace MorphologyTests {
 		double domain_size1_f = morph.getDomainSize((char)1);
 		double domain_size2_f = morph.getDomainSize((char)2);
 		// Check that the domain size is almost the same
-		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.02);
-		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.02);
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.025);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.025);
 		// Try the extended correlation calculation
 		params.Enable_extended_correlation_calc = true;
 		params.Extended_correlation_cutoff_distance = 5;
