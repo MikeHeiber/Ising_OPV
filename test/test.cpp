@@ -1103,7 +1103,7 @@ namespace MorphologyTests {
 		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
 		params.Tomogram_name = "./test/TOMO_test_8bit";
 		// Check import of tomo dataset with missing data
-		params.Tomogram_name = "./test/TOMO_test_8bit_missing";
+		params.Tomogram_name = "./test/TOMO_test_missing";
 		morph = Morphology(params, 0);
 		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
 		params.Tomogram_name = "./test/TOMO_test_8bit";

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <tomogram_metadata xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://github.com/MikeHeiber/Ising_OPV/tomogram_metadata http://github.com/MikeHeiber/Ising_OPV/blob/development/tomogram_metadata.xsd" schema_version="1.1">
+xsi:schemaLocation="http://github.com/MikeHeiber/Ising_OPV/tomogram_metadata http://github.com/MikeHeiber/Ising_OPV/blob/development/tomogram_metadata.xsd" schema_version="1.0">
 	<sample_info>
 		<composition_info>
 			<chemical_component>

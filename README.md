@@ -1,14 +1,13 @@
 Ising_OPV
 =========
 
-This software tool creates and analyzes bulk heterojunction morphologies for further use in kinetic Monte Carlo simulation tools, such as [Excimontec](https://github.com/MikeHeiber/Excimontec). 
+This C++ software package can be used to create and analyze bulk heterojunction morphologies for further use in kinetic Monte Carlo simulation tools, such as [Excimontec](https://github.com/MikeHeiber/Excimontec). 
 This package implements an Ising-based model to quickly and efficiently generate three-dimensional bulk heterojunction morphologies on a cubic lattice in a parallel computing environment. 
 In addition, morphologies derived from other simulations models or experimental measurements can be imported into the tool. 
 Generated or imported morphologies are then rigorously analyzed to determine important morphological features such as the domain size, tortuosity, interfacial area to volume ratio, and more. 
-If you would like some assistance in customizing this software tool for your particular research interest or application, please contact me to discuss collaboration options or feel free to contribute to the development of this open-source software tool.
 
 #### Major Features:
-- Create controlled binary phase separated blends with using tunable interaction energies and duration of phase separation
+- Create controlled binary phase separated blends with tunable interaction energies and duration of phase separation
 - Use smoothing to create idealized pure phase morphologies
 - Impart controlled interfacial mixing between domains
 - Create anisotropic morphologies using directionally dependent interaction energies
@@ -19,8 +18,8 @@ If you would like some assistance in customizing this software tool for your par
 
 The current release is Ising_OPV
 [![GitHub (pre-)release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases). 
-All major planned features that are to be included in v4.0 are now implemented and have undergone preliminary testing. 
-However, this software tool is still under development, and as such, there may still be bugs that need to be fixed. 
+All major planned features for v4.0 are now implemented and have undergone significant testing. 
+However, there may still be bugs that need to be fixed. 
 Please report any bugs or submit feature requests in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
 #### Continuous Integration and Testing Status:
@@ -48,11 +47,11 @@ You can check out my research using this tool and other work on [Researchgate](h
 
 #### Building and Testing the Executable
 
-This software tool uses Message Passing Interface (MPI) to utilize parallel computing power. 
+This software package uses Message Passing Interface (MPI) to utilize parallel computing power. 
 As a result, using Ising_OPV requires that an MPI library is pre-installed on your system, and the final Ising_OPV executable must be built on your specific system. 
-We cannot provide pre-built binaries for your system. 
+Pre-built binaries for your system will not be supplied. 
 Contact your HPC admin to determine the protocols for building MPI applications on your HPC system. 
-In many cases, the HPC system will already be configured for you, and the package comes with a default makefile that can be used with the GCC compiler. 
+In many cases, the HPC environment will already be configured for you, and the package comes with a default makefile that can be used with the GCC compiler. 
 
 If you wish, you can also install MPI on your own personal workstation and then build Excimontec there as well. For development and preliminary simulation tests, sometimes it is more efficient to run on your own workstation instead of an HPC system. 
 More information about common MPI packages can be found here:
@@ -70,7 +69,7 @@ Once you have an MPI library installed and have an appropriate compiler, to buil
 Then, navigate to the Ising_OPV directory and run `make`. 
 Once the normal build is successful, you should test Ising_OPV on your own hardware using the unit and system tests provided before you use the tool. 
 Build the testing executable by running `make test`. 
-Once the test build is complete, navigate to the test directory, and run the two test executables `./Ising_OPV_tests.exe` and `./Ising_OPV_MPI_tests.exe`.
+Once the test build is complete, run the two test executables `./test/Ising_OPV_tests.exe` and `./test/Ising_OPV_MPI_tests.exe`.
 Please report any build or testing errors in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. If you do not have any build or testing errors, then you are ready to go!
 
 #### Running Simulations
@@ -81,10 +80,10 @@ An example batch script for the SLURM job scheduling system is provided with thi
 Similar batch scripts can also be written for TORQUE or other job schedulers.
 
 Regardless of the job scheduler, the program execution command is essentially the same. 
-For simple morphology generation jobs, Ising_OPV.exe takes one required input argument, which is the filename of the input parameter file. 
-An example parameter file is provided with this package (parameters_default.txt).
+Ising_OPV.exe takes one required input argument, which is the filename of the input parameter file. 
+An annotated example parameter file is provided with this package (parameters_default.txt).
 
-For example, within the batch script, to create 10 morphologies using 10 processors, the command is:
+For example, to create 10 morphologies using 10 processors with the default parameters, the command is:
 
 ```mpiexec -n 10 Ising_OPV.exe parameters_default.txt```
 
@@ -92,11 +91,11 @@ Users can also import morphology sets previously generated by the Ising_OPV tool
 This will import the morphologies (morphology_0.txt, morphology_1.txt, etc) and assign one to each processor.
 The morphology files must be located in the working directory to be found and imported.
 
-Finally, users can import experimental tomogram image data, generate a morphology set from the data, and then perform further operations by enabling tomogram import in the parameter file and specifying the name of tomogram dataset. 
-The tomogram metadata is imported from an .xml file and then that is used for interpreting a .raw data file. 
-Once the tomogram data is loaded, the morphology will be segmented into a number of equal sub-volumes to form a new morphology set and then the rest of the analysis is performed. 
+Finally, users can also import experimental tomogram image data, generate a morphology set from the data, and then perform further operations by enabling tomogram import in the parameter file and specifying the name of tomogram dataset. 
+The tomogram metadata is imported from an XML metadata file and then that is used for interpreting a RAW binary data file that contains the image data. 
+Once the tomogram data is loaded, the morphology can be segmented into a number of equally size sub-volumes to form a new morphology set, and then the rest of the analysis is performed. 
 Again, the tomogram dataset files must be located in the working directory to be found and imported. 
-Also, the metadata format required by Ising_OPV is defined in XML schema file, tomogram_metadata.xsd.
+Also, the metadata format required by Ising_OPV is defined in XML schema definition file, tomogram_metadata.xsd.
 
 #### Simulation Output
 
@@ -111,7 +110,7 @@ Ising_OPV will create several output files:
 - interfacial_distance_histograms.txt -- This text file will be created when interfacial distance histogram calculation is enabled and will contain histogram data for each domain type averaged over all morphologies in the set.
 - morphology_#_compressed.txt -- This text file will be created for each morphology generated in the set and stores the data for that morphology.
 - morphology_#_cross_section.txt -- This text file will be created for each morphology generated in the set when enabled and will contain uncompressed data for a cross sectional image through the x=Length/2 plane.
--  tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contains the end-to-end tortuosity histogram data for each domain type averaged over all morphologies in the set.
+- tortuosity_histograms.txt -- This text file will be created when tortuosity calculation is enabled and contains the end-to-end tortuosity histogram data for each domain type averaged over all morphologies in the set.
 
 #### Data Analysis
 
@@ -120,7 +119,7 @@ This is a good starting point for managing the data generated by Ising_OPV, and 
 
 #### Software API
 
-While this tool is designed to be primarily controlled through the parameter file, API documentation for the Ising_OPV package can be viewed [here](https://mikeheiber.github.io/Ising_OPV/) to enable code developers to utilize Ising_OPV functionality as part of a larger or customized software tool.
+While this tool is designed to be primarily controlled through the parameter file, API documentation for the Ising_OPV package can be viewed [here](https://mikeheiber.github.io/Ising_OPV/) to enable code developers to utilize Ising_OPV functionality as part of a larger or customized software tool. This software package is written in modern object oriented C++ and can be readily modified by other developers.
 
 ## Citing this Work
 

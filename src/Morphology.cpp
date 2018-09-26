@@ -1911,8 +1911,8 @@ namespace Ising_OPV {
 		cout << ID << ": Loading RAW data file..." << endl;
 		ifstream data_file(data_filename, ifstream::in | ifstream::binary);
 		if (!data_file.is_open()) {
-			cout << ID << ": Error! Tomogram binary file " << data_filename << " could not be opened." << endl;
-			throw runtime_error("Error! Tomogram binary .raw file could not be opened.");
+			cout << ID << ": Error! Tomogram binary RAW file " << data_filename << " could not be opened." << endl;
+			throw runtime_error("Error! Tomogram binary RAW file could not be opened.");
 		}
 		data_file.seekg(0, data_file.end);
 		int N_bytes = data_file.tellg();
