@@ -1049,26 +1049,50 @@ namespace MorphologyTests {
 		auto morphologies = morph.importTomogramMorphologyFile();
 		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
 		// Check extracted morphologies
+		vector<double> iav_ratios;
+		vector<double> iv_fracs;
 		for (auto& item : morphologies) {
 			EXPECT_EQ(100, item.getLength());
 			EXPECT_EQ(100, item.getWidth());
 			EXPECT_EQ(100, item.getHeight());
-			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
-			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.075);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.075);
+			iav_ratios.push_back(item.calculateInterfacialAreaVolumeRatio());
+			iv_fracs.push_back(item.calculateInterfacialVolumeFraction());
 		}
+		double iav_ratio_i = vector_avg(iav_ratios);
+		double iv_frac_i = vector_avg(iv_fracs);
+		// Check import of 8 bit data with more mixed volume fraction
+		params.Mixed_frac = 0.1;
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		iav_ratios.clear();
+		iv_fracs.clear();
+		for (auto& item : morphologies) {
+			EXPECT_EQ(100, item.getLength());
+			EXPECT_EQ(100, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.075);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.075);
+			iav_ratios.push_back(item.calculateInterfacialAreaVolumeRatio());
+			iv_fracs.push_back(item.calculateInterfacialVolumeFraction());
+		}
+		double iav_ratio_f = vector_avg(iav_ratios);
+		double iv_frac_f = vector_avg(iv_fracs);
+		// Check that iav ratio and iv fraction have both increased
+		EXPECT_GT(iav_ratio_f, iav_ratio_i);
+		EXPECT_GT(iv_frac_f, iv_frac_i);
+		params.Mixed_frac = 0.0;
 		// Check extraction of 1 segment
 		params.N_extracted_segments = 1;
 		morph = Morphology(params, 0);
 		morphologies = morph.importTomogramMorphologyFile();
 		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
-		// Check extracted morphologies
-		for (auto& item : morphologies) {
-			EXPECT_EQ(200, item.getLength());
-			EXPECT_EQ(200, item.getWidth());
-			EXPECT_EQ(100, item.getHeight());
-			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
-			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
-		}
+		EXPECT_EQ(200, morphologies[0].getLength());
+		EXPECT_EQ(200, morphologies[0].getWidth());
+		EXPECT_EQ(100, morphologies[0].getHeight());
+		EXPECT_NEAR(0.5, morphologies[0].getMixFraction((char)1), 0.01);
+		EXPECT_NEAR(0.5, morphologies[0].getMixFraction((char)2), 0.01);
 		params.N_extracted_segments = 4;
 		// Check extraction of 36 segments
 		params.N_extracted_segments = 36;
