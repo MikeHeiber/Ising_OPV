@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unit_5fsize',['Unit_size',['../struct_parameters___lattice.html#a5f9628b968ba4206a7650c774827b1f0',1,'Parameters_Lattice']]]
+  ['x',['x',['../struct_ising___o_p_v_1_1_coords.html#a14c36dabe92162f9e79a43f1f21ec37e',1,'Ising_OPV::Coords']]]
 ];

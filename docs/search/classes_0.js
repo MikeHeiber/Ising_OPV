@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['coords',['Coords',['../struct_coords.html',1,'']]],
-  ['correlationcalcparams',['CorrelationCalcParams',['../struct_correlation_calc_params.html',1,'']]]
+  ['coords',['Coords',['../struct_ising___o_p_v_1_1_coords.html',1,'Ising_OPV']]]
 ];

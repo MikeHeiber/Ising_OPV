@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['utils',['Utils',['../namespace_utils.html',1,'']]]
+  ['ising_5fopv',['Ising_OPV',['../namespace_ising___o_p_v.html',1,'']]]
 ];

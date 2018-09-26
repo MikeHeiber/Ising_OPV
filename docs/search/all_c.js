@@ -1,5 +1,9 @@
 var searchData=
 [
-  ['parameters_5flattice',['Parameters_Lattice',['../struct_parameters___lattice.html',1,'']]],
-  ['probability_5fscaling_5fexponent',['Probability_scaling_exponent',['../struct_input___parameters.html#a99dcd8a5297039a15097ec298218f8dc',1,'Input_Parameters::Probability_scaling_exponent()'],['../struct_tomogram_import_params.html#a6809734d8f4b5036012d366392d49ea1',1,'TomogramImportParams::Probability_scaling_exponent()']]]
+  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['removeduplicates',['removeDuplicates',['../namespace_ising___o_p_v.html#a505f077d47af59a64e6ca63287db0f2e',1,'Ising_OPV']]],
+  ['removewhitespace',['removeWhitespace',['../namespace_ising___o_p_v.html#aac30337e86aa1dcb97cab5e6a2aaf0a2',1,'Ising_OPV']]],
+  ['rescale_5ffactor',['Rescale_factor',['../class_ising___o_p_v_1_1_parameters.html#aea62d6daeb04924c8a8f6803a443bd46',1,'Ising_OPV::Parameters']]],
+  ['resize',['resize',['../class_ising___o_p_v_1_1_lattice.html#a6755d3db42141e454b54bcf64a96b21c',1,'Ising_OPV::Lattice']]],
+  ['round_5fint',['round_int',['../namespace_ising___o_p_v.html#a92552450328eac34e6a7b2d7aa514b62',1,'Ising_OPV']]]
 ];

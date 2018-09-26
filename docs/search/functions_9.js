@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['setsitetype',['setSiteType',['../class_lattice.html#a32b61395fccb5d33187c8142382f536a',1,'Lattice::setSiteType(const long int site_index, const char site_type)'],['../class_lattice.html#ac4005a7e4ab30ffa741cbda49aba970c',1,'Lattice::setSiteType(const int x, const int y, const int z, const char site_type)']]],
-  ['setxyz',['setXYZ',['../struct_coords.html#a88de3a6ee710766eb9c9444cee45a9f3',1,'Coords']]],
-  ['shrinklattice',['shrinkLattice',['../class_morphology.html#a023663f7159641bd8f37e251872fec30',1,'Morphology']]],
-  ['stretchlattice',['stretchLattice',['../class_morphology.html#aeab0b8df25e039317611692294bb713f',1,'Morphology']]]
+  ['removeduplicates',['removeDuplicates',['../namespace_ising___o_p_v.html#a505f077d47af59a64e6ca63287db0f2e',1,'Ising_OPV']]],
+  ['removewhitespace',['removeWhitespace',['../namespace_ising___o_p_v.html#aac30337e86aa1dcb97cab5e6a2aaf0a2',1,'Ising_OPV']]],
+  ['resize',['resize',['../class_ising___o_p_v_1_1_lattice.html#a6755d3db42141e454b54bcf64a96b21c',1,'Ising_OPV::Lattice']]],
+  ['round_5fint',['round_int',['../namespace_ising___o_p_v.html#a92552450328eac34e6a7b2d7aa514b62',1,'Ising_OPV']]]
 ];

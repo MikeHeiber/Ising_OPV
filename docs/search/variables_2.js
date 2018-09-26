@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['desired_5funit_5fsize',['Desired_unit_size',['../struct_input___parameters.html#a3a7c6a52ccaccfba7600a4116c309d6a',1,'Input_Parameters::Desired_unit_size()'],['../struct_tomogram_import_params.html#aaab017c64b667853f8245150e7f9e68a',1,'TomogramImportParams::Desired_unit_size()']]]
+  ['desired_5funit_5fsize',['Desired_unit_size',['../class_ising___o_p_v_1_1_parameters.html#a407108394e3dbeaaba0a25a44eb2e5f4',1,'Ising_OPV::Parameters']]]
 ];

@@ -2,19 +2,22 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
 [
     [ "Lattice.cpp", "_lattice_8cpp.html", null ],
     [ "Lattice.h", "_lattice_8h.html", [
-      [ "Parameters_Lattice", "struct_parameters___lattice.html", "struct_parameters___lattice" ],
-      [ "Site", "class_site.html", "class_site" ],
-      [ "Lattice", "class_lattice.html", "class_lattice" ]
+      [ "Lattice", "class_ising___o_p_v_1_1_lattice.html", "class_ising___o_p_v_1_1_lattice" ],
+      [ "Lattice_Params", "struct_ising___o_p_v_1_1_lattice_1_1_lattice___params.html", "struct_ising___o_p_v_1_1_lattice_1_1_lattice___params" ]
     ] ],
     [ "main.cpp", "main_8cpp.html", "main_8cpp" ],
     [ "Morphology.cpp", "_morphology_8cpp.html", null ],
     [ "Morphology.h", "_morphology_8h.html", [
-      [ "NeighborCounts", "struct_neighbor_counts.html", "struct_neighbor_counts" ],
-      [ "NeighborInfo", "struct_neighbor_info.html", "struct_neighbor_info" ],
-      [ "CorrelationCalcParams", "struct_correlation_calc_params.html", "struct_correlation_calc_params" ],
-      [ "TomogramImportParams", "struct_tomogram_import_params.html", "struct_tomogram_import_params" ],
-      [ "Morphology", "class_morphology.html", "class_morphology" ]
+      [ "Morphology", "class_ising___o_p_v_1_1_morphology.html", "class_ising___o_p_v_1_1_morphology" ]
+    ] ],
+    [ "Parameters.cpp", "_parameters_8cpp.html", null ],
+    [ "Parameters.h", "_parameters_8h.html", [
+      [ "Parameters", "class_ising___o_p_v_1_1_parameters.html", "class_ising___o_p_v_1_1_parameters" ]
     ] ],
     [ "Utils.cpp", "_utils_8cpp.html", "_utils_8cpp" ],
-    [ "Utils.h", "_utils_8h.html", "_utils_8h" ]
+    [ "Utils.h", "_utils_8h.html", "_utils_8h" ],
+    [ "Version.cpp", "_version_8cpp.html", "_version_8cpp" ],
+    [ "Version.h", "_version_8h.html", [
+      [ "Version", "class_ising___o_p_v_1_1_version.html", "class_ising___o_p_v_1_1_version" ]
+    ] ]
 ];

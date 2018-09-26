@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['first_5findices',['first_indices',['../struct_neighbor_info.html#a24aef60740d39e2fc524d56780deea53',1,'NeighborInfo']]]
+  ['growth_5fdirection',['Growth_direction',['../class_ising___o_p_v_1_1_parameters.html#ac0f1bf16ebc54ab9296bb17c8f4d3763',1,'Ising_OPV::Parameters']]]
 ];

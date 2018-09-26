@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['neighborcounts',['NeighborCounts',['../struct_neighbor_counts.html',1,'']]],
-  ['neighborinfo',['NeighborInfo',['../struct_neighbor_info.html',1,'']]]
+  ['version',['Version',['../class_ising___o_p_v_1_1_version.html',1,'Ising_OPV']]]
 ];

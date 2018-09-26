@@ -1,4 +1,29 @@
 var searchData=
 [
-  ['first_5findices',['first_indices',['../struct_neighbor_info.html#a24aef60740d39e2fc524d56780deea53',1,'NeighborInfo']]]
+  ['generaterandomcoords',['generateRandomCoords',['../class_ising___o_p_v_1_1_lattice.html#a503a08c4287c2ed13af47571a229de10',1,'Ising_OPV::Lattice']]],
+  ['generaterandomx',['generateRandomX',['../class_ising___o_p_v_1_1_lattice.html#aa5a3d51c28da27d9df28656494faa7f3',1,'Ising_OPV::Lattice']]],
+  ['generaterandomy',['generateRandomY',['../class_ising___o_p_v_1_1_lattice.html#a6247106bbb73a95ff81dac2f7aaf68bc',1,'Ising_OPV::Lattice']]],
+  ['generaterandomz',['generateRandomZ',['../class_ising___o_p_v_1_1_lattice.html#ad41875a2cbf599da46dd15f14d437bff',1,'Ising_OPV::Lattice']]],
+  ['getcorrelationdata',['getCorrelationData',['../class_ising___o_p_v_1_1_morphology.html#a3ef4a60d093397799ead8d3227f673b5',1,'Ising_OPV::Morphology']]],
+  ['getdepthcompositiondata',['getDepthCompositionData',['../class_ising___o_p_v_1_1_morphology.html#ab404f1e96b6be78cc41380061fb9c12e',1,'Ising_OPV::Morphology']]],
+  ['getdepthdomainsizedata',['getDepthDomainSizeData',['../class_ising___o_p_v_1_1_morphology.html#a424a8ab9245f64d19e8502e9374cfb2c',1,'Ising_OPV::Morphology']]],
+  ['getdepthivdata',['getDepthIVData',['../class_ising___o_p_v_1_1_morphology.html#a9965d3d68658bbe25450680ccd32fc0a',1,'Ising_OPV::Morphology']]],
+  ['getdomainanisotropy',['getDomainAnisotropy',['../class_ising___o_p_v_1_1_morphology.html#ad3a54e337f913faa52d1a6a9167b225c',1,'Ising_OPV::Morphology']]],
+  ['getdomainsize',['getDomainSize',['../class_ising___o_p_v_1_1_morphology.html#a13dcee9872c631414a27e5ca1cc8117a',1,'Ising_OPV::Morphology']]],
+  ['getheight',['getHeight',['../class_ising___o_p_v_1_1_lattice.html#a9a4eb55a88c7a7afe750ea189956c8bd',1,'Ising_OPV::Lattice::getHeight()'],['../class_ising___o_p_v_1_1_morphology.html#a38d9048dca8f178a41a91f126df894e6',1,'Ising_OPV::Morphology::getHeight()']]],
+  ['getid',['getID',['../class_ising___o_p_v_1_1_morphology.html#a8e99a4c47d427461fcaa6e6b8bf53f8e',1,'Ising_OPV::Morphology']]],
+  ['getinterfacialdistancehistogram',['getInterfacialDistanceHistogram',['../class_ising___o_p_v_1_1_morphology.html#a9babc1cb7762f4a59bcbc70b38538dff',1,'Ising_OPV::Morphology']]],
+  ['getislandvolumefraction',['getIslandVolumeFraction',['../class_ising___o_p_v_1_1_morphology.html#a6e58f1e33b6a8b4c4eadb5f0aeb3e2a1',1,'Ising_OPV::Morphology']]],
+  ['getlength',['getLength',['../class_ising___o_p_v_1_1_lattice.html#af0533befad42556acc14a16ba98f8188',1,'Ising_OPV::Lattice::getLength()'],['../class_ising___o_p_v_1_1_morphology.html#aa0b6fe610b3aaeabb27f1c5613362d3f',1,'Ising_OPV::Morphology::getLength()']]],
+  ['getmixfraction',['getMixFraction',['../class_ising___o_p_v_1_1_morphology.html#ad7534584bdda26f768e3ee8f6c97b949',1,'Ising_OPV::Morphology']]],
+  ['getnumsites',['getNumSites',['../class_ising___o_p_v_1_1_lattice.html#a7aec8779f7b667cfa064fb0f9e323588',1,'Ising_OPV::Lattice']]],
+  ['getsitecoords',['getSiteCoords',['../class_ising___o_p_v_1_1_lattice.html#afd6606a7a0252078574642d6460bebc3',1,'Ising_OPV::Lattice']]],
+  ['getsiteindex',['getSiteIndex',['../class_ising___o_p_v_1_1_lattice.html#a37696587f5c7c32ecff03368d257ded3',1,'Ising_OPV::Lattice::getSiteIndex(const Coords &amp;coords) const'],['../class_ising___o_p_v_1_1_lattice.html#aa1151c092cffda5cfeb927a5cc6dc356',1,'Ising_OPV::Lattice::getSiteIndex(const int x, const int y, const int z) const']]],
+  ['getsitetype',['getSiteType',['../class_ising___o_p_v_1_1_lattice.html#aba4ea6422cf6147aeaa2fb541f1678a7',1,'Ising_OPV::Lattice::getSiteType(const long int site_index) const'],['../class_ising___o_p_v_1_1_lattice.html#a0718c8de8abf6e34b39734755c66260b',1,'Ising_OPV::Lattice::getSiteType(const Coords &amp;coords) const'],['../class_ising___o_p_v_1_1_lattice.html#ad7153322ab15d5193462ac3a292b0bfd',1,'Ising_OPV::Lattice::getSiteType(const int x, const int y, const int z) const']]],
+  ['gettortuositydata',['getTortuosityData',['../class_ising___o_p_v_1_1_morphology.html#aed2df803605482d6196ec4b8422021e1',1,'Ising_OPV::Morphology']]],
+  ['getunitsize',['getUnitSize',['../class_ising___o_p_v_1_1_lattice.html#aa114cf70eb7f43b2c0e324e5a7b3c1eb',1,'Ising_OPV::Lattice::getUnitSize()'],['../class_ising___o_p_v_1_1_morphology.html#ab623693d2561533fb5a536f01631c557',1,'Ising_OPV::Morphology::getUnitSize()']]],
+  ['getversionstr',['getVersionStr',['../class_ising___o_p_v_1_1_version.html#a54d2c490bd638faf3b943f811407ee6e',1,'Ising_OPV::Version']]],
+  ['getvolume',['getVolume',['../class_ising___o_p_v_1_1_lattice.html#a14a2635051dc02defc4bcdc78bffa931',1,'Ising_OPV::Lattice']]],
+  ['getwidth',['getWidth',['../class_ising___o_p_v_1_1_lattice.html#ac39cd4ff9446b33ec7fe830e7e07d35c',1,'Ising_OPV::Lattice::getWidth()'],['../class_ising___o_p_v_1_1_morphology.html#aa7f26b7ab74417b1b17d26c49cad0f8b',1,'Ising_OPV::Morphology::getWidth()']]],
+  ['growth_5fdirection',['Growth_direction',['../class_ising___o_p_v_1_1_parameters.html#ac0f1bf16ebc54ab9296bb17c8f4d3763',1,'Ising_OPV::Parameters']]]
 ];

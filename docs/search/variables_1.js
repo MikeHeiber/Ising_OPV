@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['correlation_5fcutoff_5fdistance',['Correlation_cutoff_distance',['../struct_input___parameters.html#afcae117b4d6ad69303a7e7f4c0245b01',1,'Input_Parameters::Correlation_cutoff_distance()'],['../struct_correlation_calc_params.html#a5cd725a32ff33b7fc095b1a9360ebe40',1,'CorrelationCalcParams::Correlation_cutoff_distance()']]]
+  ['current_5fversion',['Current_version',['../namespace_ising___o_p_v.html#a6118e9e416983b01628e9697ac201b4a',1,'Ising_OPV']]]
 ];

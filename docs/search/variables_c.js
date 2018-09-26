@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rescale_5ffactor',['Rescale_factor',['../struct_input___parameters.html#a772dcf2d432685f190308f94f9178db3',1,'Input_Parameters']]]
+  ['tomogram_5fname',['Tomogram_name',['../class_ising___o_p_v_1_1_parameters.html#a759a36a4cde2dc0e383fd6ad633b700d',1,'Ising_OPV::Parameters']]]
 ];

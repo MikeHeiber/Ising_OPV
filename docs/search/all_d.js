@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
-  ['removeduplicates',['removeDuplicates',['../namespace_utils.html#a5f64d00eec0b50ac5bd119652c99d01b',1,'Utils']]],
-  ['removewhitespace',['removeWhitespace',['../namespace_utils.html#af9ceee3373ffe317f07d177cf0dfe056',1,'Utils']]],
-  ['rescale_5ffactor',['Rescale_factor',['../struct_input___parameters.html#a772dcf2d432685f190308f94f9178db3',1,'Input_Parameters']]],
-  ['resize',['resize',['../class_lattice.html#ac4be34653feea6ea791dddf800432765',1,'Lattice']]],
-  ['round_5fint',['round_int',['../namespace_utils.html#a7c01171765e90ffe32cdcf6f5cd663fb',1,'Utils']]]
+  ['setparameters',['setParameters',['../class_ising___o_p_v_1_1_morphology.html#a761feaaf8e9dfaac168a6324074bfd0f',1,'Ising_OPV::Morphology']]],
+  ['setsitetype',['setSiteType',['../class_ising___o_p_v_1_1_lattice.html#ab489f86830e8ee28595f668c33f56dc5',1,'Ising_OPV::Lattice::setSiteType(const long int site_index, const char site_type)'],['../class_ising___o_p_v_1_1_lattice.html#a87731823d3f9d11143a0a8343a519aac',1,'Ising_OPV::Lattice::setSiteType(const int x, const int y, const int z, const char site_type)']]],
+  ['setxyz',['setXYZ',['../struct_ising___o_p_v_1_1_coords.html#a64e736cff5b0ee78e7c6459b78830e6d',1,'Ising_OPV::Coords']]],
+  ['shrinklattice',['shrinkLattice',['../class_ising___o_p_v_1_1_morphology.html#a4f024dbb11d61016737e08542aab3c1c',1,'Ising_OPV::Morphology']]],
+  ['smoothing_5fthreshold',['Smoothing_threshold',['../class_ising___o_p_v_1_1_parameters.html#af407adc5366025ae224b62eeec4eae03',1,'Ising_OPV::Parameters']]],
+  ['str2bool',['str2bool',['../namespace_ising___o_p_v.html#a78aaaa796c7283d856463a49fb9755d1',1,'Ising_OPV']]],
+  ['stretchlattice',['stretchLattice',['../class_ising___o_p_v_1_1_morphology.html#a7466d169230a8e79d0e2545851402a62',1,'Ising_OPV::Morphology']]]
 ];

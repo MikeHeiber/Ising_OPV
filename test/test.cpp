@@ -4,12 +4,265 @@
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
 
 #include "gtest/gtest.h"
-#include "Morphology.h"
 #include "Lattice.h"
+#include "Morphology.h"
+#include "Parameters.h"
 #include "Utils.h"
+#include "Version.h"
 
 using namespace std;
-using namespace Utils;
+using namespace Ising_OPV;
+
+namespace VersionTests {
+
+	TEST(VersionTests, ConstructorTests) {
+		// Check behavior of incorrect formats
+		EXPECT_THROW(Version ver1("blah"), invalid_argument);
+		EXPECT_THROW(Version ver1("v1.0"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.0"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.1-gamma"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.1-alpha"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.1-alpha.0"), invalid_argument);
+		EXPECT_THROW(Version ver1("0.0.0-alpha.1"), invalid_argument);
+		EXPECT_THROW(Version ver1("1.0.0-alpha"), invalid_argument);
+		EXPECT_THROW(Version ver1("-1.0.0-alpha"), invalid_argument);
+	}
+
+	TEST(VersionTests, ComparisonTests) {
+		Version ver1("1.0.0-alpha.1");
+		Version ver2("1.0.0-alpha.1");
+		EXPECT_EQ(ver1, ver2);
+		EXPECT_GE(ver1, ver2);
+		EXPECT_LE(ver1, ver2);
+		// Check different prerelease numbers
+		Version ver3("1.0.0-alpha.2");
+		EXPECT_NE(ver1, ver3);
+		EXPECT_LT(ver1, ver3);
+		EXPECT_GT(ver3, ver2);
+		// Check different prerelease names
+		Version ver4("1.0.0-beta.1");
+		EXPECT_NE(ver4, ver1);
+		EXPECT_GT(ver4, ver1);
+		EXPECT_LT(ver1, ver4);
+		Version ver5("1.0.0-rc.1");
+		EXPECT_NE(ver4, ver5);
+		EXPECT_LT(ver4, ver5);
+		EXPECT_GT(ver5, ver4);
+		// Check different major numbers
+		Version ver6("2.0.0-alpha.1");
+		EXPECT_NE(ver6, ver1);
+		EXPECT_GT(ver6, ver1);
+		EXPECT_LT(ver1, ver6);
+		// Check different minor numbers
+		Version ver7("1.1.0-alpha.1");
+		EXPECT_NE(ver7, ver1);
+		EXPECT_GT(ver7, ver1);
+		EXPECT_LT(ver1, ver7);
+		// Check different rev numbers
+		Version ver8("1.0.1-alpha.1");
+		EXPECT_NE(ver8, ver1);
+		EXPECT_GT(ver8, ver1);
+		EXPECT_LT(ver1, ver8);
+		// Check abbreviated version
+		Version ver9("1.0-alpha.1");
+		EXPECT_EQ(ver9, ver1);
+		Version ver10("1.0-beta.1");
+		EXPECT_EQ(ver10, ver4);
+	}
+
+	TEST(VersionTests, GetVersionStrTssts) {
+		string version_str = "1.0.0-beta.1";
+		Version ver1(version_str);
+		EXPECT_EQ(version_str, ver1.getVersionStr());
+		stringstream ss1;
+		ss1 << ver1;
+		EXPECT_EQ(version_str, ss1.str());
+		version_str = "2.0.1";
+		Version ver2(version_str);
+		EXPECT_EQ(version_str, ver2.getVersionStr());
+		stringstream ss2;
+		ss2 << ver2;
+		EXPECT_EQ(version_str, ss2.str());
+	}
+}
+
+namespace ParametersTests {
+
+	TEST(ParametersTests, ImportandCheckTests) {
+		Parameters params;
+		// Check loading of parameter file with old format
+		ifstream param_file1("./test/parameters_old_format.txt");
+		EXPECT_FALSE(params.importParameters(param_file1));
+		param_file1.close();
+		// Check loading of parameter file with bad format
+		ifstream param_file2("./test/parameters_bad_format.txt");
+		EXPECT_FALSE(params.importParameters(param_file2));
+		param_file2.close();
+		// Check loading of parameter file with missing data
+		ifstream param_file3("./test/parameters_missing_data.txt");
+		EXPECT_FALSE(params.importParameters(param_file3));
+		param_file3.close();
+		// Check parameter files with typos in boolean values to check conversion of string to bool
+		ifstream param_file5("parameters_default.txt");
+		vector<string> file_data;
+		string line;
+		while (getline(param_file5, line)) {
+			file_data.push_back(line);
+		}
+		param_file5.close();
+		for (auto& item : file_data) {
+			// Find parameter lines with a boolean true value
+			if (item.substr(0, 4).compare("true") == 0) {
+				// Replace true with misspelled 'tue'
+				item.replace(item.find("true"), 4, "tue");
+				// Save file data vector to a new parameter file
+				outputVectorToFile(file_data, "./test/parameters_misspell.txt");
+				// Try to open and import new parameter file with misspelled true
+				ifstream param_file6("./test/parameters_misspell.txt");
+				EXPECT_FALSE(params.importParameters(param_file6));
+				param_file6.close();
+				// Reset mispelled tue back to true
+				item.replace(item.find("tue"), 3, "true");
+			}
+			// Find parameter lines with a boolean false value
+			else if (item.substr(0, 5).compare("false") == 0) {
+				// Replace false with misspelled 'fase'
+				item.replace(item.find("false"), 5, "fase");
+				// Save file data vector to a new parameter file
+				outputVectorToFile(file_data, "./test/parameters_misspell.txt");
+				// Try to open and import new parameter file with misspelled false
+				ifstream param_file6("./test/parameters_misspell.txt");
+				EXPECT_FALSE(params.importParameters(param_file6));
+				param_file6.close();
+				// Reset mispelled fase back to false
+				item.replace(item.find("fase"), 4, "false");
+			}
+		}
+		// Load default parameters
+		ifstream param_file4("parameters_default.txt");
+		// Check that default parameters can be loaded 
+		EXPECT_TRUE(params.importParameters(param_file4));
+		param_file4.close();
+		// Check that default parameters are valid
+		EXPECT_TRUE(params.checkParameters());
+		// Check invalid parameters
+		Parameters params_invalid;
+		// Check invalid dimensions
+		params_invalid = params;
+		params_invalid.Length = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check mix fraction
+		params_invalid = params;
+		params_invalid.Mix_fraction = 1.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid interaction energy
+		params_invalid = params;
+		params_invalid.Interaction_energy1 = -0.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid MC steps
+		params_invalid = params;
+		params_invalid.MC_steps = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid smoothing threshold
+		params_invalid = params;
+		params_invalid.Enable_smoothing = true;
+		params_invalid.Smoothing_threshold = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid rescale
+		params_invalid = params;
+		params_invalid.Enable_rescale = true;
+		params_invalid.Rescale_factor = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid rescale
+		params_invalid = params;
+		params_invalid.Enable_rescale = true;
+		params_invalid.Enable_shrink = true;
+		params_invalid.Rescale_factor = 3;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid interfacial mixing
+		params_invalid = params;
+		params_invalid.Enable_interfacial_mixing = true;
+		params_invalid.Interface_width = 0.0;
+		params_invalid.Interface_conc = 0.5;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid.Interface_width = 1.0;
+		params_invalid.Interface_conc = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid correlation calc params
+		// Check invalid calc method options
+		params_invalid = params;
+		params_invalid.Enable_correlation_calc = true;
+		params_invalid.Enable_e_method = false;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid = params;
+		params_invalid.Enable_mix_frac_method = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid N_sampling
+		params_invalid = params;
+		params_invalid.N_sampling_max = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid extended calc
+		params_invalid = params;
+		params_invalid.Enable_extended_correlation_calc = true;
+		params_invalid.Extended_correlation_cutoff_distance = 0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check growth preference params
+		params_invalid = params;
+		params_invalid.Enable_growth_pref = true;
+		params_invalid.Growth_direction = 0;
+		params_invalid.Additional_interaction = 0.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid = params;
+		params_invalid.Enable_growth_pref = true;
+		params_invalid.Growth_direction = 1;
+		params_invalid.Additional_interaction = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check import options
+		params_invalid = params;
+		params_invalid.Enable_import_morphologies = true;
+		params_invalid.Enable_import_tomogram = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check import tomogram options
+		// Check invalid unit size
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Desired_unit_size = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid Mixed_frac
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Mixed_frac = 1.1;
+		params_invalid.Mixed_conc = 0.5;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check invalid Mixed_conc
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Mixed_frac = 0.1;
+		params_invalid.Mixed_conc = 1.1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check cutoff analysis options
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.Mixed_conc = 0.0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check extracted segments
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.N_extracted_segments = -1;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		params_invalid.N_extracted_segments = 3;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check number of variants
+		params_invalid = params;
+		params_invalid.Enable_import_tomogram = true;
+		params_invalid.N_variants = 0;
+		EXPECT_FALSE(params_invalid.checkParameters());
+		// Check analysis only
+		params_invalid = params;
+		params_invalid.Enable_analysis_only = true;
+		EXPECT_FALSE(params_invalid.checkParameters());
+	}
+}
 
 namespace UtilsTests {
 
@@ -24,50 +277,133 @@ namespace UtilsTests {
 		EXPECT_TRUE(coords == coords2);
 	}
 
+	TEST(UtilsTests, CalculateHistTests) {
+		// Check behavior for an empty data set
+		vector<int> data;
+		EXPECT_THROW(calculateHist(data, 1), invalid_argument);
+		// Create sample data
+		data = { 0,0,2,1,2,4,3,1,0,4,2 };
+		// Calculate the histogram
+		auto hist = calculateHist(data, 1);
+		// Check hist size
+		EXPECT_EQ(5, (int)hist.size());
+		// Check hist bins
+		EXPECT_DOUBLE_EQ(0.0, hist[0].first);
+		EXPECT_DOUBLE_EQ(1.0, hist[1].first);
+		EXPECT_DOUBLE_EQ(2.0, hist[2].first);
+		EXPECT_DOUBLE_EQ(3.0, hist[3].first);
+		EXPECT_DOUBLE_EQ(4.0, hist[4].first);
+		// Check hist values
+		EXPECT_EQ(3, hist[0].second);
+		EXPECT_EQ(2, hist[1].second);
+		EXPECT_EQ(3, hist[2].second);
+		EXPECT_EQ(1, hist[3].second);
+		EXPECT_EQ(2, hist[4].second);
+		// Caclulate the probability hist using the hist
+		auto prob = calculateProbabilityHist(hist);
+		// Check behavior if the hist is empty
+		hist.clear();
+		EXPECT_THROW(calculateProbabilityHist(hist), invalid_argument);
+		// Check prob size
+		EXPECT_EQ(5, (int)prob.size());
+		// Check prob values
+		EXPECT_DOUBLE_EQ(3.0 / 11.0, prob[0].second);
+		EXPECT_DOUBLE_EQ(2.0 / 11.0, prob[1].second);
+		EXPECT_DOUBLE_EQ(3.0 / 11.0, prob[2].second);
+		EXPECT_DOUBLE_EQ(1.0 / 11.0, prob[3].second);
+		EXPECT_DOUBLE_EQ(2.0 / 11.0, prob[4].second);
+		// Check that the prob hist sums to 1
+		auto cum_hist = calculateCumulativeHist(prob);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
+		// Calculate the prob hist directly from the data vector
+		prob = calculateProbabilityHist(data, 1);
+		// Check prob size
+		EXPECT_EQ(5, (int)prob.size());
+		// Check prob values
+		EXPECT_DOUBLE_EQ(3.0 / 11.0, prob[0].second);
+		EXPECT_DOUBLE_EQ(2.0 / 11.0, prob[1].second);
+		EXPECT_DOUBLE_EQ(3.0 / 11.0, prob[2].second);
+		EXPECT_DOUBLE_EQ(1.0 / 11.0, prob[3].second);
+		EXPECT_DOUBLE_EQ(2.0 / 11.0, prob[4].second);
+		// Check that the prob hist sums to 1
+		cum_hist = calculateCumulativeHist(prob);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
+		// Check behavior how larger bin size
+		// Create sample data
+		data = { 0,0,2,1,2,4,3,1,0,4,2,5 };
+		// Calculate the histogram
+		hist = calculateHist(data, 2);
+		// Check hist size
+		EXPECT_EQ(3, (int)hist.size());
+		// Check hist bins
+		EXPECT_DOUBLE_EQ(0.5, hist[0].first);
+		EXPECT_DOUBLE_EQ(2.5, hist[1].first);
+		EXPECT_DOUBLE_EQ(4.5, hist[2].first);
+		// Check hist values
+		EXPECT_EQ(5, hist[0].second);
+		EXPECT_EQ(4, hist[1].second);
+		EXPECT_EQ(3, hist[2].second);
+		// Check behavior with invalid bin size
+		EXPECT_THROW(calculateHist(data, 0), invalid_argument);
+		EXPECT_THROW(calculateHist(data, -1), invalid_argument);
+	}
+
 	TEST(UtilsTests, CalculateProbabilityHistTests) {
+		vector<int> int_data;
+		// Test with empty int data set that exception is thrown
+		EXPECT_THROW(calculateProbabilityHist(int_data, 5), invalid_argument);
+		// Generate a set of data from a uniform real distribution
 		mt19937_64 gen(std::random_device{}());
 		uniform_real_distribution<> dist(0, 100);
-		vector<double> data((int)1e7);
+		vector<double> data((int)2e7, 0.0);
 		for (int i = 0; i < (int)data.size(); i++) {
 			data[i] = dist(gen);
 		}
-		auto hist = calculateProbabilityHist(data, 10);
+		// Calculate histogram with 9 bins
+		auto prob = calculateProbabilityHist(data, 10);
+		// Check for the correct number of bins
+		EXPECT_EQ(10, (int)prob.size());
+		// Check several random values from the uniform probability hist
 		uniform_int_distribution<> dist2(0, 9);
-		EXPECT_EQ(10, (int)hist.size());
-		EXPECT_NEAR(1.0 / 100.0, hist[dist2(gen)].second, 1e-4);
-		EXPECT_NEAR(1.0 / 100.0, hist[dist2(gen)].second, 1e-4);
-		EXPECT_NEAR(1.0 / 100.0, hist[dist2(gen)].second, 1e-4);
-		hist = calculateProbabilityHist(data, 10.0);
-		EXPECT_EQ(10, (int)hist.size());
-		EXPECT_NEAR(1.0 / 100.0, hist[dist2(gen)].second, 1e-4);
-		EXPECT_NEAR(1.0 / 100.0, hist[dist2(gen)].second, 1e-4);
-		EXPECT_NEAR(1.0 / 100.0, hist[dist2(gen)].second, 1e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		// Check that the prob hist sums to 1
+		auto cum_hist = calculateCumulativeHist(prob);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
+		// Calculate histogram with a bin size of 10.0
+		prob = calculateProbabilityHist(data, 10.0);
+		// Check for the correct number of bins
+		EXPECT_EQ(10, (int)prob.size());
+		// Check several random values from the uniform probability hist
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		// Check that the prob hist sums to 1
+		cum_hist = calculateCumulativeHist(prob);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
+		// Clear data vector
 		data.clear();
-		hist = calculateProbabilityHist(data, 10.0);
-		EXPECT_DOUBLE_EQ(0.0, hist[0].first);
-		EXPECT_DOUBLE_EQ(0.0, hist[0].second);
-		hist = calculateProbabilityHist(data, 5);
-		EXPECT_DOUBLE_EQ(0.0, hist[0].first);
-		EXPECT_DOUBLE_EQ(0.0, hist[0].second);
-		hist = calculateProbabilityHist(data, 1.0, 5);
-		EXPECT_DOUBLE_EQ(0.0, hist[0].first);
-		EXPECT_DOUBLE_EQ(0.0, hist[0].second);
+		// Check that empty double data vectors throw an exception
+		EXPECT_THROW(calculateProbabilityHist(data, 10.0), invalid_argument);
+		EXPECT_THROW(calculateProbabilityHist(data, 5);, invalid_argument);
+		EXPECT_THROW(calculateProbabilityHist(data, 1.0, 5), invalid_argument);
+		// Check behavior on a test dataset
 		data = { 0.0, 1.0, 2.0, 3.0, 4.0 };
-		hist = calculateProbabilityHist(data, 10);
-		EXPECT_EQ(5, (int)hist.size());
-		hist = calculateProbabilityHist(data, 0.1);
-		EXPECT_EQ(5, (int)hist.size());
+		prob = calculateProbabilityHist(data, 10);
+		EXPECT_EQ(5, (int)prob.size());
+		prob = calculateProbabilityHist(data, 0.1);
+		EXPECT_EQ(5, (int)prob.size());
 	}
 
-	TEST(UtilsTests, ImportBooleanTests) {
-		bool error_status;
-		EXPECT_TRUE(importBooleanParam("true", error_status));
-		EXPECT_TRUE(importBooleanParam(" true  ", error_status));
-		EXPECT_FALSE(importBooleanParam("false	", error_status));
-		EXPECT_FALSE(importBooleanParam("   false", error_status));
-		EXPECT_FALSE(importBooleanParam("blah", error_status));
-		EXPECT_FALSE(importBooleanParam("	blah  ", error_status));
-		EXPECT_TRUE(error_status);
+	TEST(UtilsTests, Str2boolTests) {
+		EXPECT_TRUE(str2bool("true"));
+		EXPECT_TRUE(str2bool(" true  "));
+		EXPECT_FALSE(str2bool("false	"));
+		EXPECT_FALSE(str2bool("   false"));
+		// Check that invalid input strings throw an exception as designed
+		EXPECT_THROW(str2bool("blah"), invalid_argument);
+		EXPECT_THROW(str2bool("	blah  "), invalid_argument);
 	}
 
 	TEST(UtilsTests, IntegrateDataTests) {
@@ -147,6 +483,8 @@ namespace UtilsTests {
 		EXPECT_DOUBLE_EQ(1.048576e-4, intpow(2.5, -10));
 		EXPECT_DOUBLE_EQ(1.0, intpow(15.04564, 0));
 		EXPECT_DOUBLE_EQ(1e-21, intpow(1e-7, 3));
+		// Check integer base to negative power
+		EXPECT_DOUBLE_EQ(0.5, intpow(2, -1));
 	}
 
 	TEST(UtilsTests, RemoveDuplicatesTests) {
@@ -189,12 +527,16 @@ namespace UtilsTests {
 		}
 		EXPECT_DOUBLE_EQ(5.5, vector_avg(int_data));
 		EXPECT_NEAR(3.02765035409749, vector_stdev(int_data), 1e-14);
+		EXPECT_DOUBLE_EQ(5.5, vector_median(int_data));
+		EXPECT_EQ(4, vector_which_median(int_data));
 		// negative ints
 		for (int i = 0; i < 10; i++) {
 			int_data[i] = -(i + 1);
 		}
 		EXPECT_DOUBLE_EQ(-5.5, vector_avg(int_data));
 		EXPECT_NEAR(3.02765035409749, vector_stdev(int_data), 1e-14);
+		EXPECT_DOUBLE_EQ(-5.5, vector_median(int_data));
+		EXPECT_EQ(4, vector_which_median(int_data));
 		// positive doubles
 		vector<double> double_data;
 		double_data.assign(10, 0);
@@ -203,6 +545,8 @@ namespace UtilsTests {
 		}
 		EXPECT_DOUBLE_EQ(2.75, vector_avg(double_data));
 		EXPECT_NEAR(1.51382517704875, vector_stdev(double_data), 1e-14);
+		EXPECT_DOUBLE_EQ(2.75, vector_median(double_data));
+		EXPECT_EQ(4, vector_which_median(double_data));
 		// negative doubles
 		double_data.assign(10, 0);
 		for (int i = 0; i < 10; i++) {
@@ -210,6 +554,12 @@ namespace UtilsTests {
 		}
 		EXPECT_DOUBLE_EQ(-2.75, vector_avg(double_data));
 		EXPECT_NEAR(1.51382517704875, vector_stdev(double_data), 1e-14);
+		EXPECT_DOUBLE_EQ(-2.75, vector_median(double_data));
+		EXPECT_EQ(4, vector_which_median(double_data));
+		// Check simple odd size vector median
+		vector<double> data = { 3.0, 0.0, 1.0, 5.0, 10.0 };
+		EXPECT_DOUBLE_EQ(3.0, vector_median(data));
+		EXPECT_EQ(0, vector_which_median(data));
 	}
 }
 
@@ -217,13 +567,10 @@ namespace LatticeTests {
 
 	class LatticeTest : public ::testing::Test {
 	protected:
-		mt19937_64 gen;
-		Parameters_Lattice params_lattice;
-		vector<Site> sites;
+		Lattice::Lattice_Params params_lattice;
 		Lattice lattice;
 
 		void SetUp() {
-			gen.seed(std::random_device{}());
 			// Setup params
 			params_lattice.Enable_periodic_x = true;
 			params_lattice.Enable_periodic_y = true;
@@ -233,7 +580,7 @@ namespace LatticeTests {
 			params_lattice.Height = 50;
 			params_lattice.Unit_size = 1.0;
 			// Initialize Lattice object
-			lattice.init(params_lattice, &gen);
+			lattice.init(params_lattice);
 		}
 	};
 
@@ -298,7 +645,7 @@ namespace LatticeTests {
 		params_lattice.Enable_periodic_y = false;
 		params_lattice.Enable_periodic_z = true;
 		Lattice lattice2;
-		lattice2.init(params_lattice, &gen);
+		lattice2.init(params_lattice);
 		EXPECT_FALSE(lattice2.isXPeriodic());
 		EXPECT_FALSE(lattice2.isYPeriodic());
 		EXPECT_TRUE(lattice2.isZPeriodic());
@@ -309,7 +656,7 @@ namespace LatticeTests {
 		EXPECT_TRUE(lattice2.checkMoveValidity(coords1, 0, 0, 1));
 		EXPECT_TRUE(lattice2.checkMoveValidity(coords1, -1, 1, -1));
 		params_lattice.Enable_periodic_z = false;
-		lattice2.init(params_lattice, &gen);
+		lattice2.init(params_lattice);
 		EXPECT_FALSE(lattice2.isZPeriodic());
 		EXPECT_FALSE(lattice2.checkMoveValidity(coords1, 0, 0, 1));
 	}
@@ -349,7 +696,7 @@ namespace LatticeTests {
 		EXPECT_EQ(12, lattice.calculateLatticeDistanceSquared(coords_i, coords_f));
 	}
 
-	TEST_F(LatticeTest, GetSiteCoordsTests) {
+	TEST_F(LatticeTest, GetSiteTests) {
 		Coords coords1, coords2;
 		int index;
 		for (int i = 0; i < 100; i++) {
@@ -360,8 +707,909 @@ namespace LatticeTests {
 			EXPECT_EQ(coords1.y, coords2.y);
 			EXPECT_EQ(coords1.z, coords2.z);
 		}
+		// Check request for coords given a site index that not in the lattice
+		EXPECT_THROW(lattice.getSiteCoords(-1), invalid_argument);
+		EXPECT_THROW(lattice.getSiteCoords(lattice.getLength()*lattice.getWidth()*lattice.getHeight()), out_of_range);
+		// Check behavior of getSiteType
+		coords1.setXYZ(10, 10, 10);
+		// Check default site type
+		EXPECT_EQ((char)0, lattice.getSiteType(coords1));
+		EXPECT_EQ((char)0, lattice.getSiteType(0));
+		// Check behavior of invalid site index
+		EXPECT_THROW(lattice.getSiteType(-1), invalid_argument);
+		EXPECT_THROW(lattice.getSiteType(50 * 50 * 50), out_of_range);
+		// Check behavior of invalid coords
+		coords1.setXYZ(-1, -1, -1);
+		EXPECT_THROW(lattice.getSiteType(coords1), invalid_argument);
+		coords1.setXYZ(50, 50, 50);
+		EXPECT_THROW(lattice.getSiteType(coords1), out_of_range);
 	}
 
+	TEST_F(LatticeTest, ExtractSublatticeTests) {
+		// Extract a smaller lattice
+		Lattice lattice_new = lattice.extractSublattice(0, 20, 0, 20, 0, 20);
+		// Check new lattice dimensions
+		EXPECT_EQ(20, lattice_new.getLength());
+		EXPECT_EQ(20, lattice_new.getWidth());
+		EXPECT_EQ(20, lattice_new.getHeight());
+		// Extract a smaller lattice
+		lattice_new = lattice.extractSublattice(10, 40, 20, 30, 0, 30);
+		// Check new lattice dimensions
+		EXPECT_EQ(40, lattice_new.getLength());
+		EXPECT_EQ(30, lattice_new.getWidth());
+		EXPECT_EQ(30, lattice_new.getHeight());
+		// Extract a smaller lattice up to the edge of the larger lattice
+		lattice_new = lattice.extractSublattice(25, 25, 25, 25, 25, 25);
+		// Check new lattice dimensions
+		EXPECT_EQ(25, lattice_new.getLength());
+		EXPECT_EQ(25, lattice_new.getWidth());
+		EXPECT_EQ(25, lattice_new.getHeight());
+		// Check that invalid input throws the correct excpetions
+		// Check negative inputs
+		EXPECT_THROW(lattice.extractSublattice(-1, 20, 0, 20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, -1, 20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, 0, 20, -1, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, -20, 0, 20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, 0, -20, 0, 20), invalid_argument);
+		EXPECT_THROW(lattice.extractSublattice(0, 20, 0, 20, 0, -20), invalid_argument);
+		// Check out of range inputs
+		// sublattice size extends beyond lattice
+		EXPECT_THROW(lattice.extractSublattice(20, 50, 20, 20, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 20, 50, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 20, 20, 20, 50), out_of_range);
+		// starting coordinates start outside the lattice
+		EXPECT_THROW(lattice.extractSublattice(50, 20, 20, 20, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 50, 20, 20, 20), out_of_range);
+		EXPECT_THROW(lattice.extractSublattice(20, 20, 20, 20, 50, 20), out_of_range);
+	}
+
+}
+
+namespace MorphologyTests {
+
+	TEST(MorphologyTests, ConstructorTests) {
+		// Test the default constructor
+		Morphology morph;
+		// Check that the object has the default ID number
+		EXPECT_EQ(0, morph.getID());
+		// Check that the lattice has default size of 0,0,0.
+		EXPECT_EQ(0, morph.getLength());
+		// Test the standard constructor
+		Parameters params;
+		params.Length = 50;
+		params.Width = 60;
+		params.Height = 70;
+		params.Enable_periodic_z = false;
+		morph = Morphology(params, 1);
+		// Check that ID number is set properly
+		EXPECT_EQ(1, morph.getID());
+		// Check that the lattice has the correct size.
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(60, morph.getWidth());
+		EXPECT_EQ(70, morph.getHeight());
+		// Check behavior of constructor using invalid parameter values
+		params.Length = -1;
+		EXPECT_THROW(morph = Morphology(params, 1), invalid_argument);
+		// Check behavior setting invalid params
+		EXPECT_THROW(morph.setParameters(params), invalid_argument);
+		params.Length = 50;
+		// Check the lattice input constructor
+		Lattice::Lattice_Params params_lattice;
+		params_lattice.Enable_periodic_x = true;
+		params_lattice.Enable_periodic_y = true;
+		params_lattice.Enable_periodic_z = false;
+		params_lattice.Length = 20;
+		params_lattice.Width = 30;
+		params_lattice.Height = 40;
+		params_lattice.Unit_size = 1.5;
+		Lattice lattice;
+		// Initialize Lattice object
+		lattice.init(params_lattice);
+		// Check that mismatching dimensions of lattice and params throws exception
+		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
+		// Check that mismatching periodic boundary conditions of lattice and params throws exception
+		params.Length = 20;
+		params.Width = 30;
+		params.Height = 40;
+		params.Enable_periodic_z = true;
+		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
+		// Check that invalid params throws exception
+		params.Length = 0;
+		params.Enable_periodic_z = false;
+		EXPECT_THROW(morph = Morphology(lattice, params, 2), invalid_argument);
+		params.Length = 20;
+		// Check the correct params
+		morph = Morphology(lattice, params, 2);
+		// Check that ID number is set properly
+		EXPECT_EQ(2, morph.getID());
+		// Check that the lattice has the correct size.
+		EXPECT_EQ(20, morph.getLength());
+		EXPECT_EQ(30, morph.getWidth());
+		EXPECT_EQ(40, morph.getHeight());
+		// Check that the lattice has the correct unit size
+		EXPECT_DOUBLE_EQ(1.5, morph.getUnitSize());
+	}
+
+	TEST(MorphologyTests, RandomMorphologyTests) {
+		// Setup default parameters
+		Parameters params;
+		params.Length = 50;
+		params.Width = 50;
+		params.Height = 50;
+		params.Enable_periodic_z = true;
+		params.N_sampling_max = 50000;
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		params.Enable_extended_correlation_calc = false;
+		params.Extended_correlation_cutoff_distance = 3;
+		// Initialize Morphology object
+		Morphology morph(params, 0);
+		vector<double> mix_fractions;
+		mix_fractions.assign(2, 0.5);
+		morph.createRandomMorphology(mix_fractions);
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.001);
+		// Check correlation data before it has been calculated
+		auto data1 = morph.getCorrelationData((char)1);
+		auto data2 = morph.getCorrelationData((char)2);
+		EXPECT_DOUBLE_EQ(0.0, data1[0]);
+		EXPECT_DOUBLE_EQ(0.0, data2[0]);
+		// Check correlation data request for invalid site type
+		EXPECT_THROW(morph.getCorrelationData((char)3), invalid_argument);
+		// Calculate the inital domain size values
+		morph.calculateCorrelationDistances();
+		double domain_size1 = morph.getDomainSize((char)1);
+		double domain_size2 = morph.getDomainSize((char)2);
+		// Check domain size request for invalid site type
+		EXPECT_THROW(morph.getDomainSize((char)3), invalid_argument);
+		// Check that random blend domain size is less than 2
+		EXPECT_LT(domain_size1, 2.0);
+		EXPECT_LT(domain_size2, 2.0);
+		// Calculate the initial domain anisotropy
+		morph.calculateAnisotropies();
+		// Check that the random blend is isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
+		// Check anisotropy request for invalid site type
+		EXPECT_THROW(morph.getDomainAnisotropy((char)3), invalid_argument);
+		// Try creating random morphology with invalid mix_fractions vectors
+		mix_fractions[0] = -0.5;
+		mix_fractions[1] = -0.5;
+		EXPECT_THROW(morph.createRandomMorphology(mix_fractions), invalid_argument);
+		mix_fractions[0] = 0.5;
+		mix_fractions[1] = 0.2;
+		EXPECT_THROW(morph.createRandomMorphology(mix_fractions), invalid_argument);
+		mix_fractions[0] = 0.5;
+		mix_fractions[1] = 0.7;
+		EXPECT_THROW(morph.createRandomMorphology(mix_fractions), invalid_argument);
+	}
+
+	TEST(MorphologyTests, AnisotropicPhaseSeparationTests) {
+		// Setup default parameters
+		Parameters params;
+		params.Length = 40;
+		params.Width = 40;
+		params.Height = 40;
+		params.Enable_periodic_z = false;
+		params.N_sampling_max = 100000;
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		params.Enable_extended_correlation_calc = false;
+		params.Extended_correlation_cutoff_distance = 3;
+		Morphology morph(params, 0);
+		vector<double> mix_fractions;
+		mix_fractions.assign(2, 0.5);
+		morph.createRandomMorphology(mix_fractions);
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.001);
+		// Calculate the inital domain size values
+		morph.calculateCorrelationDistances();
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Check that random blend domain size is less than 2
+		EXPECT_LT(domain_size1_i, 2.0);
+		EXPECT_LT(domain_size2_i, 2.0);
+		// Calculate the initial domain anisotropy
+		morph.calculateAnisotropies();
+		// Check that the initial random blend is isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.05);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.05);
+		// Perform some anisotropic phase separation that creates aligned structures out-of-plane in the z-direction
+		morph.executeIsingSwapping(220, 0.35, 0.35, true, 3, 0.05);
+		// Calculate the final domain size values
+		morph.calculateCorrelationDistances();
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has increased
+		EXPECT_LT(domain_size1_i, domain_size1_f);
+		EXPECT_LT(domain_size2_i, domain_size2_f);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(5.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(5.0, domain_size2_f, 0.5);
+		// Calculate the final domain anisotropy
+		morph.calculateAnisotropies();
+		// Check the approximate magnitude of the anisotropy factor
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)1), 0.25);
+		EXPECT_NEAR(1.4, morph.getDomainAnisotropy((char)2), 0.25);
+		// Reset morphology to a random blend
+		morph.createRandomMorphology(mix_fractions);
+		// Calculate the inital domain size values
+		morph.calculateCorrelationDistances();
+		domain_size1_i = morph.getDomainSize((char)1);
+		domain_size2_i = morph.getDomainSize((char)2);
+		// Check that random blend domain size is less than 2
+		EXPECT_LT(domain_size1_i, 2.0);
+		EXPECT_LT(domain_size2_i, 2.0);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
+		morph.executeIsingSwapping(180, 0.4, 0.4, true, 3, -0.05);
+		// Calculate the final domain size values
+		morph.calculateCorrelationDistances();
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has increased
+		EXPECT_LT(domain_size1_i, domain_size1_f);
+		EXPECT_LT(domain_size2_i, domain_size2_f);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(5.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(5.0, domain_size2_f, 0.5);
+		// Calculate the final domain anisotropy
+		morph.calculateAnisotropies();
+		// Check the approximate magnitude of the anisotropy factor
+		EXPECT_NEAR(0.845, morph.getDomainAnisotropy((char)1), 0.125);
+		EXPECT_NEAR(0.845, morph.getDomainAnisotropy((char)2), 0.125);
+		// Reset morphology to a random blend
+		morph.createRandomMorphology(mix_fractions);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-direction
+		morph.executeIsingSwapping(200, 0.35, 0.35, true, 1, 0.05);
+		// Calculate the domain anisotropy
+		morph.calculateAnisotropies();
+		auto anisotropy1 = morph.getDomainAnisotropy((char)1);
+		auto anisotropy2 = morph.getDomainAnisotropy((char)2);
+		// Reset morphology to a random blend
+		morph.createRandomMorphology(mix_fractions);
+		// Perform some anisotropic phase separation that creates aligned structures in the y-direction
+		morph.executeIsingSwapping(200, 0.35, 0.35, true, 2, 0.05);
+		// Calculate the domain anisotropy
+		morph.calculateAnisotropies();
+		// Check that anisotropic phase separation in the x- or y-directions produces approximately the same anisotropy metric
+		EXPECT_NEAR(anisotropy1, morph.getDomainAnisotropy((char)1), 0.175);
+		EXPECT_NEAR(anisotropy2, morph.getDomainAnisotropy((char)2), 0.175);
+		// Test anisotropic morphologies on lattices that are too narrow
+		params.Length = 10;
+		params.Width = 10;
+		params.Height = 25;
+		morph = Morphology(params, 0);
+		morph.createRandomMorphology(mix_fractions);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
+		morph.executeIsingSwapping(700, 0.4, 0.4, true, 3, -0.1);
+		// Check calculation of anisotropy with narrow lattice
+		morph.calculateAnisotropies();
+		// Calculation should have an error and result in default value of -1
+		EXPECT_DOUBLE_EQ(-1.0, morph.getDomainAnisotropy((char)1));
+		EXPECT_DOUBLE_EQ(-1.0, morph.getDomainAnisotropy((char)2));
+		// Test anisotropic morphologies on lattices that are too thin
+		params.Length = 25;
+		params.Width = 25;
+		params.Height = 10;
+		params.Enable_periodic_z = true;
+		morph = Morphology(params, 0);
+		morph.createRandomMorphology(mix_fractions);
+		// Perform some anisotropic phase separation that creates aligned structures in the x-y plane
+		morph.executeIsingSwapping(700, 0.35, 0.35, true, 3, 0.05);
+		// Check calculation of anisotropy with thin lattice
+		morph.calculateAnisotropies();
+		// Calculation should have an error and result in default value of -1
+		EXPECT_DOUBLE_EQ(-1.0, morph.getDomainAnisotropy((char)1));
+		EXPECT_DOUBLE_EQ(-1.0, morph.getDomainAnisotropy((char)2));
+	}
+
+	TEST(MorphologyTests, MorphologyAnalysisTests) {
+		Parameters params;
+		params.Length = 40;
+		params.Width = 40;
+		params.Height = 40;
+		params.Enable_periodic_z = false;
+		Morphology morph(params, 0);
+		morph.createBilayerMorphology();
+		// Calculate interfacial volume and interfacial area to volume ratio
+		double iv_fraction = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio = morph.calculateInterfacialAreaVolumeRatio();
+		// Check interfacial metrics for the well-defined bilayer morphology
+		EXPECT_DOUBLE_EQ((double)(40 * 40 * 2) / (double)(40 * 40 * 40), iv_fraction);
+		EXPECT_DOUBLE_EQ((double)(40 * 40) / (double)(40 * 40 * 40), iav_ratio);
+		// Create a checkerboard morphology
+		morph.createCheckerboardMorphology();
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.01);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.01);
+		// Check the interfacial volume fraction
+		EXPECT_DOUBLE_EQ(1.0, morph.calculateInterfacialVolumeFraction());
+	}
+
+	TEST(MorphologyTests, ImportTomogramTests) {
+		// Setup default parameters
+		Parameters params;
+		params.Length = 100;
+		params.Width = 100;
+		params.Height = 50;
+		params.Enable_periodic_z = false;
+		params.N_sampling_max = 50000;
+		params.Enable_e_method = true;
+		params.Enable_import_tomogram = true;
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		params.Desired_unit_size = 1.0;
+		params.Mixed_frac = 0.0;
+		params.Mixed_conc = 0.5;
+		params.N_extracted_segments = 4;
+		params.N_variants = 1;
+		// Check import of 8 bit data
+		Morphology morph(params, 0);
+		auto morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		vector<double> iav_ratios;
+		vector<double> iv_fracs;
+		for (auto& item : morphologies) {
+			EXPECT_EQ(100, item.getLength());
+			EXPECT_EQ(100, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.075);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.075);
+			iav_ratios.push_back(item.calculateInterfacialAreaVolumeRatio());
+			iv_fracs.push_back(item.calculateInterfacialVolumeFraction());
+		}
+		double iav_ratio_i = vector_avg(iav_ratios);
+		double iv_frac_i = vector_avg(iv_fracs);
+		// Check import of 8 bit data with more mixed volume fraction
+		params.Mixed_frac = 0.1;
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		iav_ratios.clear();
+		iv_fracs.clear();
+		for (auto& item : morphologies) {
+			EXPECT_EQ(100, item.getLength());
+			EXPECT_EQ(100, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.075);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.075);
+			iav_ratios.push_back(item.calculateInterfacialAreaVolumeRatio());
+			iv_fracs.push_back(item.calculateInterfacialVolumeFraction());
+		}
+		double iav_ratio_f = vector_avg(iav_ratios);
+		double iv_frac_f = vector_avg(iv_fracs);
+		// Check that iav ratio and iv fraction have both increased
+		EXPECT_GT(iav_ratio_f, iav_ratio_i);
+		EXPECT_GT(iv_frac_f, iv_frac_i);
+		params.Mixed_frac = 0.0;
+		// Check extraction of 1 segment
+		params.N_extracted_segments = 1;
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		EXPECT_EQ(200, morphologies[0].getLength());
+		EXPECT_EQ(200, morphologies[0].getWidth());
+		EXPECT_EQ(100, morphologies[0].getHeight());
+		EXPECT_NEAR(0.5, morphologies[0].getMixFraction((char)1), 0.01);
+		EXPECT_NEAR(0.5, morphologies[0].getMixFraction((char)2), 0.01);
+		params.N_extracted_segments = 4;
+		// Check extraction of 36 segments
+		params.N_extracted_segments = 36;
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		for (auto& item : morphologies) {
+			EXPECT_EQ(32, item.getLength());
+			EXPECT_EQ(32, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+		}
+		params.N_extracted_segments = 4;
+		// Check import attempt when not enabled in parameters
+		params.Enable_import_tomogram = false;
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Enable_import_tomogram = true;
+		// Check import attempt when tomo data is not present
+		params.Tomogram_name = "./test/TOMO_data";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml is found but not the .raw file
+		params.Tomogram_name = "./test/TOMO_test_noraw";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml has invalid format
+		params.Tomogram_name = "./test/TOMO_test_invalidXML";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import of tomo dataset with missing data
+		params.Tomogram_name = "./test/TOMO_test_missing";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml has bad schema version
+		params.Tomogram_name = "./test/TOMO_test_badversion";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import attempt when xml has bad data format
+		params.Tomogram_name = "./test/TOMO_test_badformat";
+		morph = Morphology(params, 0);
+		EXPECT_THROW(morphologies = morph.importTomogramMorphologyFile(), runtime_error);
+		params.Tomogram_name = "./test/TOMO_test_8bit";
+		// Check import of 16 bit data
+		params.Tomogram_name = "./test/TOMO_test_16bit";
+		morph = Morphology(params, 0);
+		morphologies = morph.importTomogramMorphologyFile();
+		EXPECT_EQ(params.N_extracted_segments, (int)morphologies.size());
+		// Check extracted morphologies
+		for (auto& item : morphologies) {
+			EXPECT_EQ(100, item.getLength());
+			EXPECT_EQ(100, item.getWidth());
+			EXPECT_EQ(100, item.getHeight());
+			EXPECT_NEAR(0.5, item.getMixFraction((char)1), 0.1);
+			EXPECT_NEAR(0.5, item.getMixFraction((char)2), 0.1);
+		}
+	}
+
+	class MorphologyTest : public ::testing::Test {
+	protected:
+		static Morphology* morph_start;
+		Parameters params;
+
+		static void SetUpTestCase() {
+			// Setup default parameters
+			Parameters params;
+			params.Length = 50;
+			params.Width = 50;
+			params.Height = 50;
+			params.Enable_periodic_z = true;
+			params.N_sampling_max = 50000;
+			params.Enable_e_method = true;
+			params.Enable_mix_frac_method = false;
+			params.Enable_extended_correlation_calc = false;
+			params.Extended_correlation_cutoff_distance = 3;
+			// Initialize Morphology object
+			morph_start = new Morphology(params, 0);
+			vector<double> mix_fractions;
+			mix_fractions.assign(2, 0.5);
+			morph_start->createRandomMorphology(mix_fractions);
+			// Perform some phase separation
+			morph_start->executeIsingSwapping(290, 0.4, 0.4, false, 0, 0.0);
+			// Calculate the domain size values
+			morph_start->calculateCorrelationDistances();
+		}
+
+		static void TearDownTestCase() {
+			delete morph_start;
+			morph_start = NULL;
+		}
+
+		virtual void SetUp() {
+			// Setup default parameters
+			params.Length = 50;
+			params.Width = 50;
+			params.Height = 50;
+			params.Enable_periodic_z = true;
+			params.N_sampling_max = 50000;
+			params.Enable_e_method = true;
+			params.Enable_mix_frac_method = false;
+			params.Enable_extended_correlation_calc = false;
+			params.Extended_correlation_cutoff_distance = 3;
+		}
+
+		virtual void TearDown() { }
+	};
+
+	Morphology* MorphologyTest::morph_start = NULL;
+
+	TEST_F(MorphologyTest, FixtureSetupTests) {
+		// Check that the Morphology's Lattice object was setup properly
+		EXPECT_EQ(50, morph_start->getLength());
+		EXPECT_EQ(50, morph_start->getWidth());
+		EXPECT_EQ(50, morph_start->getHeight());
+		// Check that the mix fractions were implemented properly
+		EXPECT_NEAR(0.5, morph_start->getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(0.5, morph_start->getMixFraction((char)2), 0.001);
+	}
+
+	TEST_F(MorphologyTest, DomainSizeTests) {
+		Morphology morph = *morph_start;
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(6.0, domain_size1_i, 0.5);
+		EXPECT_NEAR(6.0, domain_size2_i, 0.5);
+		// Try domain size calculation using more sampling sites
+		params.N_sampling_max = 100000;
+		morph.setParameters(params);
+		morph.calculateCorrelationDistances();
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size is almost the same
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.025);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.025);
+		// Try the extended correlation calculation
+		params.Enable_extended_correlation_calc = true;
+		params.Extended_correlation_cutoff_distance = 5;
+		morph.setParameters(params);
+		morph.calculateCorrelationDistances();
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
+		// Check the length of the correlation data
+		auto data1 = morph.getCorrelationData((char)1);
+		auto data2 = morph.getCorrelationData((char)2);
+		EXPECT_EQ(11, data1.size());
+		EXPECT_EQ(11, data2.size());
+		// Check that the domain size is the same
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 0.025);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 0.025);
+		// Calculate domain size using the regular mix fraction method
+		params.Enable_e_method = false;
+		params.Enable_mix_frac_method = true;
+		params.Enable_extended_correlation_calc = false;
+		params.Extended_correlation_cutoff_distance = 3;
+		morph.setParameters(params);
+		morph.calculateCorrelationDistances();
+		domain_size1_f = morph.getDomainSize((char)1);
+		domain_size2_f = morph.getDomainSize((char)2);
+		// Reset params back to using the 1/e method
+		params.Enable_e_method = true;
+		params.Enable_mix_frac_method = false;
+		morph.setParameters(params);
+		// Check the approximate magnitude of the domain size
+		EXPECT_NEAR(6.0, domain_size1_f, 0.5);
+		EXPECT_NEAR(6.0, domain_size2_f, 0.5);
+		// Check domain anisotropy
+		morph.calculateAnisotropies();
+		// Check that the phase separated blend is isotropic
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)1), 0.125);
+		EXPECT_NEAR(1.0, morph.getDomainAnisotropy((char)2), 0.125);
+		// Calculate the depth dependent characteristics
+		morph.calculateDepthDependentData();
+		data1 = morph.getDepthDomainSizeData((char)1);
+		data2 = morph.getDepthDomainSizeData((char)2);
+		// Check the average depth dependent domain size 
+		EXPECT_NEAR(domain_size1_i, vector_avg(data1), 0.5);
+		EXPECT_NEAR(domain_size2_i, vector_avg(data2), 0.5);
+		// Gather depth dependent composition data
+		data1 = morph.getDepthCompositionData((char)1);
+		data2 = morph.getDepthCompositionData((char)2);
+		// Check the approximate composition at each depth
+		for (auto item : data1) {
+			EXPECT_NEAR(0.5, item, 0.15);
+		}
+		for (auto item : data2) {
+			EXPECT_NEAR(0.5, item, 0.15);
+		}
+		// Calculate the bulk interfacial volume fraction
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		// Check depth dependent interfacial volume fraction compared to bulk value
+		auto data = morph.getDepthIVData();
+		for (auto item : data) {
+			EXPECT_NEAR(iv_frac_i, item, 0.1);
+		}
+		string line;
+		// Output correlation data
+		ofstream outfile2("./test/correlation_data.txt");
+		morph.outputCorrelationData(outfile2);
+		outfile2.close();
+		// Check that output looks valid
+		ifstream infile2("./test/correlation_data.txt");
+		getline(infile2, line);
+		// Check first column names line
+		EXPECT_EQ("Distance (nm),Correlation1,Correlation2", line);
+		// Check first data line
+		getline(infile2, line);
+		EXPECT_EQ("0,1,1", line);
+		infile2.close();
+		// Output depth dependent data
+		ofstream outfile3("./test/depth_data.txt");
+		morph.outputDepthDependentData(outfile3);
+		outfile3.close();
+		// Check that output looks valid
+		ifstream infile3("./test/depth_data.txt");
+		// Check first column names line
+		getline(infile3, line);
+		EXPECT_EQ("Z-Position,Type1_composition,Type2_composition,Type1_domain_size,Type2_domain_size,IV_fraction", line);
+	}
+
+	TEST_F(MorphologyTest, TortuosityTests) {
+		Morphology morph = *morph_start;
+		// Calculate the tortuosity
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		// Check tortuosity calculation of invalid site type
+		EXPECT_FALSE(morph.calculateTortuosity((char)3, false));
+		// Check the tortuosity
+		double tortuosity1 = vector_avg(morph.getTortuosityData((char)1));
+		double tortuosity2 = vector_avg(morph.getTortuosityData((char)2));
+		EXPECT_NEAR(1.1, tortuosity1, 0.025);
+		EXPECT_NEAR(1.1, tortuosity2, 0.025);
+		// Calculate the tortuosity using the reduced memory option
+		morph.calculateTortuosity((char)1, true);
+		morph.calculateTortuosity((char)2, true);
+		// Check that both tortuosity methods give the same answer
+		auto data1 = morph.getTortuosityData((char)1);
+		auto data2 = morph.getTortuosityData((char)2);
+		EXPECT_DOUBLE_EQ(tortuosity1, vector_avg(data1));
+		EXPECT_DOUBLE_EQ(tortuosity2, vector_avg(data2));
+		// Output tortuosity maps
+		ofstream outfile("./test/tortuosity_maps.txt");
+		morph.outputTortuosityMaps(outfile);
+		outfile.close();
+		// Check that output looks valid
+		ifstream infile("./test/tortuosity_maps.txt");
+		string line;
+		// Check first column names line
+		getline(infile, line);
+		EXPECT_EQ("X-Position,Y-Position,Tortuosity1,Tortuosity2", line);
+		// Check first data line
+		getline(infile, line);
+		EXPECT_TRUE(line.find("0,0,") != string::npos);
+	}
+
+	TEST_F(MorphologyTest, SmoothingAndResizeTests) {
+		Morphology morph = *morph_start;
+		// Calculate the interfacial volume fraction and interfacial area to volume ratio of the starting morphology
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
+		// Get the initial domain size
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Apply smoothing
+		morph.executeSmoothing(0.52, 1);
+		// Check that the mix fractions are not severely changed
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)1), 0.02);
+		EXPECT_NEAR(0.5, morph.getMixFraction((char)2), 0.02);
+		// Recalculate the domain size
+		morph.calculateCorrelationDistances();
+		double domain_size1_f = morph.getDomainSize((char)1);
+		double domain_size2_f = morph.getDomainSize((char)2);
+		// Check that the domain size has not significantly increased
+		EXPECT_NEAR(domain_size1_i, domain_size1_f, 1.0);
+		EXPECT_NEAR(domain_size2_i, domain_size2_f, 1.0);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_f = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_f = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been reduced
+		EXPECT_LT(iv_frac_f, iv_frac_i);
+		EXPECT_LT(iav_ratio_f, iav_ratio_i);
+		// Calculate the final tortuosity
+		morph.calculateTortuosity((char)1, false);
+		morph.calculateTortuosity((char)2, false);
+		// Check the tortuosity of an isotropic smoothed phase separated blend
+		auto tortuosity1_avg = vector_avg(morph.getTortuosityData((char)1));
+		auto tortuosity2_avg = vector_avg(morph.getTortuosityData((char)2));
+		EXPECT_NEAR(1.085, tortuosity1_avg, 0.025);
+		EXPECT_NEAR(1.085, tortuosity2_avg, 0.025);
+		// Check the island volume fraction
+		EXPECT_LT(morph.getIslandVolumeFraction((char)1), 0.001);
+		EXPECT_LT(morph.getIslandVolumeFraction((char)2), 0.001);
+		// Stretch the lattice
+		morph.stretchLattice(2);
+		// Check the new dimensions
+		EXPECT_EQ(100, morph.getLength());
+		EXPECT_EQ(100, morph.getWidth());
+		EXPECT_EQ(100, morph.getHeight());
+		// Calculate domain size of new morphology
+		morph.calculateCorrelationDistances();
+		// Check the approximate magnitude of the new domain size relative to the original
+		EXPECT_NEAR(2 * domain_size1_f, morph.getDomainSize((char)1), 0.5);
+		EXPECT_NEAR(2 * domain_size2_f, morph.getDomainSize((char)2), 0.5);
+		// Shrink the lattice
+		morph.shrinkLattice(2);
+		// Check the new dimensions
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(50, morph.getWidth());
+		EXPECT_EQ(50, morph.getHeight());
+		// Calculate domain size of new morphology
+		morph.calculateCorrelationDistances();
+		// Check the approximate magnitude of the new domain size relative to the original
+		EXPECT_NEAR(domain_size1_f, morph.getDomainSize((char)1), 0.5);
+		EXPECT_NEAR(domain_size2_f, morph.getDomainSize((char)2), 0.5);
+		// Check behavior when trying to stretch and shrink with invalid rescale factors
+		EXPECT_THROW(morph.stretchLattice(0), invalid_argument);
+		EXPECT_THROW(morph.stretchLattice(0), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(0), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(0), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(3), invalid_argument);
+		EXPECT_THROW(morph.shrinkLattice(3), invalid_argument);
+	}
+
+	TEST_F(MorphologyTest, InterfacialTests) {
+		Morphology morph = *morph_start;
+		// Calculate the interfacial distance histogram
+		morph.calculateInterfacialDistanceHistogram();
+		auto hist1 = morph.getInterfacialDistanceHistogram((char)1);
+		auto hist2 = morph.getInterfacialDistanceHistogram((char)2);
+		auto cum_hist1 = calculateCumulativeHist(calculateProbabilityHist(hist1));
+		auto cum_hist2 = calculateCumulativeHist(calculateProbabilityHist(hist2));
+		// Check that the probability histograms add up to 1
+		EXPECT_DOUBLE_EQ(1.0, cum_hist1.back().second);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist2.back().second);
+		// Get initial domain sizes
+		double domain_size1_i = morph.getDomainSize((char)1);
+		double domain_size2_i = morph.getDomainSize((char)2);
+		// Apply smoothing
+		morph.executeSmoothing(0.52, 1);
+		// Save smoothed morphology
+		Morphology morph_smoothed = morph;
+		// Calculate the interfacial volume fraction and interfacial area to volume ratio of the smoothed morphology
+		double iv_frac_i = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_i = morph.calculateInterfacialAreaVolumeRatio();
+		// Apply interfacial mixing to the smoothed morphology
+		morph.executeMixing(2.0, 0.5);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		double iv_frac_mix = morph.calculateInterfacialVolumeFraction();
+		double iav_ratio_mix = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been increased
+		EXPECT_LT(iv_frac_i, iv_frac_mix);
+		EXPECT_LT(iav_ratio_i, iav_ratio_mix);
+		// Calculate domain size
+		morph.calculateCorrelationDistances();
+		// Check that the domain size has not greatly decreased
+		EXPECT_NEAR(domain_size1_i, morph.getDomainSize((char)1), 0.5);
+		EXPECT_NEAR(domain_size2_i, morph.getDomainSize((char)2), 0.5);
+		// Reset morph to smoothed morphology
+		morph = morph_smoothed;
+		// Apply interfacial mixing with higher interfacial mixing ratio to the smoothed morphology
+		morph.executeMixing(2.0, 0.6);
+		// Calculate the new interfacial volume fraction and interfacial area to volume ratio
+		iv_frac_mix = morph.calculateInterfacialVolumeFraction();
+		iav_ratio_mix = morph.calculateInterfacialAreaVolumeRatio();
+		// Check that the interfacial volume ratio and interfacial area to volume ratio have been increased
+		EXPECT_LT(iv_frac_i, iv_frac_mix);
+		EXPECT_LT(iav_ratio_i, iav_ratio_mix);
+		// Calculate domain size
+		morph.calculateCorrelationDistances();
+		// Check that the domain size has not greatly decreased
+		EXPECT_NEAR(domain_size1_i, morph.getDomainSize((char)1), 0.5);
+		EXPECT_NEAR(domain_size2_i, morph.getDomainSize((char)2), 0.5);
+	}
+
+	TEST_F(MorphologyTest, ExportImportTests) {
+		//// Create a local copy of the Morphology object
+		Morphology morph = *morph_start;
+		// Get the mix fractions of the original morphology
+		double mix_fraction1 = morph.getMixFraction((char)1);
+		double mix_fraction2 = morph.getMixFraction((char)2);
+		// Get the domain size of the initial morphology
+		double domain_size1 = morph.getDomainSize((char)1);
+		double domain_size2 = morph.getDomainSize((char)2);
+		// output original morphology in compressed format
+		ofstream outfile1("./test/morphology_file1.txt");
+		morph.outputMorphologyFile(outfile1, true);
+		outfile1.close();
+		// Import compressed morphology file
+		cout << "Importing compressed morphology file." << endl;
+		ifstream infile1("./test/morphology_file1.txt");
+		EXPECT_TRUE(morph.importMorphologyFile(infile1));
+		infile1.close();
+		// Check dimensions of imported morphology
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(50, morph.getWidth());
+		EXPECT_EQ(50, morph.getHeight());
+		// Check that the mix fractions remained the same
+		EXPECT_NEAR(mix_fraction1, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(mix_fraction2, morph.getMixFraction((char)2), 0.001);
+		// Calculate domain size of imported morphology
+		morph.calculateCorrelationDistances();
+		// Check that domain size of original and imported morphologies are the same
+		EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
+		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
+		// output original morphology in uncompressed format
+		ofstream outfile2("./test/morphology_file2.txt");
+		morph.outputMorphologyFile(outfile2, false);
+		outfile2.close();
+		// Import uncompressed morphology file
+		cout << "Importing uncompressed morphology file." << endl;
+		ifstream infile2("./test/morphology_file2.txt", ifstream::in);
+		EXPECT_TRUE(morph.importMorphologyFile(infile2));
+		infile2.close();
+		// Check dimensions of imported morphology
+		EXPECT_EQ(50, morph.getLength());
+		EXPECT_EQ(50, morph.getWidth());
+		EXPECT_EQ(50, morph.getHeight());
+		// Check that the mix fractions remained the same
+		EXPECT_NEAR(mix_fraction1, morph.getMixFraction((char)1), 0.001);
+		EXPECT_NEAR(mix_fraction2, morph.getMixFraction((char)2), 0.001);
+		// Calculate domain size of imported morphology
+		morph.calculateCorrelationDistances();
+		// Check that domain size of original and imported morphologies are the same
+		EXPECT_NEAR(domain_size1, morph.getDomainSize((char)1), 0.05);
+		EXPECT_NEAR(domain_size2, morph.getDomainSize((char)2), 0.05);
+		// Test attempt to load a corrupted compressed morphology file with missing data
+		// Load compressed file into string vector
+		string line;
+		vector<string> file_data;
+		ifstream infile3("./test/morphology_file1.txt");
+		while (getline(infile3, line)) {
+			file_data.push_back(line);
+		}
+		infile3.close();
+		// Delete last 2 lines
+		file_data.pop_back();
+		file_data.pop_back();
+		// Save data back to file
+		ofstream outfile3("./test/morphology_file1.txt");
+		for (auto& item : file_data) {
+			outfile3 << item << endl;
+		}
+		outfile3.close();
+		// Try importing corrupted compressed file
+		ifstream infile4("./test/morphology_file1.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile4));
+		infile4.close();
+		// Test attempt to load a corrupted uncompressed morphology file with missing data
+		// Load uncompressed file into string vector
+		file_data.clear();
+		ifstream infile5("./test/morphology_file2.txt");
+		while (getline(infile5, line)) {
+			file_data.push_back(line);
+		}
+		infile5.close();
+		// Delete last 2 lines
+		file_data.pop_back();
+		file_data.pop_back();
+		// Save data back to file
+		ofstream outfile4("./test/morphology_file2.txt");
+		for (auto& item : file_data) {
+			outfile4 << item << endl;
+		}
+		outfile4.close();
+		// Try importing corrupted compressed file
+		ifstream infile6("./test/morphology_file2.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile6));
+		infile6.close();
+		// Try importing morphology file from old version
+		ifstream infile7("./test/morphology_old_version.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile7));
+		infile7.close();
+		// Try importing morphology with unopening ifstream
+		ifstream unopen_file;
+		EXPECT_FALSE(morph.importMorphologyFile(unopen_file));
+		// Try importing a morphology file without a header line
+		ifstream infile8("./test/morphology_no_header.txt");
+		EXPECT_FALSE(morph.importMorphologyFile(infile8));
+		infile8.close();
+	}
+
+	TEST_F(MorphologyTest, OtherOutputTests) {
+		Morphology morph = *morph_start;
+		string line;
+		// Output composition maps
+		ofstream outfile1("./test/composition_maps.txt");
+		morph.outputCompositionMaps(outfile1);
+		outfile1.close();
+		// Check that output looks valid
+		ifstream infile1("./test/composition_maps.txt");
+		// Check first column names line
+		getline(infile1, line);
+		EXPECT_EQ("X-Position,Y-Position,Composition1,Composition2", line);
+		// Check first data line
+		getline(infile1, line);
+		EXPECT_TRUE(line.find("0,0,") != string::npos);
+		infile1.close();
+		// Output morphology cross-section
+		ofstream outfile2("./test/morphology_cross.txt");
+		morph.outputMorphologyCrossSection(outfile2);
+		outfile2.close();
+		// Check that output looks valid
+		ifstream infile2("./test/morphology_cross.txt");
+		// Check first column names line
+		getline(infile2, line);
+		EXPECT_EQ("X-Position,Y-Position,Z-Position,Site_type", line);
+		// Check first data line
+		getline(infile2, line);
+		EXPECT_TRUE(line.find(to_string(morph.getLength() / 2) + ",0,0,") != string::npos);
+		infile2.close();
+
+	}
 }
 
 int main(int argc, char **argv) {

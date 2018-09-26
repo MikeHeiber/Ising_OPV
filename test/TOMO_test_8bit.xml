@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tomogram_metadata xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://github.com/MikeHeiber/Ising_OPV/tomogram_metadata http://github.com/MikeHeiber/Ising_OPV/blob/development/tomogram_metadata.xsd" schema_version="1.0">
+	<sample_info>
+		<composition_info>
+			<chemical_component>
+				<chemical_name>polymer</chemical_name>
+				<chemical_abbrev></chemical_abbrev>
+				<vol_frac>0.5</vol_frac>
+				<comment>electron donor</comment>
+			</chemical_component>
+			<chemical_component>
+				<chemical_name>fullerene</chemical_name>
+				<chemical_abbrev></chemical_abbrev>
+				<vol_frac>0.5</vol_frac>
+				<comment>electron acceptor</comment>
+			</chemical_component>
+		</composition_info>
+		<fabrication_info>
+			<person></person>
+			<date></date>
+			<substrate></substrate>
+			<ink_formulation>
+				<solids_concentration>
+					<value></value>
+					<units></units>
+				</solids_concentration>
+				<chemical_component>
+					<chemical_name></chemical_name>
+					<chemical_abbrev></chemical_abbrev>
+					<vol_frac></vol_frac>
+					<comment></comment>
+				</chemical_component>
+			</ink_formulation>
+			<coating_method>
+				<spin_coat>
+					<spin_speed>
+						<value></value>
+						<units></units>
+					</spin_speed>
+					<spin_time>
+						<value></value>
+						<units></units>
+					</spin_time>
+				</spin_coat>
+			</coating_method>
+			<thermal_anneal>
+				<temperature>
+					<value></value>
+					<units></units>
+				</temperature>
+				<time>
+					<value></value>
+					<units></units>
+				</time>
+				<comment></comment>
+			</thermal_anneal>
+			<comment></comment>
+		</fabrication_info>
+	</sample_info>
+	<measurement_info>
+		<person></person>
+		<date></date>
+		<instrument></instrument>
+		<reconstruction_algorithm></reconstruction_algorithm>
+		<comment></comment>
+	</measurement_info>
+	<data_info>
+		<data_format>8 bit</data_format>
+		<length>100</length>
+		<width>100</width>
+		<height>50</height>
+		<pixel_size>
+			<value>2.0</value>
+			<units>nm</units>
+		</pixel_size>
+		<comment></comment>
+	</data_info>
+</tomogram_metadata>

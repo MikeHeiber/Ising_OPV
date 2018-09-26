@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['additional_5finteraction',['Additional_interaction',['../struct_input___parameters.html#a2b39ae7d3547dc0711516895eb174328',1,'Input_Parameters']]]
+  ['additional_5finteraction',['Additional_interaction',['../class_ising___o_p_v_1_1_parameters.html#af9f3d293ed5afbff981de94e4a8504dd',1,'Ising_OPV::Parameters']]]
 ];
