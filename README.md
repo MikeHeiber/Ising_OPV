@@ -14,7 +14,7 @@ Generated or imported morphologies are then rigorously analyzed to determine imp
 - Create morphology sets from imported experimental three-dimensional tomograms
 - Calculate detailed structural analysis of the morphology set
 
-![Tomography data import and analysis workflow.](./papers/v4_paper/tomogram_analysis.png)
+<img src="./papers/v4_paper/tomogram_analysis.png" alt="Tomography data import and analysis workflow" width="650">
 
 ## Current Status
 
