@@ -128,9 +128,11 @@ While this tool is designed to be primarily controlled through the parameter fil
 ## Citing this Work
 
 If you find Ising_OPV to be helpful for your research, please cite the original study:
+
 [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **2**, 014008 (2014).](http://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008) [[ResearchGate]](https://www.researchgate.net/publication/264419218_Efficient_Generation_of_Model_Bulk_Heterojunction_Morphologies_for_Organic_Photovoltaic_Device_Modeling)
 
 If your work involves investigating the effects of morphological tortuosity, please also cite the study that introduced the tortuosity features:
+
 [M.C. Heiber, K. Kister, A. Baumann, V. Dyakonov, C. Deibel, and T.-Q. Nguyen, Phys. Rev. Appl. **8**, 054043 (2017).](https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.8.054043) [[ResearchGate]](https://www.researchgate.net/publication/321226076_Impact_of_Tortuosity_on_Charge-Carrier_Transport_in_Organic_Bulk_Heterojunction_Blends)
 
 In addition, please also cite the DOI for the specific version that you used from [Zenodo.org](https://zenodo.org/search?page=1&size=20&q=conceptrecid:%22592959%22&sort=-version&all_versions=True).

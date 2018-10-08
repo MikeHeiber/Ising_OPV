@@ -1,7 +1,7 @@
 Examples
 =========
 
-## Isotropic Phase-Separation
+## 1) Isotropic Phase-Separation
 
 #### Defining the Parameters
 
