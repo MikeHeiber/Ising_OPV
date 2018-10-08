@@ -14,6 +14,8 @@ compiler:
     
 env:
     - OPTIONS="GCC_VERSION=4.7 && MPI=openmpi && TARGET=test_coverage"
+    - OPTIONS="GCC_VERSION=4.7 && MPI=openmpi && TARGET=test_default"
+    - OPTIONS="GCC_VERSION=4.7 && MPI=openmpi && TARGET=test_example1"
     - OPTIONS="GCC_VERSION=4.7 && MPI=mpich2 && TARGET=test"
     - OPTIONS="GCC_VERSION=4.7 && MPI=openmpi && TARGET=test"
     - OPTIONS="GCC_VERSION=4.8 && MPI=mpich2 && TARGET=test"
@@ -42,6 +44,10 @@ before_install:
     - if [[ "$TARGET" = test_coverage ]]; then pip install --user cpp-coveralls; fi
     
 script:
-    - make -j10 $TARGET && travis_wait ./test/Ising_OPV_tests.exe && travis_wait mpiexec -n 4 ./test/Ising_OPV_MPI_tests.exe
+    - make -j10 $TARGET 
+    - if [[ "$TARGET" = test ]]; then travis_wait ./test/Ising_OPV_tests.exe && travis_wait mpiexec -n 4 ./test/Ising_OPV_MPI_tests.exe; fi
+    - if [[ "$TARGET" = test_default ]]; then make -j10 && travis_wait mpiexec -n 4 ./Ising_OPV.exe parameters_default.txt; fi
+    - if [[ "$TARGET" = test_example1 ]]; then make -j10 && travis_wait mpiexec -n 4 ./Ising_OPV.exe ./examples/example1/parameters_ex1.txt; fi
+    - if [[ "$TARGET" = test_coverage ]]; then travis_wait ./test/Ising_OPV_tests.exe && travis_wait mpiexec -n 4 ./test/Ising_OPV_MPI_tests.exe; fi
     - if [[ "$TARGET" = test_coverage ]]; then coveralls --include src --exclude "googletest/*" --gcov-options '\-lp'; fi
-    - if [[ "$TARGET" = test ]]; then make -j10 && mpiexec -n 4 ./Ising_OPV.exe parameters_default.txt; fi
+    

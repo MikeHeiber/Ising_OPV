@@ -22,7 +22,7 @@ false //Enable_shrink (true or false) (choose whether or not to shrink the latti
 ## Interfacial Mixing Options
 false //Enable_interfacial_mixing (true or false) (choose whether or not to introduce interfacial mixing after phase separation, smoothing, and rescaling is complete)
 4.0 //Interface_width (nm) (specify the approximate width of the interfacial mixing region)
-0.5 //Interface_conc (donor fraction) (specify the mixed type1 volume fraction in the interfacial region)
+0.5 //Interface_conc (type1 volume fraction) (specify the type1 volume fraction in the interfacial mixed region)
 ---------------------------------------------------------------------------------------------
 ## Analysis Options
 false //Enable_analysis_only (true or false)
