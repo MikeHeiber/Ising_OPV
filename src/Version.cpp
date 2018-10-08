@@ -9,7 +9,7 @@ using namespace std;
 
 namespace Ising_OPV {
 
-	Version Current_version("4.0.0-rc.1");
+	Version Current_version("4.0.0-rc.2");
 
 	Version::Version() { }
 
