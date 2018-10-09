@@ -18,9 +18,11 @@ var searchData=
   ['calculatetortuosity',['calculateTortuosity',['../class_ising___o_p_v_1_1_morphology.html#a46e41e74b9159f2763d43044d10602d4',1,'Ising_OPV::Morphology']]],
   ['checkmovevalidity',['checkMoveValidity',['../class_ising___o_p_v_1_1_lattice.html#a94b9b24f3722c3e142520faf0b6c7a68',1,'Ising_OPV::Lattice']]],
   ['checkparameters',['checkParameters',['../class_ising___o_p_v_1_1_parameters.html#a67f69a54b8d0e687aba147565859371a',1,'Ising_OPV::Parameters']]],
+  ['code_5fof_5fconduct_2emd',['CODE_OF_CONDUCT.md',['../_c_o_d_e___o_f___c_o_n_d_u_c_t_8md.html',1,'']]],
   ['coords',['Coords',['../struct_ising___o_p_v_1_1_coords.html',1,'Ising_OPV']]],
   ['createbilayermorphology',['createBilayerMorphology',['../class_ising___o_p_v_1_1_morphology.html#a60d795dd026fdd63be2008d4bcaed3f3',1,'Ising_OPV::Morphology']]],
   ['createcheckerboardmorphology',['createCheckerboardMorphology',['../class_ising___o_p_v_1_1_morphology.html#af1d3defa2f3a0e9a2b9404449b0394ec',1,'Ising_OPV::Morphology']]],
   ['createrandommorphology',['createRandomMorphology',['../class_ising___o_p_v_1_1_morphology.html#a5468ddffa5443f504ea83e14b05aa88a',1,'Ising_OPV::Morphology']]],
-  ['current_5fversion',['Current_version',['../namespace_ising___o_p_v.html#a6118e9e416983b01628e9697ac201b4a',1,'Ising_OPV']]]
+  ['current_5fversion',['Current_version',['../namespace_ising___o_p_v.html#a6118e9e416983b01628e9697ac201b4a',1,'Ising_OPV']]],
+  ['contributor_20covenant_20code_20of_20conduct',['Contributor Covenant Code of Conduct',['../md__c_o_d_e__o_f__c_o_n_d_u_c_t.html',1,'']]]
 ];
