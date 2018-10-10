@@ -28,6 +28,6 @@ Building on this foundation, v4.0 adds an exciting new feature that allows users
 
 # Acknowledgments
 
-This work was developed under the financial assistance award 70NANB14H012 from U.S. Department of Commerce, National Institute of Standards and Technology as part of the Center for Hierarchical Materials Design (CHiMaD).  Thank you to Dr. Dean M. DeLongchamp for providing access to NIST's Raritan computing cluster, which was helpful with software development and testing.
+This work was developed under the financial assistance award 70NANB14H012 from U.S. Department of Commerce, National Institute of Standards and Technology as part of the Center for Hierarchical Materials Design (CHiMaD).  Thank you to Dr. Dean M. DeLongchamp for providing access to NIST's Raritan computing cluster and Dr. Andrew A. Herzing for providing TEM tomography data, which was helpful with software development and testing.
 
 # References
