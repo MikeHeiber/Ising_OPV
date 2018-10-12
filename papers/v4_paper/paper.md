@@ -1,5 +1,5 @@
 ---
-title: 'Ising_OPV v4.0: Experimental Tomography Data Import, Interpretation, and Analysis'
+title: "Ising\_OPV v4.0: Experimental Tomography Data Import, Interpretation, and Analysis"
 tags:
   - organic photovoltaics
   - bulk heterojunction morphology
