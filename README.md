@@ -71,7 +71,14 @@ Once you have an MPI library installed and have an appropriate compiler, to buil
 Then, navigate to the Ising_OPV directory and run `make`. 
 Once the normal build is successful, you should test Ising_OPV on your own hardware using the unit and system tests provided before you use the tool. 
 Build the testing executable by running `make test`. 
-Once the test build is complete, run the two test executables `./test/Ising_OPV_tests.exe` and `./test/Ising_OPV_MPI_tests.exe`.
+Once the test build is complete, run the two test executables
+
+```./test/Ising_OPV_tests.exe```
+
+and
+
+```mpiexec -n 4 ./test/Ising_OPV_MPI_tests.exe```.
+
 Please report any build or testing errors in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. If you do not have any build or testing errors, then you are ready to go!
 
 #### Running Simulations
