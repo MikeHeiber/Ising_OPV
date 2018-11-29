@@ -1,4 +1,4 @@
-Ising_OPV
+Ising_OPV 
 =========
 
 This C++ software package can be used to create and analyze bulk heterojunction morphologies for further use in kinetic Monte Carlo simulation tools, such as [Excimontec](https://github.com/MikeHeiber/Excimontec). 
