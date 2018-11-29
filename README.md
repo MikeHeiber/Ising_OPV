@@ -18,11 +18,10 @@ Generated or imported morphologies are then rigorously analyzed to determine imp
 
 ## Current Status
 
-Latest release:  [![GitHub (pre-)release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
+Latest stable release:  [![GitHub Release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
 
-All major planned features for v4.0 are now implemented and have undergone significant testing. 
-However, there may still be bugs that need to be fixed. 
-Please report any bugs or submit feature requests in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
+v4.0 is now stable. 
+Please report any bugs or submit feature requests for future releases in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
 #### Continuous Integration and Testing Status:
 
@@ -40,9 +39,10 @@ Code is being tested using [googletest](https://github.com/google/googletest) wi
 | Master | [![Coveralls Github branch](https://img.shields.io/coveralls/github/MikeHeiber/Ising_OPV/master.svg?style=for-the-badge)](https://coveralls.io/github/MikeHeiber/Ising_OPV?branch=master) |
 | Development | [![Coveralls Github branch](https://img.shields.io/coveralls/github/MikeHeiber/Ising_OPV/development.svg?style=for-the-badge)](https://coveralls.io/github/MikeHeiber/Ising_OPV?branch=development) |
 
-## Contact
+## Contributing
 
-If you would like to contribute to the development of this project or would like some help in using the tool for your research, please contact me (heiber@mailaps.org) to discuss a collaboration. 
+If you would like to contribute to the development of this project, please see the [contributing instructions](./CONTRIBUTING.md).
+If you would like some help in using or customizing the tool for your research, please contact me (heiber@mailaps.org) to discuss a collaboration. 
 You can check out my research using this tool and other work on [Researchgate](https://www.researchgate.net/profile/Michael_Heiber).
 
 ## Using Ising_OPV
