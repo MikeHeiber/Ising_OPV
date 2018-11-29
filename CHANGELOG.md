@@ -30,4 +30,4 @@ This release only changes documentation files and does not contain modifications
 
 ### Fixed
 - README.md - Instructions for running the MPI tests
-- papers/v4_paper/paper.md - Poblem with underscore by adding a backslash
+- papers/v4_paper/paper.md - Problem with underscore by adding a backslash
