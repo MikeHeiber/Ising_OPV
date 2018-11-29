@@ -16,13 +16,17 @@ var searchData=
   ['calculatemixfractions',['calculateMixFractions',['../class_ising___o_p_v_1_1_morphology.html#ac648512ac51c87cf97e07a022bf33db0',1,'Ising_OPV::Morphology']]],
   ['calculateprobabilityhist',['calculateProbabilityHist',['../namespace_ising___o_p_v.html#a44dc3a03b54cd9c240af37d925859de0',1,'Ising_OPV::calculateProbabilityHist(const std::vector&lt; std::pair&lt; double, int &gt;&gt; hist)'],['../namespace_ising___o_p_v.html#af16d0797b80c69982d72f5688711c0ec',1,'Ising_OPV::calculateProbabilityHist(const std::vector&lt; int &gt; &amp;data, int bin_size)'],['../namespace_ising___o_p_v.html#ace56151868b75c286496fe11b3996505',1,'Ising_OPV::calculateProbabilityHist(const std::vector&lt; double &gt; &amp;data, int num_bins)'],['../namespace_ising___o_p_v.html#a369fa76e4d281ac59e3936c343dd563e',1,'Ising_OPV::calculateProbabilityHist(const std::vector&lt; double &gt; &amp;data, double bin_size)'],['../namespace_ising___o_p_v.html#ac187d08d4fb5222cafb3349e04125cf1',1,'Ising_OPV::calculateProbabilityHist(const std::vector&lt; double &gt; &amp;data, const double bin_size, const int num_bins)']]],
   ['calculatetortuosity',['calculateTortuosity',['../class_ising___o_p_v_1_1_morphology.html#a46e41e74b9159f2763d43044d10602d4',1,'Ising_OPV::Morphology']]],
+  ['changelog_2emd',['CHANGELOG.md',['../_c_h_a_n_g_e_l_o_g_8md.html',1,'']]],
   ['checkmovevalidity',['checkMoveValidity',['../class_ising___o_p_v_1_1_lattice.html#a94b9b24f3722c3e142520faf0b6c7a68',1,'Ising_OPV::Lattice']]],
   ['checkparameters',['checkParameters',['../class_ising___o_p_v_1_1_parameters.html#a67f69a54b8d0e687aba147565859371a',1,'Ising_OPV::Parameters']]],
   ['code_5fof_5fconduct_2emd',['CODE_OF_CONDUCT.md',['../_c_o_d_e___o_f___c_o_n_d_u_c_t_8md.html',1,'']]],
+  ['contributing_2emd',['CONTRIBUTING.md',['../_c_o_n_t_r_i_b_u_t_i_n_g_8md.html',1,'']]],
   ['coords',['Coords',['../struct_ising___o_p_v_1_1_coords.html',1,'Ising_OPV']]],
   ['createbilayermorphology',['createBilayerMorphology',['../class_ising___o_p_v_1_1_morphology.html#a60d795dd026fdd63be2008d4bcaed3f3',1,'Ising_OPV::Morphology']]],
   ['createcheckerboardmorphology',['createCheckerboardMorphology',['../class_ising___o_p_v_1_1_morphology.html#af1d3defa2f3a0e9a2b9404449b0394ec',1,'Ising_OPV::Morphology']]],
   ['createrandommorphology',['createRandomMorphology',['../class_ising___o_p_v_1_1_morphology.html#a5468ddffa5443f504ea83e14b05aa88a',1,'Ising_OPV::Morphology']]],
-  ['current_5fversion',['Current_version',['../namespace_ising___o_p_v.html#a6118e9e416983b01628e9697ac201b4a',1,'Ising_OPV']]],
-  ['contributor_20covenant_20code_20of_20conduct',['Contributor Covenant Code of Conduct',['../md__c_o_d_e__o_f__c_o_n_d_u_c_t.html',1,'']]]
+  ['current_5fversion',['Current_version',['../namespace_ising___o_p_v.html#a84f8c140132a89afcc7b515a001ce574',1,'Ising_OPV']]],
+  ['changelog',['Changelog',['../md__c_h_a_n_g_e_l_o_g.html',1,'']]],
+  ['contributor_20covenant_20code_20of_20conduct',['Contributor Covenant Code of Conduct',['../md__c_o_d_e__o_f__c_o_n_d_u_c_t.html',1,'']]],
+  ['contributing_20to_20ising_5fopv',['Contributing to Ising_OPV',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]]
 ];

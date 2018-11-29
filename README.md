@@ -1,4 +1,4 @@
-Ising_OPV
+Ising_OPV 
 =========
 
 This C++ software package can be used to create and analyze bulk heterojunction morphologies for further use in kinetic Monte Carlo simulation tools, such as [Excimontec](https://github.com/MikeHeiber/Excimontec). 
@@ -18,11 +18,12 @@ Generated or imported morphologies are then rigorously analyzed to determine imp
 
 ## Current Status
 
-Latest release:  [![GitHub (pre-)release](https://img.shields.io/github/release/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
+v4.0 is now stable. 
+Please report any bugs or submit feature requests for future releases in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
-All major planned features for v4.0 are now implemented and have undergone significant testing. 
-However, there may still be bugs that need to be fixed. 
-Please report any bugs or submit feature requests in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
+Latest pre-release:  [![GitHub Pre-release](https://img.shields.io/github/release-pre/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
+
+To keep track of upcoming changes or review prior changes to the codebase, please see the [Changelog](./CHANGELOG.md).
 
 #### Continuous Integration and Testing Status:
 
@@ -40,9 +41,10 @@ Code is being tested using [googletest](https://github.com/google/googletest) wi
 | Master | [![Coveralls Github branch](https://img.shields.io/coveralls/github/MikeHeiber/Ising_OPV/master.svg?style=for-the-badge)](https://coveralls.io/github/MikeHeiber/Ising_OPV?branch=master) |
 | Development | [![Coveralls Github branch](https://img.shields.io/coveralls/github/MikeHeiber/Ising_OPV/development.svg?style=for-the-badge)](https://coveralls.io/github/MikeHeiber/Ising_OPV?branch=development) |
 
-## Contact
+## Contributing
 
-If you would like to contribute to the development of this project or would like some help in using the tool for your research, please contact me (heiber@mailaps.org) to discuss a collaboration. 
+If you would like to contribute to the development of this project, please see the [contributing instructions](./CONTRIBUTING.md).
+If you would like some help in using or customizing the tool for your research, please contact me (heiber@mailaps.org) to discuss a collaboration. 
 You can check out my research using this tool and other work on [Researchgate](https://www.researchgate.net/profile/Michael_Heiber).
 
 ## Using Ising_OPV
@@ -71,7 +73,14 @@ Once you have an MPI library installed and have an appropriate compiler, to buil
 Then, navigate to the Ising_OPV directory and run `make`. 
 Once the normal build is successful, you should test Ising_OPV on your own hardware using the unit and system tests provided before you use the tool. 
 Build the testing executable by running `make test`. 
-Once the test build is complete, run the two test executables `./test/Ising_OPV_tests.exe` and `./test/Ising_OPV_MPI_tests.exe`.
+Once the test build is complete, run the two test executables
+
+```./test/Ising_OPV_tests.exe```
+
+and
+
+```mpiexec -n 4 ./test/Ising_OPV_MPI_tests.exe```.
+
 Please report any build or testing errors in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. If you do not have any build or testing errors, then you are ready to go!
 
 #### Running Simulations
