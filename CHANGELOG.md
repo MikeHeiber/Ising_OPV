@@ -24,6 +24,9 @@ This release only changes documentation files and does not contain modifications
 - README.md - Current release status to note that v4.0 is now stable
 - papers/v4_paper/paper.md - Image alt text to be more descriptive
 - papers/v4_paper/paper.md - Formating of plus signs using \texttt command
+- Version.cpp - Current_version namespace variable to v4.0.0
+- Doxyfile - updated the version number to v4.0.0
+- docs - generated updated Doxygen documentation
 
 ### Fixed
 - README.md - Instructions for running the MPI tests
