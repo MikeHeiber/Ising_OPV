@@ -23,6 +23,7 @@ Please report any bugs or submit feature requests for future releases in the [Is
 
 Latest pre-release:  [![GitHub Pre-release](https://img.shields.io/github/release-pre/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
 
+To keep track of upcoming changes or review prior changes to the codebase, please see the [Changelog](./CHANGELOG.md).
 
 #### Continuous Integration and Testing Status:
 
