@@ -46,7 +46,7 @@ The code owners will review new issues, provide feedback, and decide if and when
 
 6. Implement your changes keeping the scope of changes limited to the specified issue.
 
-7. Document your changes by adding to the Changelog.
+7. Document your changes by adding to the [Changelog](./CHANGELOG.md).
 
 8. Update your new branch with any upstream changes and resolve any conflicts.
 
