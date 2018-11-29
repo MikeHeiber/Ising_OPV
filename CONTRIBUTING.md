@@ -4,7 +4,7 @@ We welcome new contributors to this project to help make the Ising_OPV morpholog
 
 ## Ground Rules
 
-- To maintain an inclusive and welcoming environment, all community members must follow the [Code of Conduct](https://github.com/MikeHeiber/Ising_OPV/blob/master/CODE_OF_CONDUCT.md).
+- To maintain an inclusive and welcoming environment, all community members must follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 - To keep project development organized, all new features and bugfixes must be proposed and discussed using [issues](https://github.com/MikeHeiber/Ising_OPV/issues) before changes are implemented.
 - C++ code should follow the [C++11 standard](https://en.wikipedia.org/wiki/C%2B%2B11) and should be written to be simple and largely self-documenting with self-descriptive names.
 
