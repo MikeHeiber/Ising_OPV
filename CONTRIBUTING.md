@@ -34,7 +34,9 @@ The code owners will review new issues, provide feedback, and decide if and when
 
 4. Clone your forked Ising_OPV repo to your local machine.
 
-    ```git clone --recurse-submodules https://github.com/YOUR_USERNAME/Ising_OPV```
+    ```
+    git clone --recurse-submodules https://github.com/YOUR_USERNAME/Ising_OPV
+    ```
 
 5. Create a new feature branch from the development branch.
 
