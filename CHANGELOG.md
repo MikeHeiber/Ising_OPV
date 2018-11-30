@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- README.md - Link to JOSS paper
+
 ## [v4.0.0] - 2018-11-29 - Final Release
 
 This release only changes documentation files and does not contain modifications to the source code.
