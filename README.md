@@ -21,7 +21,7 @@ Generated or imported morphologies are then rigorously analyzed to determine imp
 v4.0 is now stable. 
 Please report any bugs or submit feature requests for future releases in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
-Latest pre-release:  [![GitHub Pre-release](https://img.shields.io/github/release-pre/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
+Latest release:  [![GitHub Pre-release](https://img.shields.io/github/release-pre/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
 
 To keep track of upcoming changes or review prior changes to the codebase, please see the [Changelog](./CHANGELOG.md).
 
@@ -136,9 +136,11 @@ While this tool is designed to be primarily controlled through the parameter fil
 
 ## Citing this Work
 
-If you find Ising_OPV to be helpful for your research, please cite the original study:
+If you find Ising_OPV to be helpful for your research, please cite both of these seminal papers:
 
 [M. C. Heiber and A. Dhinojwala, Phys. Rev. Appl. **2**, 014008 (2014).](http://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.2.014008) [[ResearchGate]](https://www.researchgate.net/publication/264419218_Efficient_Generation_of_Model_Bulk_Heterojunction_Morphologies_for_Organic_Photovoltaic_Device_Modeling)
+
+[M. C. Heiber, J. Open Source Software **3**, 1072 (2018).](https://doi.org/10.21105/joss.01072) [[ResearchGate]](https://www.researchgate.net/publication/329320148_Ising_OPV_v40_Experimental_Tomography_Data_Import_Interpretation_and_Analysis)
 
 If your work involves investigating the effects of morphological tortuosity, please also cite the study that introduced the tortuosity features:
 
