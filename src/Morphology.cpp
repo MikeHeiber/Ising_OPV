@@ -1860,7 +1860,7 @@ namespace Ising_OPV {
 		XMLDocument xml_doc;
 		string data_format;
 		FILE* xml_file_ptr;
-		xml_file_ptr = fopen(metadata_filename.c_str(), "r");
+		xml_file_ptr = fopen(metadata_filename.c_str(), "rb");
 		if (xml_file_ptr == NULL) {
 			cout << ID << ": Error! XML metadata file not found." << endl;
 			throw runtime_error("Error! XML metadata file not found.");
@@ -2084,9 +2084,10 @@ namespace Ising_OPV {
 			int offset_y = (lattice.getWidth() - size * dim) / 2;
 			Lattice sublattice;
 			Parameters params_new = Params;
-			params_new.Length = new_length;
-			params_new.Width = new_width;
+			params_new.Length = size;
+			params_new.Width = size;
 			params_new.Height = lattice.getHeight();
+			params_new.Enable_periodic_z = false;
 			for (int x = 0; x < dim; x++) {
 				for (int y = 0; y < dim; y++) {
 					sublattice = lattice.extractSublattice(x*size + offset_x, size, y*size + offset_y, size, 0, lattice.getHeight());

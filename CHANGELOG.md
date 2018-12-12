@@ -8,8 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.0.1] - 2018-12-12 - Tomogram Import Bugfix
+
 ### Added
 - README.md - Link to JOSS paper
+
+### Changed
+- Doxyfile - Updated file input and output paths to relative paths
+
+### Fixed
+- Morphology (importTomogramMorphologyFile) - Corrected error loading xml metadata files on Windows by telling the fopen function to open the file as a binary file
+- Morphology (importTomogramMorphologyFile) - Corrected miscalculation of the extracted sublattice dimensions that was causing some tomogram files not to be imported
 
 ## [v4.0.0] - 2018-11-29 - Final Release
 
