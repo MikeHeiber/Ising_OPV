@@ -1047,7 +1047,6 @@ namespace Ising_OPV {
 	}
 
 	bool Morphology::calculatePathDistances(vector<float>& path_distances) {
-		int z;
 		Coords coords;
 		long int current_index;
 		long int neighbor_index;
@@ -1092,6 +1091,7 @@ namespace Ising_OPV {
 			}
 		}
 		// The pathfinding algorithm is performed for one domain type at a time.
+		int z;
 		for (int n = 0; n < 2; n++) {
 			// Use Dijkstra's algorithm to fill in the remaining path distance data.
 			cout << ID << ": Executing Dijkstra's algorithm to calculate shortest paths through domain type " << (int)Site_types[n] << ".\n";
@@ -1562,7 +1562,7 @@ namespace Ising_OPV {
 				}
 			});
 			// Select random dissimilar neighbor site
-			uniform_int_distribution<int> dist(0, distance(neighbors.begin(), it) - 1);
+			uniform_int_distribution<int> dist(0, (int)distance(neighbors.begin(), it) - 1);
 			auto selected_it = neighbors.begin();
 			advance(selected_it, dist(gen));
 			neighbor_site_index = *selected_it;
@@ -1915,7 +1915,7 @@ namespace Ising_OPV {
 			throw runtime_error("Error! Tomogram binary RAW file could not be opened.");
 		}
 		data_file.seekg(0, data_file.end);
-		int N_bytes = data_file.tellg();
+		int N_bytes = (int)data_file.tellg();
 		data_file.seekg(0, data_file.beg);
 		vector<float> data_vec;
 		if (data_format.compare("8 bit") == 0) {
