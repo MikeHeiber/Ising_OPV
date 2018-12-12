@@ -431,7 +431,7 @@ namespace Ising_OPV {
 		//	Error_found = true;
 		//}
 		//i++;
-		Mixed_frac = atoi(stringvars[i].c_str());
+		Mixed_frac = atof(stringvars[i].c_str());
 		i++;
 		Mixed_conc = atof(stringvars[i].c_str());
 		i++;

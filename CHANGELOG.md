@@ -12,15 +12,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - README.md - Link to JOSS paper
+- Morphology (executeIsingSwapping) - Cast return of distance function to an int to prevent compiler warning
+- Morphology (importTomogramMorphologyFile) - Cast return of ifstream's tellg function to an int to prevent compiler warning
+- Utils (vector_which_median) - Cast return of distance function to int to prevent compiler warning
 
 ### Changed
 - Doxyfile - Updated file input and output paths to relative paths
 - Version - Updated Current_version namespace variable to v4.0.1
 - Updated Doxygen documentation
+- Morphology (calculatePathDistances) - Moved declaration of local z variable near it's first use to prevent potential conflict with other z variable used in a subsequent loop
+- main.cpp (main) - Imported morphology filenames now use main's reusable filename string variable
 
 ### Fixed
 - Morphology (importTomogramMorphologyFile) - Corrected error loading xml metadata files on Windows by telling the fopen function to open the file as a binary file
 - Morphology (importTomogramMorphologyFile) - Corrected miscalculation of the extracted sublattice dimensions that was causing some tomogram files not to be imported
+- Parameters (importParameters) - Corrected problem importing the Mixed_frac parameter from the parameter file as an integer instead of a double
 
 ## [v4.0.0] - 2018-11-29 - Final Release
 

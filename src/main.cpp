@@ -136,7 +136,7 @@ int main(int argc, char * argv[]) {
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
 	if (parameters.Enable_import_morphologies || parameters.Enable_import_tomogram) {
-		string filename = "morphology_" + to_string(procid) + ".txt";
+		filename = "morphology_" + to_string(procid) + ".txt";
 		cout << procid << ": Opening morphology file " << filename << endl;
 		morphology_input_file.open(filename);
 		if (morphology_input_file.is_open()) {
