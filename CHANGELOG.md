@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Doxyfile - Updated file input and output paths to relative paths
+- Version - Updated Current_version namespace variable to v4.0.1
+- Updated Doxygen documentation
 
 ### Fixed
 - Morphology (importTomogramMorphologyFile) - Corrected error loading xml metadata files on Windows by telling the fopen function to open the file as a binary file
