@@ -398,6 +398,7 @@ namespace UtilsTests {
 		data.clear();
 		// Check that empty double data vectors throw an exception
 		EXPECT_THROW(calculateProbabilityHist(data, 10.0), invalid_argument);
+		EXPECT_THROW(calculateProbabilityHist(data, 0.0, 10.0), invalid_argument);
 		EXPECT_THROW(calculateProbabilityHist(data, 5);, invalid_argument);
 		EXPECT_THROW(calculateProbabilityHist(data, 1.0, 5), invalid_argument);
 		// Check behavior on a test dataset
