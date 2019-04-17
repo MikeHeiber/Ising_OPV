@@ -371,8 +371,20 @@ namespace UtilsTests {
 		// Check that the prob hist sums to 1
 		auto cum_hist = calculateCumulativeHist(prob);
 		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
-		// Calculate histogram with a bin size of 10.0
+		// Check histogram calculated with set bin size of 10.0
 		prob = calculateProbabilityHist(data, 10.0);
+		// Check for the correct number of bins
+		EXPECT_EQ(10, (int)prob.size());
+		// Check several random values from the uniform probability hist
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		EXPECT_NEAR(10.0 / 100.0, prob[dist2(gen)].second, 2.5e-4);
+		// Check that the prob hist sums to 1
+		cum_hist = calculateCumulativeHist(prob);
+		EXPECT_DOUBLE_EQ(1.0, cum_hist.back().second);
+		// Check function where one specifies the bin positions
+		// Calculate histogram with 9 bins
+		prob = calculateProbabilityHist(data, 0.0, 10.0);
 		// Check for the correct number of bins
 		EXPECT_EQ(10, (int)prob.size());
 		// Check several random values from the uniform probability hist

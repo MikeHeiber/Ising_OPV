@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Utils (calculateProbabilityHist) - Added new overloaded function definition that allows users to specify the bin positions
+- test/test.cpp (CalculateProbabilityHistTests) - Added series of test for the new calculateProbabilityHist function with specified bin positions
 
 ### Changed
 - .travis.yml - Extended copyright statement to 2019
