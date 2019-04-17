@@ -18,10 +18,9 @@ Generated or imported morphologies are then rigorously analyzed to determine imp
 
 ## Current Status
 
-v4.0 is now stable. 
-Please report any bugs or submit feature requests for future releases in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
+Latest stable release: [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/MikeHeiber/Ising_OPV.svg)](https://github.com/MikeHeiber/Ising_OPV/releases)
 
-Latest release:  [![GitHub Pre-release](https://img.shields.io/github/release-pre/MikeHeiber/Ising_OPV/all.svg?style=flat-square)](https://github.com/MikeHeiber/Ising_OPV/releases)
+Please report any bugs or submit feature requests for future releases in the [Issues](https://github.com/MikeHeiber/Ising_OPV/issues) section. 
 
 To keep track of upcoming changes or review prior changes to the codebase, please see the [Changelog](./CHANGELOG.md).
 

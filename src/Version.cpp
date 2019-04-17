@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 Michael C. Heiber
+// Copyright (c) 2014-2019 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -9,7 +9,7 @@ using namespace std;
 
 namespace Ising_OPV {
 
-	Version Current_version("4.0.1");
+	Version Current_version("4.0.2");
 
 	Version::Version() { }
 
