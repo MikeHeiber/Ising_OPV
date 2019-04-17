@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 Michael C. Heiber
+// Copyright (c) 2014-2019 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -168,11 +168,40 @@ namespace Ising_OPV {
 			index = (int)floor((data[i] - min_val) / bin_size);
 			counts[index]++;
 		}
-		// total counts
-		int total_counts = accumulate(counts.begin(), counts.end(), 0);
 		// Normalized histogram to get probability
 		for (int i = 0; i < num_bins; i++) {
-			hist[i].second = (double)counts[i] / (double)(total_counts);
+			hist[i].second = (double)counts[i] / (double)(data.size());
+		}
+		return hist;
+	}
+
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_start, const double bin_size) {
+		// Check for valid input data
+		if ((int)data.size() == 0) {
+			cout << "Error! Cannot calculate probability histogram because the input data vector is empty." << endl;
+			throw invalid_argument("Error! Cannot calculate probability histogram because the input data vector is empty.");
+		}
+		// Determine data range
+		double max_val = *max_element(data.begin(), data.end());
+		// Extend the range a little bit to ensure all data fits in the range
+		max_val += 1e-12*abs(max_val);
+		// Determine number of bins
+		int num_bins = (int)ceil((max_val - bin_start) / bin_size);
+		// Calculate bin-centered x values
+		vector<pair<double, double>> hist(num_bins, make_pair(0.0, 0.0));
+		for (int i = 0; i < num_bins; i++) {
+			hist[i].first = bin_start + 0.5*bin_size + bin_size * i;
+		}
+		// Calculate histogram
+		vector<int> counts(num_bins, 0);
+		int index;
+		for (int i = 0; i < (int)data.size(); i++) {
+			index = (int)floor((data[i] - bin_start) / bin_size);
+			counts[index]++;
+		}
+		// Normalized histogram to get probability
+		for (int i = 0; i < num_bins; i++) {
+			hist[i].second = (double)counts[i] / (double)(data.size());
 		}
 		return hist;
 	}

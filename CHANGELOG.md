@@ -8,6 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.0.2] - 2019-04-17 - Tortuosity Histogram Bugfix
+
+### Added
+- Utils (calculateProbabilityHist) - Added new overloaded function definition that allows users to specify the bin positions
+- test/test.cpp (CalculateProbabilityHistTests) - Added series of test for the new calculateProbabilityHist function with specified bin positions
+
+### Changed
+- .travis.yml - Extended copyright statement to 2019
+- Doxyfile - Updated project version to v4.0.2
+- docs - Updated documentation using updated Doxygen 1.8.15
+- LICENSE - Extended copyright statement to 2019
+- Lattice - Extended copyright statements to 2019
+- main.cpp - Extended copyright statement to 2019
+- main.cpp - Reduced the tortuosity histogram bin size from 0.02 to 0.01 to produce higher resolution data
+- Morphology - Extended copyright statements to 2019
+- Parameters - Extended copyright statements to 2019
+- Utils - Extended copyright statements to 2019
+- Utils (calculateProbabilityHist) - Refactored functions to use data vector size for normalization instead of unnecessarily counting 
+- Version - Extended copyright statements to 2019
+- Version - Updated Current_version namespace variable to v4.0.02
+- test/test.cpp - Extended copyright statement to 2019
+- test/test_mpi.cpp - Extended copyright statement to 2019
+
+### Fixed
+- main.cpp - Tortuosity histogram output so that the data from the first bin is now correctly output to the data file
+- README.md - Current status section to show latest stable release badge
+
 ## [v4.0.1] - 2018-12-12 - Tomogram Import Bugfix
 
 ### Added

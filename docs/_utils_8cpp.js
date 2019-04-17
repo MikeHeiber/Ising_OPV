@@ -7,6 +7,7 @@ var _utils_8cpp =
     [ "calculateProbabilityHist", "_utils_8cpp.html#ace56151868b75c286496fe11b3996505", null ],
     [ "calculateProbabilityHist", "_utils_8cpp.html#a369fa76e4d281ac59e3936c343dd563e", null ],
     [ "calculateProbabilityHist", "_utils_8cpp.html#ac187d08d4fb5222cafb3349e04125cf1", null ],
+    [ "calculateProbabilityHist", "_utils_8cpp.html#ae81d2084d3baca482a14dbe7c24e5e14", null ],
     [ "integrateData", "_utils_8cpp.html#a2fd5e2ba266c8551a5800d12ebf2effc", null ],
     [ "interpolateData", "_utils_8cpp.html#a7d9e7c269686f48f923c5a0e039ed6c8", null ],
     [ "MPI_calculateProbHistAvg", "_utils_8cpp.html#a8ca9bca11102688e2730c91c63fd0dbc", null ],

@@ -27,7 +27,7 @@ var NAVTREE =
     [ "Changelog", "md__c_h_a_n_g_e_l_o_g.html", null ],
     [ "Contributor Covenant Code of Conduct", "md__c_o_d_e__o_f__c_o_n_d_u_c_t.html", null ],
     [ "Contributing to Ising_OPV", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", null ],
-    [ "Ising_OPV", "md__r_e_a_d_m_e.html", null ],
+    [ "Examples", "md_examples_examples.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

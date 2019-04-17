@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 Michael C. Heiber
+// Copyright (c) 2014-2019 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -365,13 +365,15 @@ int main(int argc, char * argv[]) {
 		// Output the average tortuosity histograms and the end-to-end path data.
 		if (parameters.Enable_tortuosity_calc) {
 			tortuosity_hist_file.open("tortuosity_histograms.txt");
-			auto probhist1 = calculateProbabilityHist(tortuosity_data1, 0.02);
-			auto probhist2 = calculateProbabilityHist(tortuosity_data2, 0.02);
-			tortuosity_hist_file << "Tortuosity, Probability1,Probability2" << endl;
+			double bin_size = 0.01;
+			auto probhist1 = calculateProbabilityHist(tortuosity_data1, 1.0, bin_size);
+			auto probhist2 = calculateProbabilityHist(tortuosity_data2, 1.0, bin_size);
+			outputVectorToFile(probhist1, "tortuosity_data");
+			tortuosity_hist_file << "Tortuosity,Probability1,Probability2" << endl;
 			int hist_size = (probhist1.size() > probhist2.size()) ? (int)probhist1.size() : (int)probhist2.size();
-			for (int i = 1; i < hist_size; i++) {
+			for (int i = 0; i < hist_size; i++) {
 				// output bin value
-				tortuosity_hist_file << 0.02*i + 1 << ",";
+				tortuosity_hist_file << bin_size * i + 1.0 + bin_size / 2.0 << ",";
 				if (i < (int)probhist1.size()) {
 					tortuosity_hist_file << probhist1[i].second << ",";
 				}

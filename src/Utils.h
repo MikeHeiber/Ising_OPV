@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 Michael C. Heiber
+// Copyright (c) 2014-2019 Michael C. Heiber
 // This source file is part of the Ising_OPV project, which is subject to the MIT License.
 // For more information, see the LICENSE file that accompanies this software.
 // The Ising_OPV project can be found on Github at https://github.com/MikeHeiber/Ising_OPV
@@ -25,12 +25,12 @@ namespace Ising_OPV {
 	//! \brief This namespace provides useful constants and utility functions.
 	//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 	//! \author Michael C. Heiber
-	//! \date 2014-2018
+	//! \date 2014-2019
 
 		//! \brief This simple struct contains Cartesian coordinates specified by integers x,y,z.
 		//! \copyright MIT License.  For more information, see the LICENSE file that accompanies this software package.
 		//! \author Michael C. Heiber
-		//! \date 2014-2018
+		//! \date 2014-2019
 	struct Coords {
 		//! The x Cartesian coordinate.
 		int x;
@@ -122,6 +122,15 @@ namespace Ising_OPV {
 	//! \param bin_size is the input bin size.
 	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
 	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_size, const int num_bins);
+	
+	//! \brief Calculates the probability histogram for the input data vector using the input bin start value and bin size.
+	//! \details Linearly spaced bins are automatically created starting from the bin start value. The function
+	//! outputs bin-centered x values and probability y values in a x-y pair vector.
+	//! \param data is the input data vector.
+	//! \param bin_start is the starting value of the first bin.
+	//! \param bin_size is the input bin size.
+	//! \returns A vector of x-y pairs consisting of bin-centered x values and probability y values.
+	std::vector<std::pair<double, double>> calculateProbabilityHist(const std::vector<double>& data, const double bin_start, const double bin_size);
 
 	//! \brief Numerically integrates a vector of x-y data using the trapezoid rule.
 	//! \warning The function assumes that the data is sorted by the x values.
