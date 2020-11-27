@@ -1627,7 +1627,11 @@ namespace MorphologyTests {
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
-	// Redirect cout to NULL to suppress command line output during the tests
-	//cout.rdbuf(NULL);
-	return RUN_ALL_TESTS();
+	// Redirect cout to test log file during the tests
+	ofstream testlog("./test/test_log.txt");
+	auto old_buf = cout.rdbuf(testlog.rdbuf());
+	int test_status = RUN_ALL_TESTS();
+	cout.rdbuf(old_buf);
+	testlog.close();
+	return test_status;
 }

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- test.cpp (main) - Redirected command line output to a testing log file so that users can more easily check error messages that may occur during testing
+
 ## [v4.0.2] - 2019-04-17 - Tortuosity Histogram Bugfix
 
 ### Added
